@@ -1,0 +1,106 @@
+/* === MINIMAL CORE CSS === */
+:root {
+    --primary: #2563eb;
+    --bg: #f8fafc;
+    --white: #ffffff;
+    --text: #0f172a;
+    --sidebar-w: 260px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body { 
+    font-family: 'Inter', sans-serif; 
+    background: var(--bg); 
+    color: var(--text); 
+    display: flex; 
+    min-height: 100vh; 
+}
+
+/* Sidebar */
+.sidebar {
+    width: var(--sidebar-w);
+    height: 100vh;
+    background: var(--white);
+    border-right: 1px solid #e2e8f0;
+    padding: 1.5rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    overflow-y: auto;
+    transition: transform 0.2s ease;
+}
+
+.logo { font-size: 1.5rem; font-weight: 800; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.5rem; }
+
+.sidebar-close { display: none; background: none; border: none; cursor: pointer; position: absolute; top: 1rem; right: 1rem; }
+
+/* Navigation & Categories */
+.nav-list { list-style: none; margin-bottom: 1.5rem; }
+.nav-list li { padding: 0.6rem 0.75rem; border-radius: 6px; cursor: pointer; font-weight: 600; }
+.nav-list li.active { background: #eff6ff; color: var(--primary); }
+
+.sidebar-categories { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem; }
+.sidebar-cat-card { display: flex; align-items: center; gap: 0.65rem; padding: 0.5rem 0.65rem; border-radius: 6px; cursor: pointer; }
+.sidebar-cat-icon-wrap { width: 28px; height: 28px; border-radius: 6px; background: #eff6ff; color: var(--primary); display: flex; align-items: center; justify-content: center; }
+
+/* Sidebar Footer */
+.sidebar-footer { margin-top: auto; padding-top: 1rem; border-top: 1px solid #e2e8f0; }
+.btn-logout-sidebar { background: none; border: none; cursor: pointer; width: 100%; text-align: left; padding: 0.5rem; font-weight: 600; font-size: 0.9rem; }
+
+/* Main Area */
+.main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.navbar {
+    height: 72px;
+    background: var(--white);
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 90;
+}
+
+.menu-toggle { display: none; background: none; border: none; cursor: pointer; }
+
+/* Content */
+.content {
+    padding: 2.5rem;
+    max-width: 1000px;
+}
+
+.btn-create {
+    padding: 0.7rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    width: 100%;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* Auth Buttons */
+.auth-buttons { display: flex; gap: 1rem; align-items: center; }
+.btn-login { cursor: pointer; background: none; border: none; font-weight: 600; }
+.btn-register { cursor: pointer; background: var(--primary); color: white; padding: 0.5rem 1rem; border-radius: 6px; border: none; font-weight: 600; }
+
+/* Responsive Fix */
+@media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-close, .menu-toggle { display: block; }
+    .main { margin-left: 0; }
+}
