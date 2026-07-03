@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/bouzerda0/real-time-forum/internal/database"
+	"real-time-forum/database"
 )
 
 func main() {
