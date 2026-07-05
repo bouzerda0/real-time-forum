@@ -23,7 +23,7 @@ func main() {
 	// Middleware
 	http.HandleFunc("/api/logout", middleware.AuthMiddleware(auth.LogoutHandler))
 
-	// 3. Serving Frontend SPA
+	// Serving Frontend SPA
 	fs := http.FileServer(http.Dir("../../frontend"))
 
 	http.Handle("/", fs)
