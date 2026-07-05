@@ -2,27 +2,29 @@ package database
 
 import (
 	"database/sql"
-	"log"
 	"os"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var DB *sql.DB
 
-func InitDB() {
+func InitDB(dbPath string) error {
 	var err error
-	DB, err = sql.Open("sqlite3", "./forum.db")
+	DB, err = sql.Open("sqlite3", dbPath)
 	if err != nil {
-		log.Fatal("Unable to open database:", err)
+		return err
 	}
 
-	createTable, err := os.ReadFile("internal/database/schema.sql")
+	createTable, err := os.ReadFile("database/schema.sql")
 	if err != nil {
-		log.Fatal("Unable to read schema file:", err)
+		return err
 	}
 
 	_, err = DB.Exec(string(createTable))
 	if err != nil {
-		log.Fatal("Unable to create table:", err)
+		return err
 	}
 
+	return nil
 }

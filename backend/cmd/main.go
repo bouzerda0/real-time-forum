@@ -5,20 +5,35 @@ import (
 	"net/http"
 
 	"real-time-forum/database"
+	"real-time-forum/internal/auth"
+	"real-time-forum/internal/middleware"
 )
 
 func main() {
-	database.InitDB()
-
-	fs := http.FileServer(http.Dir("./web/static"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./web/index.html")
-	})
-
-	log.Println("Starting server on :8080")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
-		log.Fatal("ListenAndServe: ", err)
+	err := database.InitDB("../database.db")
+	if err != nil {
+		log.Fatal("Failed to initialize database:", err)
 	}
+	defer database.DB.Close()
 
+	//  API Routes
+	http.HandleFunc("/api/register", auth.RegisterHandler)
+	http.HandleFunc("/api/login", auth.LoginHandler)
+
+	// Middleware
+	http.HandleFunc("/api/logout", middleware.AuthMiddleware(auth.LogoutHandler))
+
+	// 3. Serving Frontend SPA
+	fs := http.FileServer(http.Dir("../../frontend"))
+
+	http.Handle("/", fs)
+
+	// start server
+	port := ":8080"
+	log.Printf("🚀 Server is running on http://localhost%s\n", port)
+
+	err = http.ListenAndServe(port, nil)
+	if err != nil {
+		log.Fatal("Server failed to start:", err)
+	}
 }
