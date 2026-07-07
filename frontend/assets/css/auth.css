@@ -1,0 +1,176 @@
+/* ==========================================
+   1. Center the Login and Register Page
+   ========================================== */
+/* Make the app container take the full screen and put the card in the middle */
+#app:has(.disc-card) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    max-width: none;
+    background-color: #f4f7f9;
+    /* Soft background color */
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* ==========================================
+   2. The Card Style (White box)
+   ========================================== */
+.disc-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    /* Rounded corners */
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    /* Soft shadow for 3D look */
+    width: 100%;
+    max-width: 420px;
+    /* Maximum width of the card */
+    font-family: 'Inter', sans-serif;
+    box-sizing: border-box;
+    animation: fadeIn 0.4s ease-out;
+    /* Smooth animation when page loads */
+}
+
+/* The animation rule */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================
+   3. Texts and Titles
+   ========================================== */
+/* The main title (Login or Register) */
+.disc-card h2 {
+    color: #0f172a;
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 30px;
+}
+
+/* The labels above the inputs */
+.disc-card label {
+    display: block;
+    color: #475569;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+/* ==========================================
+   4. Input Fields (Where user types)
+   ========================================== */
+.disc-card input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    font-size: 15px;
+    color: #0f172a;
+    background-color: #f8fafc;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+/* When the user clicks inside the input (Focus state) */
+.disc-card input:focus {
+    outline: none;
+    border-color: #0066FF;
+    /* Primary blue color */
+    background-color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(0, 102, 255, 0.15);
+    /* Light blue glow */
+}
+
+/* ==========================================
+   5. The Main Button (Sign In / Register)
+   ========================================== */
+.btn-create {
+    width: 100%;
+    background-color: #0066FF;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    margin-top: 15px;
+    box-shadow: 0 4px 10px rgba(0, 102, 255, 0.2);
+}
+
+/* When the mouse is over the button */
+.btn-create:hover {
+    background-color: #0052cc;
+    box-shadow: 0 6px 15px rgba(0, 102, 255, 0.3);
+}
+
+/* When the button is clicked (pressed down) */
+.btn-create:active {
+    transform: scale(0.98);
+}
+
+/* When the button is disabled (e.g., loading state) */
+.btn-create:disabled {
+    background-color: #94a3b8;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+/* ==========================================
+   6. Links and Error Messages
+   ========================================== */
+/* The text below the button */
+.disc-card p {
+    color: #64748b;
+}
+
+/* The link to register/login */
+.disc-card a {
+    color: #0066FF;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+/* When the mouse is over the link */
+.disc-card a:hover {
+    text-decoration: underline;
+    color: #004099;
+}
+
+/* The red error message box */
+#login-error,
+#register-error {
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #ef4444;
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+/* Hide the error box if there is no text inside it */
+#login-error:empty,
+#register-error:empty {
+    display: none;
+}
