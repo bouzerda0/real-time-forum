@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/bouzerda0/real-time-forum/internal/database"
+	"real-time-forum/backend/database"
 )
 
 func main() {
@@ -20,5 +20,4 @@ func main() {
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
-
 }
