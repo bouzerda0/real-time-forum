@@ -23,6 +23,8 @@ type Post struct {
 	CreatedAt time.Time
 }
 
+
+
 type Comment struct {
 	ID        int
 	PostID    int
