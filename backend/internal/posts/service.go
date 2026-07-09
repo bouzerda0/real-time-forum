@@ -2,7 +2,8 @@ package posts
 
 import (
 	"strings"
-
+	"net/http"
+	"real-time-forum/backend/database"
 	"real-time-forum/backend/internal/models"
 )
 
@@ -37,4 +38,22 @@ func checkCategories(arr []string, category string) bool {
 		}
 	}
 	return false
+}
+
+func GetUserID(r *http.Request) (int, error) {
+	// Get the cookie named session_token from the user's request
+	cookie, err := r.Cookie("session_token")
+	if err != nil {
+		return 0, err
+	}
+	// take the value of the cookie
+	token := cookie.Value
+
+	var userID int
+	// Query the database to find the user_id associated with the session_token
+	err = database.DB.QueryRow("SELECT user_id FROM user_sessions  WHERE session_token = ?", token).Scan(&userID)
+	if err != nil {
+		return 0, err
+	}
+	return userID, nil
 }
