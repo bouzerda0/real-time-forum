@@ -1,69 +1,38 @@
 export function LoginView() {
-    // Create the UI (DOM Elements)
     const mainContainer = document.createElement('div');
     mainContainer.className = 'disc-card';
+    mainContainer.innerHTML = `
+        <h2>Login</h2>
+        <div id="login-error"></div>
+        <form id="loginForm" style="display: flex; flex-direction: column; gap: 1rem;">
+            <div>
+                <label>Username or Email</label>
+                <input type="text" id="identify" required />
+            </div>
+            <div>
+                <label>Password</label>
+                <input type="password" id="password" required />
+            </div>
+            <button type="submit" class="btn-create">Sign In</button>
+        </form>
+        <p style="margin-top: 1rem; font-size: 0.875rem; text-align: center;">
+            Don't have an account? <a href="/register" id="signup-link">Register</a>
+        </p>
+    `;
 
-    const pageTitle = document.createElement('h2');
-    pageTitle.textContent = 'Login';
-
-    const errorMessage = document.createElement('div');
-    errorMessage.id = 'login-error';
-
-    const loginForm = document.createElement('form');
-    loginForm.id = 'loginForm';
-    loginForm.style.cssText = 'display: flex; flex-direction: column; gap: 1rem;';
-
-    // --- Username or Email Field ---
-    const usernameBox = document.createElement('div');
-    const usernameLabel = document.createElement('label');
-    usernameLabel.textContent = 'Username or Email';
-    const usernameInput = document.createElement('input');
-    usernameInput.type = 'text';
-    usernameInput.id = 'identify';
-    usernameInput.required = true;
-    usernameBox.append(usernameLabel, usernameInput);
-
-    // --- Password Field ---
-    const passwordBox = document.createElement('div');
-    const passwordLabel = document.createElement('label');
-    passwordLabel.textContent = 'Password';
-    const passwordInput = document.createElement('input');
-    passwordInput.type = 'password';
-    passwordInput.id = 'password';
-    passwordInput.required = true;
-    passwordBox.append(passwordLabel, passwordInput);
-
-    // --- Submit Button ---
-    const loginButton = document.createElement('button');
-    loginButton.type = 'submit';
-    loginButton.className = 'btn-create';
-    loginButton.textContent = 'Sign In';
-
-    // Put all form parts together inside the form
-    loginForm.append(usernameBox, passwordBox, loginButton);
-
-    // --- Sign Up Link ---
-    const signupText = document.createElement('p');
-    signupText.style.cssText = 'margin-top: 1rem; font-size: 0.875rem; text-align: center;';
-    signupText.textContent = "Don't have an account? ";
-
-    const signupLink = document.createElement('a');
-    signupLink.href = '/register';
-    signupLink.textContent = 'Register';
-
-    // Stop the browser from reloading when the link is clicked
-    signupLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        window.navigateTo('/register');
-    });
-
-    signupText.appendChild(signupLink);
-
-    // Put everything inside the main container
-    mainContainer.append(pageTitle, errorMessage, loginForm, signupText);
-
-    // The Logic (Events and API Calls)
     const logic = () => {
+        const loginForm = mainContainer.querySelector('#loginForm');
+        const errorMessage = mainContainer.querySelector('#login-error');
+        const loginButton = mainContainer.querySelector('button[type="submit"]');
+        const usernameInput = mainContainer.querySelector('#identify');
+        const passwordInput = mainContainer.querySelector('#password');
+
+        // Navigate to register without page reload
+        mainContainer.querySelector('#signup-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            window.navigateTo('/register');
+        });
+
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault(); // Stop page reload
 
