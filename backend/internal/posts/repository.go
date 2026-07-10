@@ -28,7 +28,7 @@ func GetAllPosts() ([]models.Post, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var p models.Post
-		err := rows.Scan(&p.ID, &p.UserID, &p.Nickname, &p.Title, &p.Content, &p.CreatedAt)
+		err := rows.Scan(&p.ID,&p.Nickname, &p.UserID, &p.Title, &p.Content,  &p.Category, &p.CreatedAt)
 		if err != nil {
 			return nil, err
 		}

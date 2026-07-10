@@ -9,20 +9,20 @@ import (
 )
 
 func PostHandler(w http.ResponseWriter, r *http.Request) {
-	userid, err := GetUserID(r)
-	if err != nil {
-		http.Error(w, http.StatusText(500), http.StatusInternalServerError)
-		return
-	}
+	// userid, err := GetUserID(r)
+	// if err != nil {
+	// 	http.Error(w, http.StatusText(500), http.StatusInternalServerError)
+	// 	return
+	// }
 	if r.Method == http.MethodPost {
 		var post models.Post
-		err = json.NewDecoder(r.Body).Decode(&post)
+		err := json.NewDecoder(r.Body).Decode(&post)
 		defer r.Body.Close()
 		if !ValidatePostInput(post) {
 			http.Error(w, http.StatusText(400), http.StatusBadRequest)
 			return
 		}
-		post.UserID = userid
+		// post.UserID = userid
 		err = CreatePost(post)
 		if err != nil {
 			http.Error(w, http.StatusText(500), http.StatusInternalServerError)

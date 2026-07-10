@@ -19,9 +19,9 @@ func main() {
 	})
 	http.HandleFunc("/posts" ,posts.PostHandler)
 	http.HandleFunc("/posts/{id}" , posts.GetPostHandler)
-	log.Println("Starting server on http://localhost:8080")
+	log.Println("Starting server on http://localhost:8081")
 
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	if err := http.ListenAndServe(":8081", nil); err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
 }
