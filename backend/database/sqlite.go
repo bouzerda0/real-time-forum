@@ -16,7 +16,7 @@ func InitDB(){
 		log.Fatal("Unable to open database:", err)
 	}
 	
-	createTable, err := os.ReadFile("internal/database/schema.sql")
+	createTable, err := os.ReadFile("backend/database/schema.sql")
 	if err != nil {
 		log.Fatal("Unable to read schema file:", err)
 	}
