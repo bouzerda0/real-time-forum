@@ -14,7 +14,7 @@ import (
 const frontendDir = "../frontend"
 
 func main() {
-	err := database.InitDB("../database.db")
+	err := database.InitDB("../forum.db")
 	if err != nil {
 		log.Fatal("Failed to initialize database:", err)
 	}
@@ -49,4 +49,3 @@ func main() {
 		log.Fatal("Server failed to start:", err)
 	}
 }
-
