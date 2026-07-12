@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"log"
 	"os"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -16,6 +17,10 @@ func InitDB(dbPath string) error {
 		return err
 	}
 
+	_, err = DB.Exec("PRAGMA foreign_keys = ON;")
+	if err != nil {
+		log.Fatal("Failed to enable foreign keys:", err)
+	}
 	createTable, err := os.ReadFile("database/schema.sql")
 	if err != nil {
 		return err
