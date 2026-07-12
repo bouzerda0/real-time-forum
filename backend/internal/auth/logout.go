@@ -29,7 +29,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		_, err := database.DB.Exec(query, cookie.Value)
 
 		if err != nil {
-			log.Println("Error deleting sessijhon from DB:", err)
+			log.Println("Error deleting session from DB:", err)
 		}
 	}
 
@@ -48,6 +48,6 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(APIResponse{
 		Status:  "success",
-		Message: "Logged in successfully",
+		Message: "Logged out successfully",
 	})
 }

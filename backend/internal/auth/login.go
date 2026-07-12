@@ -71,14 +71,18 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var dbID int
+	var dbNickname, dbEmail, dbFirstName, dbLastName string
 	var dbPasswordHash string
 
-	//  Check if this user exists in the database
-	err = database.DB.QueryRow("SELECT id, password FROM users WHERE email = ? OR username = ?", req.Identifier, req.Identifier).Scan(&dbID, &dbPasswordHash)
+	// Check if this user exists in the database by email or nickname
+	err = database.DB.QueryRow(
+		"SELECT id, nickname, email, COALESCE(first_name, ''), COALESCE(last_name, ''), password FROM users WHERE email = ? OR nickname = ?",
+		req.Identifier, req.Identifier,
+	).Scan(&dbID, &dbNickname, &dbEmail, &dbFirstName, &dbLastName, &dbPasswordHash)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			w.WriteHeader(http.StatusUnauthorized)
-			json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Invalid email/username or password."})
+			json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Invalid nickname/email or password."})
 			return
 		}
 		w.WriteHeader(http.StatusInternalServerError)
@@ -90,7 +94,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	err = bcrypt.CompareHashAndPassword([]byte(dbPasswordHash), []byte(req.Password))
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Invalid email/username or password."})
+		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Invalid nickname/email or password."})
 		return
 	}
 
@@ -100,7 +104,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("Error deleting old sessions:", err)
 	}
-	// if Credentials are correct? Create a Session Token
+
+	// Create a Session Token
 	sessionToken := generateSessionToken()
 	expirationTime := time.Now().Add(SessionDuration)
 	// Save the token in the 'user_sessions' table in our Database
@@ -111,7 +116,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Error creating session, try again later"})
 		return
 	}
-	// f. Create a cookie 
+
+	// Create a cookie
 	newCookie := http.Cookie{
 		Name:     "session_token",
 		Value:    sessionToken,
@@ -122,8 +128,15 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &newCookie)
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(APIResponse{
-		Status:  "success",
-		Message: "Logged in successfully",
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":  "success",
+		"message": "Logged in successfully",
+		"user": map[string]interface{}{
+			"id":         dbID,
+			"nickname":   dbNickname,
+			"email":      dbEmail,
+			"first_name": dbFirstName,
+			"last_name":  dbLastName,
+		},
 	})
 }

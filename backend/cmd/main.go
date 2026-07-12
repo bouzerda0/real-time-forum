@@ -20,11 +20,12 @@ func main() {
 	}
 	defer database.DB.Close()
 
-	//  API Routes
+	// API Routes
 	http.HandleFunc("/api/register", auth.RegisterHandler)
 	http.HandleFunc("/api/login", auth.LoginHandler)
+	http.HandleFunc("/api/session", auth.SessionHandler)
 
-	// Middleware
+	// Protected Routes
 	http.HandleFunc("/api/logout", middleware.AuthMiddleware(auth.LogoutHandler))
 
 	// Serving Frontend SPA

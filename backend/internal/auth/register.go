@@ -15,14 +15,18 @@ import (
 )
 
 var (
-	usernameRegex = regexp.MustCompile(`^[a-zA-Z0-9_]{4,20}$`)
+	nicknameRegex = regexp.MustCompile(`^[a-zA-Z0-9_]{3,25}$`)
 	emailRegex    = regexp.MustCompile(`^[^@\s]+@[^@\s]+\.[^@\s]+$`)
 )
 
 type RegisterRequest struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Nickname  string `json:"nickname"`
+	Age       int    `json:"age"`
+	Gender    string `json:"gender"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
 }
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
@@ -59,9 +63,39 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !usernameRegex.MatchString(req.Username) {
+	req.Nickname = strings.TrimSpace(req.Nickname)
+	req.FirstName = strings.TrimSpace(req.FirstName)
+	req.LastName = strings.TrimSpace(req.LastName)
+	req.Gender = strings.TrimSpace(req.Gender)
+	req.Email = strings.TrimSpace(req.Email)
+
+	if !nicknameRegex.MatchString(req.Nickname) {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Username must contain only letters and numbers (4-20 chars)."})
+		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Nickname must contain only letters, numbers, and underscores (3-25 chars)."})
+		return
+	}
+
+	if req.Age < 13 || req.Age > 120 {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Please enter a valid age (must be at least 13 years old)."})
+		return
+	}
+
+	if req.Gender == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Please select a gender."})
+		return
+	}
+
+	if req.FirstName == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "First name is required."})
+		return
+	}
+
+	if req.LastName == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Last name is required."})
 		return
 	}
 
@@ -72,10 +106,10 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var existingID int
-	err = database.DB.QueryRow("SELECT id FROM users WHERE email = ? OR username = ?", req.Email, req.Username).Scan(&existingID)
+	err = database.DB.QueryRow("SELECT id FROM users WHERE email = ? OR nickname = ?", req.Email, req.Nickname).Scan(&existingID)
 	if err != sql.ErrNoRows {
 		w.WriteHeader(http.StatusConflict)
-		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Email or Username already exists"})
+		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Email or Nickname already exists"})
 		return
 	}
 
@@ -110,7 +144,10 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = database.DB.Exec("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", req.Username, req.Email, string(hashedPassword))
+	_, err = database.DB.Exec(
+		"INSERT INTO users (nickname, email, password, age, gender, first_name, last_name) VALUES (?, ?, ?, ?, ?, ?, ?)",
+		req.Nickname, req.Email, string(hashedPassword), req.Age, req.Gender, req.FirstName, req.LastName,
+	)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		log.Println("Database insert error:", err)

@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -30,7 +31,46 @@ func GetUserIDFromCookie(r *http.Request) (int, error) {
 		return 0, fmt.Errorf("session expired")
 	}
 
-	//  R
 	//return the user's ID
 	return userID, nil
+}
+
+func SessionHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	userID, err := GetUserIDFromCookie(r)
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"status":  "error",
+			"message": "Unauthorized. Please login.",
+		})
+		return
+	}
+
+	var nickname, email, firstName, lastName string
+	err = database.DB.QueryRow(
+		"SELECT nickname, email, COALESCE(first_name, ''), COALESCE(last_name, '') FROM users WHERE id = ?",
+		userID,
+	).Scan(&nickname, &email, &firstName, &lastName)
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"status":  "error",
+			"message": "User not found.",
+		})
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status": "success",
+		"user": map[string]interface{}{
+			"id":         userID,
+			"nickname":   nickname,
+			"email":      email,
+			"first_name": firstName,
+			"last_name":  lastName,
+		},
+	})
 }
