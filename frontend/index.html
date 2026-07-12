@@ -41,8 +41,8 @@
         <!-- Categories-->
         <div class="sidebar-categories" id="sidebarCategories"></div>
 
-        <div class="sidebar-footer">
-            <button class="btn-logout-sidebar" onclick="navigateTo('/login')">Login</button>
+        <div class="sidebar-footer" id="sidebarFooter">
+            <button class="btn-logout-sidebar" id="sidebarLogoutBtn">Log Out</button>
         </div>
     </aside>
 
@@ -59,9 +59,8 @@
                     </svg></button>
             </div>
             <div class="navbar-right">
-                <div class="auth-buttons">
-                    <button class="btn-login" onclick="navigateTo('/login')">Login</button>
-                    <button class="btn-register" onclick="navigateTo('/register')">Register</button>
+                <div class="auth-buttons" id="navAuthArea">
+                    <!-- Dynamic user badge & global logout -->
                 </div>
             </div>
         </header>

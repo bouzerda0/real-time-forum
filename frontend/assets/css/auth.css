@@ -1,7 +1,6 @@
 /* ==========================================
    1. Center the Login and Register Page
    ========================================== */
-/* Make the app container take the full screen and put the card in the middle */
 #app:has(.disc-card) {
     display: flex;
     justify-content: center;
@@ -9,167 +8,180 @@
     min-height: 100vh;
     width: 100%;
     max-width: none;
-    background-color: #f4f7f9;
-    /* Soft background color */
+    background: radial-gradient(circle at 10% 20%, rgb(239, 246, 255) 0%, rgb(248, 250, 252) 90%);
     margin: 0;
-    padding: 20px;
+    padding: 30px 20px;
     box-sizing: border-box;
 }
 
 /* ==========================================
-   2. The Card Style (White box)
+   2. Premium Card Style
    ========================================== */
 .disc-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 16px;
-    /* Rounded corners */
-    padding: 40px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    /* Soft shadow for 3D look */
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: 20px;
+    padding: 42px;
+    box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.08), 0 0 1px 1px rgba(15, 23, 42, 0.04);
     width: 100%;
-    max-width: 420px;
-    /* Maximum width of the card */
+    max-width: 480px;
     font-family: 'Inter', sans-serif;
     box-sizing: border-box;
-    animation: fadeIn 0.4s ease-out;
-    /* Smooth animation when page loads */
+    animation: fadeInCard 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* The animation rule */
-@keyframes fadeIn {
+@keyframes fadeInCard {
     from {
         opacity: 0;
-        transform: translateY(-10px);
+        transform: translateY(-16px) scale(0.98);
     }
-
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
     }
 }
 
 /* ==========================================
-   3. Texts and Titles
+   3. Typography & Subtitles
    ========================================== */
-/* The main title (Login or Register) */
 .disc-card h2 {
     color: #0f172a;
-    font-size: 28px;
-    font-weight: 700;
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
     text-align: center;
     margin-top: 0;
-    margin-bottom: 30px;
+    margin-bottom: 6px;
 }
 
-/* The labels above the inputs */
+.disc-card .subtitle {
+    color: #64748b;
+    font-size: 14.5px;
+    text-align: center;
+    margin-bottom: 28px;
+}
+
 .disc-card label {
     display: block;
-    color: #475569;
-    font-size: 14px;
+    color: #334155;
+    font-size: 13.5px;
     font-weight: 600;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+}
+
+/* Form layout rows */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+@media (max-width: 480px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    .disc-card {
+        padding: 28px 20px;
+    }
 }
 
 /* ==========================================
-   4. Input Fields (Where user types)
+   4. Input & Select Fields
    ========================================== */
-.disc-card input {
+.disc-card input,
+.disc-card select {
     width: 100%;
-    padding: 14px 16px;
+    padding: 13px 15px;
     border: 1px solid #cbd5e1;
-    border-radius: 10px;
-    font-size: 15px;
+    border-radius: 12px;
+    font-size: 14.5px;
     color: #0f172a;
     background-color: #f8fafc;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
 }
 
-/* When the user clicks inside the input (Focus state) */
-.disc-card input:focus {
+.disc-card input:focus,
+.disc-card select:focus {
     outline: none;
-    border-color: #0066FF;
-    /* Primary blue color */
+    border-color: #2563eb;
     background-color: #ffffff;
-    box-shadow: 0 0 0 4px rgba(0, 102, 255, 0.15);
-    /* Light blue glow */
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.disc-card input::placeholder {
+    color: #94a3b8;
 }
 
 /* ==========================================
-   5. The Main Button (Sign In / Register)
+   5. Buttons
    ========================================== */
 .btn-create {
     width: 100%;
-    background-color: #0066FF;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
     color: white;
     border: none;
     padding: 14px;
-    border-radius: 10px;
-    font-size: 16px;
+    border-radius: 12px;
+    font-size: 15.5px;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-    margin-top: 15px;
-    box-shadow: 0 4px 10px rgba(0, 102, 255, 0.2);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    margin-top: 10px;
+    box-shadow: 0 8px 16px -4px rgba(37, 99, 235, 0.3);
 }
 
-/* When the mouse is over the button */
 .btn-create:hover {
-    background-color: #0052cc;
-    box-shadow: 0 6px 15px rgba(0, 102, 255, 0.3);
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    box-shadow: 0 10px 20px -4px rgba(37, 99, 235, 0.4);
+    transform: translateY(-1px);
 }
 
-/* When the button is clicked (pressed down) */
 .btn-create:active {
-    transform: scale(0.98);
+    transform: translateY(0) scale(0.99);
 }
 
-/* When the button is disabled (e.g., loading state) */
 .btn-create:disabled {
-    background-color: #94a3b8;
+    background: #94a3b8;
     cursor: not-allowed;
     box-shadow: none;
     transform: none;
 }
 
 /* ==========================================
-   6. Links and Error Messages
+   6. Links and Alerts
    ========================================== */
-/* The text below the button */
 .disc-card p {
     color: #64748b;
 }
 
-/* The link to register/login */
 .disc-card a {
-    color: #0066FF;
+    color: #2563eb;
     text-decoration: none;
     font-weight: 600;
     transition: color 0.2s ease;
 }
 
-/* When the mouse is over the link */
 .disc-card a:hover {
     text-decoration: underline;
-    color: #004099;
+    color: #1e40af;
 }
 
-/* The red error message box */
 #login-error,
 #register-error {
     background-color: #fef2f2;
     border: 1px solid #fecaca;
-    color: #ef4444;
-    padding: 12px;
-    border-radius: 8px;
+    color: #dc2626;
+    padding: 13px 16px;
+    border-radius: 12px;
     text-align: center;
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 500;
     margin-bottom: 20px;
 }
 
-/* Hide the error box if there is no text inside it */
 #login-error:empty,
 #register-error:empty {
     display: none;
