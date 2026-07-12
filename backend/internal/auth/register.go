@@ -15,12 +15,12 @@ import (
 )
 
 var (
-	nicknameRegex = regexp.MustCompile(`^[a-zA-Z0-9_]{3,25}$`)
+	usernameRegex = regexp.MustCompile(`^[a-zA-Z0-9_]{3,25}$`)
 	emailRegex    = regexp.MustCompile(`^[^@\s]+@[^@\s]+\.[^@\s]+$`)
 )
 
 type RegisterRequest struct {
-	Nickname  string `json:"nickname"`
+	Username  string `json:"username"`
 	Age       int    `json:"age"`
 	Gender    string `json:"gender"`
 	FirstName string `json:"first_name"`
@@ -63,15 +63,15 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	req.Nickname = strings.TrimSpace(req.Nickname)
+	req.Username = strings.TrimSpace(req.Username)
 	req.FirstName = strings.TrimSpace(req.FirstName)
 	req.LastName = strings.TrimSpace(req.LastName)
 	req.Gender = strings.TrimSpace(req.Gender)
 	req.Email = strings.TrimSpace(req.Email)
 
-	if !nicknameRegex.MatchString(req.Nickname) {
+	if !usernameRegex.MatchString(req.Username) {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Nickname must contain only letters, numbers, and underscores (3-25 chars)."})
+		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "username must contain only letters, numbers, and underscores (3-25 chars)."})
 		return
 	}
 
@@ -106,10 +106,10 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var existingID int
-	err = database.DB.QueryRow("SELECT id FROM users WHERE email = ? OR nickname = ?", req.Email, req.Nickname).Scan(&existingID)
+	err = database.DB.QueryRow("SELECT id FROM users WHERE email = ? OR username = ?", req.Email, req.Username).Scan(&existingID)
 	if err != sql.ErrNoRows {
 		w.WriteHeader(http.StatusConflict)
-		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Email or Nickname already exists"})
+		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Email or username already exists"})
 		return
 	}
 
@@ -145,8 +145,8 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err = database.DB.Exec(
-		"INSERT INTO users (nickname, email, password, age, gender, first_name, last_name) VALUES (?, ?, ?, ?, ?, ?, ?)",
-		req.Nickname, req.Email, string(hashedPassword), req.Age, req.Gender, req.FirstName, req.LastName,
+		"INSERT INTO users (username, email, password, age, gender, first_name, last_name) VALUES (?, ?, ?, ?, ?, ?, ?)",
+		req.Username, req.Email, string(hashedPassword), req.Age, req.Gender, req.FirstName, req.LastName,
 	)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

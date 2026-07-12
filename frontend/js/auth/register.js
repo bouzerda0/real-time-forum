@@ -7,8 +7,8 @@ export function RegisterView() {
         <div id="register-error"></div>
         <form id="registerForm" style="display: flex; flex-direction: column; gap: 1rem;">
             <div>
-                <label for="nickname">Nickname</label>
-                <input type="text" id="nickname" placeholder="e.g. cyber_samurai" required minlength="3" maxlength="25" />
+                <label for="username">username</label>
+                <input type="text" id="username" placeholder="e.g. cyber_samurai" required minlength="3" maxlength="25" />
             </div>
             <div class="form-row">
                 <div>
@@ -31,8 +31,6 @@ export function RegisterView() {
                         <option value="" disabled selected>Select gender</option>
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
-                        <option value="Non-binary">Non-binary</option>
-                        <option value="Prefer not to say">Prefer not to say</option>
                     </select>
                 </div>
             </div>
@@ -56,7 +54,7 @@ export function RegisterView() {
         const errorMessage = mainContainer.querySelector('#register-error');
         const registerButton = mainContainer.querySelector('button[type="submit"]');
 
-        const nicknameInput = mainContainer.querySelector('#nickname');
+        const usernameInput = mainContainer.querySelector('#username');
         const firstNameInput = mainContainer.querySelector('#firstName');
         const lastNameInput = mainContainer.querySelector('#lastName');
         const ageInput = mainContainer.querySelector('#age');
@@ -77,7 +75,7 @@ export function RegisterView() {
             registerButton.textContent = 'Creating account...';
 
             const payload = {
-                nickname: nicknameInput.value.trim(),
+                username: usernameInput.value.trim(),
                 first_name: firstNameInput.value.trim(),
                 last_name: lastNameInput.value.trim(),
                 age: parseInt(ageInput.value, 10),

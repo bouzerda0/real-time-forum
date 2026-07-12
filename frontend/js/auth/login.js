@@ -3,12 +3,12 @@ export function LoginView() {
     mainContainer.className = 'disc-card';
     mainContainer.innerHTML = `
         <h2>Welcome Back</h2>
-        <div class="subtitle">Sign in with your nickname or e-mail</div>
+        <div class="subtitle">Sign in with your username or e-mail</div>
         <div id="login-error"></div>
         <form id="loginForm" style="display: flex; flex-direction: column; gap: 1rem;">
             <div>
-                <label for="identify">Nickname or E-mail</label>
-                <input type="text" id="identify" placeholder="Enter nickname or e-mail" required />
+                <label for="identify">username or E-mail</label>
+                <input type="text" id="identify" placeholder="Enter username or e-mail" required />
             </div>
             <div>
                 <label for="password">Password</label>

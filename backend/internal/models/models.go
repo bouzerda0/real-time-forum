@@ -4,7 +4,7 @@ import "time"
 
 type User struct {
 	ID        int
-	Nickname  string
+	username  string
 	Email     string
 	Password  string
 	Age       int
@@ -45,4 +45,3 @@ type Message struct {
 	Content    string
 	CreatedAt  time.Time
 }
-

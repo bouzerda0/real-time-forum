@@ -4,11 +4,11 @@ import { RegisterView } from '/js/auth/register.js';
 const routes = {
     '/': () => {
         const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-        const nickname = currentUser.nickname || 'Forum Member';
+        const username = currentUser.username || 'Forum Member';
         const dom = document.createElement('div');
         dom.innerHTML = `
             <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 32px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);">
-                <h1 style="font-size: 28px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Welcome, @${nickname}!</h1>
+                <h1 style="font-size: 28px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Welcome, @${username}!</h1>
                 <p style="color: #64748b; font-size: 15px; line-height: 1.6;">You are now connected to the Real-Time Forum premium experience. Explore posts, join discussions, or start a new topic.</p>
             </div>
         `;
@@ -69,14 +69,14 @@ function updateAuthUI() {
 
     if (navAuthArea) {
         if (isAuthenticated) {
-            const initial = (currentUser.nickname || 'U').charAt(0).toUpperCase();
+            const initial = (currentUser.username || 'U').charAt(0).toUpperCase();
             navAuthArea.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <div style="display: flex; align-items: center; gap: 8px; background: #eff6ff; border: 1px solid #bfdbfe; padding: 6px 14px; border-radius: 9999px;">
                         <div style="width: 24px; height: 24px; border-radius: 50%; background: #2563eb; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">
                             ${initial}
                         </div>
-                        <span style="font-weight: 600; font-size: 13.5px; color: #1e40af;">@${currentUser.nickname || 'User'}</span>
+                        <span style="font-weight: 600; font-size: 13.5px; color: #1e40af;">@${currentUser.username || 'User'}</span>
                     </div>
                     <button id="navLogoutBtn" style="background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; padding: 7px 14px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s;">
                         Log Out

@@ -26,5 +26,8 @@ func InitDB(dbPath string) error {
 		return err
 	}
 
+	// Migrate column if table existed with nickname column previously
+	DB.Exec("ALTER TABLE users RENAME COLUMN nickname TO username;")
+
 	return nil
 }

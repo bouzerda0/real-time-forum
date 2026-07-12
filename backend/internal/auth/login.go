@@ -71,18 +71,18 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var dbID int
-	var dbNickname, dbEmail, dbFirstName, dbLastName string
+	var dbusername, dbEmail, dbFirstName, dbLastName string
 	var dbPasswordHash string
 
-	// Check if this user exists in the database by email or nickname
+	// Check if this user exists in the database by email or username
 	err = database.DB.QueryRow(
-		"SELECT id, nickname, email, COALESCE(first_name, ''), COALESCE(last_name, ''), password FROM users WHERE email = ? OR nickname = ?",
+		"SELECT id, username, email, COALESCE(first_name, ''), COALESCE(last_name, ''), password FROM users WHERE email = ? OR username = ?",
 		req.Identifier, req.Identifier,
-	).Scan(&dbID, &dbNickname, &dbEmail, &dbFirstName, &dbLastName, &dbPasswordHash)
+	).Scan(&dbID, &dbusername, &dbEmail, &dbFirstName, &dbLastName, &dbPasswordHash)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			w.WriteHeader(http.StatusUnauthorized)
-			json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Invalid nickname/email or password."})
+			json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Invalid username/email or password."})
 			return
 		}
 		w.WriteHeader(http.StatusInternalServerError)
@@ -94,7 +94,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	err = bcrypt.CompareHashAndPassword([]byte(dbPasswordHash), []byte(req.Password))
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Invalid nickname/email or password."})
+		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Invalid username/email or password."})
 		return
 	}
 
@@ -133,7 +133,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		"message": "Logged in successfully",
 		"user": map[string]interface{}{
 			"id":         dbID,
-			"nickname":   dbNickname,
+			"username":   dbusername,
 			"email":      dbEmail,
 			"first_name": dbFirstName,
 			"last_name":  dbLastName,
