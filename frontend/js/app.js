@@ -1,24 +1,25 @@
 import { LoginView } from '/js/auth/login.js';
 import { RegisterView } from '/js/auth/register.js';
+import { leadfeed } from '/js/post/feed.js';
 
 const routes = {
     '/': () => {
-        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-        const username = currentUser.username || 'Forum Member';
         const dom = document.createElement('div');
-        dom.innerHTML = `
-            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 32px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);">
-                <h1 style="font-size: 28px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Welcome, @${username}!</h1>
-                <p style="color: #64748b; font-size: 15px; line-height: 1.6;">You are now connected to the Real-Time Forum premium experience. Explore posts, join discussions, or start a new topic.</p>
-            </div>
-        `;
-        return { dom };
+        return {
+            dom,
+            logic: () => leadfeed()
+        };
     },
     '/login': LoginView,
     '/register': RegisterView,
     '/create-post': () => {
         const dom = document.createElement('div');
-        dom.innerHTML = `<h1>Create Post</h1><p>Post form here...</p>`;
+        dom.innerHTML = `
+            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 32px;">
+                <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Create Post</h1>
+                <p style="color: #64748b;">Post creation form coming soon...</p>
+            </div>
+        `;
         return { dom };
     }
 };
@@ -38,8 +39,8 @@ async function checkSession() {
             localStorage.removeItem('currentUser');
             return false;
         }
-    } catch (e) {
-        // Fallback to local storage if network briefly offline
+    } catch (error) {
+        // Fallback to local storage if network is briefly unavailable
         return localStorage.getItem('isAuthenticated') === 'true';
     }
 }
@@ -47,8 +48,8 @@ async function checkSession() {
 async function performLogout() {
     try {
         await fetch('/api/logout', { method: 'POST' });
-    } catch (e) {
-        console.error('Logout request error:', e);
+    } catch (error) {
+        console.error('Logout request error:', error);
     } finally {
         localStorage.removeItem('isAuthenticated');
         localStorage.removeItem('currentUser');
@@ -108,34 +109,31 @@ function updateAuthUI() {
             const sbLogoutBtn = sidebarFooter.querySelector('#sidebarLogoutBtn');
             if (sbLogoutBtn) sbLogoutBtn.addEventListener('click', performLogout);
         } else {
-            sidebarFooter.innerHTML = ``;
+            sidebarFooter.innerHTML = '';
         }
     }
 }
 
 async function render(path) {
     const isAuthPage = path === '/login' || path === '/register';
-
-    // Check backend session status
     const isAuthenticated = await checkSession();
 
-    // Redirect unauthenticated users strictly to /login (or let them view /register)
+    // Route guards
     if (!isAuthenticated && !isAuthPage) {
         window.navigateTo('/login');
         return;
     }
 
-    // Redirect already authenticated users away from /login or /register to home
     if (isAuthenticated && isAuthPage) {
         window.navigateTo('/');
         return;
     }
 
-    // Toggle layout: hide sidebar & navbar on auth pages
+    // Layout adjustments for auth pages
     const sidebar = document.querySelector('.sidebar');
     const navbar = document.querySelector('.navbar');
     const mainArea = document.querySelector('.main');
-    const app = document.getElementById('app');
+    const container = document.getElementById('feed-container') || document.getElementById('app');
 
     if (sidebar) sidebar.style.display = isAuthPage ? 'none' : '';
     if (navbar) navbar.style.display = isAuthPage ? 'none' : '';
@@ -143,16 +141,18 @@ async function render(path) {
         mainArea.style.marginLeft = isAuthPage ? '0' : '';
         mainArea.style.width = isAuthPage ? '100%' : '';
     }
-    if (app) {
-        app.style.padding = isAuthPage ? '0' : '';
-        app.style.maxWidth = isAuthPage ? 'none' : '';
+    if (container) {
+        container.style.padding = isAuthPage ? '0' : '';
+        container.style.maxWidth = isAuthPage ? 'none' : '';
     }
 
     updateAuthUI();
 
+    if (!container) return;
+
     const route = routes[path];
     if (!route) {
-        app.innerHTML = `
+        container.innerHTML = `
             <div style="text-align: center; padding: 60px;">
                 <h1 style="font-size: 36px; color: #0f172a;">404</h1>
                 <p style="color: #64748b; margin-top: 8px;">Page not found</p>
@@ -163,11 +163,11 @@ async function render(path) {
 
     if (typeof route === 'function') {
         const view = route();
-        app.innerHTML = '';
-        app.appendChild(view.dom);
+        container.innerHTML = '';
+        container.appendChild(view.dom);
         if (view.logic) view.logic();
     } else {
-        app.innerHTML = route;
+        container.innerHTML = route;
     }
 }
 

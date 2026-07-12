@@ -12,6 +12,7 @@ import (
 	"real-time-forum/internal/posts"
 )
 
+<<<<<<< HEAD
 const frontendDir = "../frontend"
 
 func main() {
@@ -51,5 +52,24 @@ func main() {
 	err = http.ListenAndServe(port, nil)
 	if err != nil {
 		log.Fatal("Server failed to start:", err)
+=======
+func main() {
+	// Initialize database
+	database.InitDB()
+
+	// Serve frontend files
+	fs := http.FileServer(http.Dir("./frontend"))
+	http.Handle("/", fs)
+
+	// API Routes
+	http.HandleFunc("/posts", posts.PostHandler)
+	http.HandleFunc("/posts/{id}", posts.GetPostHandler)
+
+	log.Println("Server started at http://localhost:8081")
+
+	err := http.ListenAndServe(":8081", nil)
+	if err != nil {
+		log.Fatal(err)
+>>>>>>> origin/msarar1
 	}
 }
