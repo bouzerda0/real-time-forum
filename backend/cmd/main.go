@@ -6,10 +6,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"real-time-forum/backend/internal/posts"
 	"real-time-forum/database"
 	"real-time-forum/internal/auth"
 	"real-time-forum/internal/middleware"
+	"real-time-forum/internal/posts"
 )
 
 const frontendDir = "../frontend"

@@ -3,8 +3,8 @@ package posts
 import (
 	"strings"
 	"net/http"
-	"real-time-forum/backend/database"
-	"real-time-forum/backend/internal/models"
+	"real-time-forum/database"
+	"real-time-forum/internal/models"
 )
 
 var categories = []string{

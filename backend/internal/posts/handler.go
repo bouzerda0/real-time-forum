@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"real-time-forum/backend/internal/models"
+	"real-time-forum/internal/models"
 )
 
 func PostHandler(w http.ResponseWriter, r *http.Request) {
