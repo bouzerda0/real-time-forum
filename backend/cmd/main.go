@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"real-time-forum/backend/internal/posts"
 	"real-time-forum/database"
 	"real-time-forum/internal/auth"
 	"real-time-forum/internal/middleware"
@@ -39,6 +40,9 @@ func main() {
 		// Otherwise, serve index.html for SPA client-side routing
 		http.ServeFile(w, r, filepath.Join(frontendDir, "index.html"))
 	})
+	http.HandleFunc("/posts", posts.PostHandler)
+	http.HandleFunc("/posts/{id}", posts.GetPostHandler)
+	log.Println("Starting server on http://localhost:8081")
 
 	// start server
 	port := ":8080"
