@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -10,18 +9,21 @@ import (
 )
 
 func main() {
+	// Initialize database
 	database.InitDB()
 
-	fs := http.FileServer(http.Dir("./web/static"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, "home page")
-	})
-	http.HandleFunc("/posts" ,posts.PostHandler)
-	http.HandleFunc("/posts/{id}" , posts.GetPostHandler)
-	log.Println("Starting server on http://localhost:8081")
+	// Serve frontend files
+	fs := http.FileServer(http.Dir("./frontend"))
+	http.Handle("/", fs)
 
-	if err := http.ListenAndServe(":8081", nil); err != nil {
-		log.Fatal("ListenAndServe: ", err)
+	// API Routes
+	http.HandleFunc("/posts", posts.PostHandler)
+	http.HandleFunc("/posts/{id}", posts.GetPostHandler)
+
+	log.Println("Server started at http://localhost:8081")
+
+	err := http.ListenAndServe(":8081", nil)
+	if err != nil {
+		log.Fatal(err)
 	}
 }
