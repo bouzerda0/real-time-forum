@@ -16,11 +16,11 @@ type User struct {
 type Post struct {
 	ID        int
 	UserID    int
-	Nickname string
+	Nickname  string
 	Title     string
 	Content   string
 	Category  string
-	CreatedAt time.Time
+	CreatedAt string
 }
 
 

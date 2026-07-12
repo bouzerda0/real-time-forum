@@ -4,16 +4,16 @@ export async function leadfeed() {
     const feed = document.getElementById("feed-container");
 
     feed.innerHTML = "<p>Loading...</p>";
-        const posts = await ApiRequest("/posts");
+    const posts = await ApiRequest("/posts");
 
-        if (posts.length === 0) {
-            showEmpty();
-            return;
-        }
+    if (posts.length === 0) {
+        showEmpty();
+        return;
+    }
 
-        renderPosts(posts);
+    renderPosts(posts);
 
-  
+
 }
 
 function showEmpty() {

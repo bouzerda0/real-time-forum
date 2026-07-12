@@ -18,9 +18,10 @@ func CreatePost(post models.Post) error {
 
 func GetAllPosts() ([]models.Post, error) {
 	var posts []models.Post
-	rows, err := database.DB.Query(`SELECT posts.id, users.username, posts.user_id, posts.title, posts.content, posts.category, posts.created_at
+	rows, err := database.DB.Query(`SELECT posts.id, COALESCE(users.username, 'Anonymous'), posts.user_id, COALESCE(posts.title, ''), COALESCE(posts.content, ''), COALESCE(posts.category, 'General'), COALESCE(posts.created_at, '')
 	FROM posts
-	JOIN users ON posts.user_id = users.id
+	LEFT JOIN users ON posts.user_id = users.id
+	ORDER BY posts.created_at DESC
 	`)
 	if err != nil {
 		return nil, err
@@ -39,8 +40,9 @@ func GetAllPosts() ([]models.Post, error) {
 
 func GetPostByID(postID int) (models.Post, error) {
 	var post models.Post
-	err := database.DB.QueryRow(`SELECT posts.id, users.username, posts.user_id, posts.title, posts.content, posts.created_at FROM posts 
-	JOIN users ON posts.user_id = users.id 
+	err := database.DB.QueryRow(`SELECT posts.id, COALESCE(users.username, 'Anonymous'), posts.user_id, COALESCE(posts.title, ''), COALESCE(posts.content, ''), COALESCE(posts.category, 'General'), COALESCE(posts.created_at, '')
+	FROM posts 
+	LEFT JOIN users ON posts.user_id = users.id 
 	WHERE posts.id = ?`,
 		postID).Scan(
 		&post.ID,
@@ -48,6 +50,7 @@ func GetPostByID(postID int) (models.Post, error) {
 		&post.UserID,
 		&post.Title,
 		&post.Content,
+		&post.Category,
 		&post.CreatedAt,
 	)
 	if err != nil {

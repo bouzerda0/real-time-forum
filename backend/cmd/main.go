@@ -12,7 +12,6 @@ import (
 	"real-time-forum/internal/posts"
 )
 
-<<<<<<< HEAD
 const frontendDir = "../frontend"
 
 func main() {
@@ -22,15 +21,17 @@ func main() {
 	}
 	defer database.DB.Close()
 
-	// API Routes
+	// Auth API Routes
 	http.HandleFunc("/api/register", auth.RegisterHandler)
 	http.HandleFunc("/api/login", auth.LoginHandler)
 	http.HandleFunc("/api/session", auth.SessionHandler)
-
-	// Protected Routes
 	http.HandleFunc("/api/logout", middleware.AuthMiddleware(auth.LogoutHandler))
 
-	// Serving Frontend SPA
+	// Posts API Routes
+	http.HandleFunc("/posts", posts.PostHandler)
+	http.HandleFunc("/posts/{id}", posts.GetPostHandler)
+
+	// Serving Frontend SPA (must be registered after specific API routes)
 	fs := http.FileServer(http.Dir(frontendDir))
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		// If the file exists on disk, serve it directly (CSS, JS, images, etc.)
@@ -41,35 +42,12 @@ func main() {
 		// Otherwise, serve index.html for SPA client-side routing
 		http.ServeFile(w, r, filepath.Join(frontendDir, "index.html"))
 	})
-	http.HandleFunc("/posts", posts.PostHandler)
-	http.HandleFunc("/posts/{id}", posts.GetPostHandler)
-	log.Println("Starting server on http://localhost:8081")
 
-	// start server
 	port := ":8080"
 	log.Printf("🚀 Server is running on http://localhost%s\n", port)
 
 	err = http.ListenAndServe(port, nil)
 	if err != nil {
 		log.Fatal("Server failed to start:", err)
-=======
-func main() {
-	// Initialize database
-	database.InitDB()
-
-	// Serve frontend files
-	fs := http.FileServer(http.Dir("./frontend"))
-	http.Handle("/", fs)
-
-	// API Routes
-	http.HandleFunc("/posts", posts.PostHandler)
-	http.HandleFunc("/posts/{id}", posts.GetPostHandler)
-
-	log.Println("Server started at http://localhost:8081")
-
-	err := http.ListenAndServe(":8081", nil)
-	if err != nil {
-		log.Fatal(err)
->>>>>>> origin/msarar1
 	}
 }
