@@ -17,13 +17,13 @@
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
-        <div class="logo">
+        <div class="logo" onclick="navigateTo('/')" style="cursor: pointer; display: flex; align-items: center; gap: 10px; user-select: none;">
             <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
                     d="M26 6H6C4.89543 6 4 6.89543 4 8V20C4 21.1046 4.89543 22 6 22H11L9.5 25.5C9.22386 26.1213 9.77614 26.5 10.5 26.5C11.2239 26.5 14.5 22 14.5 22H26C27.1046 22 28 21.1046 28 20V8C28 6.89543 27.1046 6 26 6Z"
                     stroke="#0066FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
-            <span>Forum</span>
+            <span style="font-size: 1.35rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em;">Forum</span>
         </div>
         <button class="sidebar-close" id="sidebarClose"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -31,9 +31,8 @@
                 <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg></button>
 
-        <!-- Navigation -->
         <ul class="nav-list">
-            <li class="active" onclick="navigateTo('/')">Dashboard</li>
+            <li class="active" style="cursor: default;">Dashboard</li>
         </ul>
 
         <button class="btn-create" onclick="navigateTo('/create-post')">+ Create Post</button>
@@ -57,11 +56,6 @@
                         <line x1="3" y1="6" x2="21" y2="6"></line>
                         <line x1="3" y1="18" x2="21" y2="18"></line>
                     </svg></button>
-            </div>
-            <div class="navbar-right">
-                <div class="auth-buttons" id="navAuthArea">
-                    <!-- Dynamic user badge & global logout -->
-                </div>
             </div>
         </header>
 
