@@ -9,21 +9,15 @@ const AVAILABLE_CATEGORIES = [
     "Education"
 ];
 
-export function createPost() {
-    console.log("is called")
-    const createButton = document.querySelector(".btn-create");
-    console.log(createButton)
-    if (!createButton) return;
+export function CreatePostView() {
+    const container = document.createElement("div");
+    container.style.padding = "20px 0";
+    container.appendChild(createPostForm());
 
-    createButton.addEventListener("click", renderCreatePost);
-}
-
-function renderCreatePost() {
-    const app = document.getElementById("feed-container");
-
-    if (!app) return;
-
-    app.replaceChildren(createPostForm());
+    return {
+        dom: container,
+        logic: () => { }
+    };
 }
 
 function createPostForm() {
@@ -40,7 +34,9 @@ function createPostForm() {
     title.className = "post-title";
     title.placeholder = "Enter post title";
     title.required = true;
-    const categories = createCategorySection()
+
+    const categories = createCategorySection();
+
     // Content
     const content = document.createElement("textarea");
     content.id = "post-content";
@@ -70,21 +66,19 @@ async function handleCreatePost(event) {
     const title = document.getElementById("post-title").value.trim();
     const content = document.getElementById("post-content").value.trim();
 
-    const categories = Array.from(
-        document.querySelectorAll('input[name="post-categories"]:checked')
-    ).map(checkbox => checkbox.value);
+    const selectedCategoryEl = document.querySelector('input[name="post-category"]:checked');
+    const category = selectedCategoryEl ? selectedCategoryEl.value : "";
 
-    if (!title || !content || categories.length === 0) {
-        alert("Please fill all fields.");
+    if (!title || !content || !category) {
+        alert("Please fill all fields and select a category.");
         return;
     }
 
     const post = {
         title,
         content,
-        categories,
+        category,
     };
-    console.log(post)
 
     try {
         await ApiRequest("/posts", {
@@ -93,14 +87,14 @@ async function handleCreatePost(event) {
         });
 
         console.log("Post created successfully.");
+        if (window.navigateTo) {
+            window.navigateTo("/");
+        }
     } catch (error) {
-        console.log(error)
         console.error(error);
         alert("Failed to create post.");
     }
 }
-
-
 
 function createCategorySection() {
     const container = document.createElement("div");
@@ -108,26 +102,29 @@ function createCategorySection() {
 
     const labelTitle = document.createElement("label");
     labelTitle.className = "categories-title";
-    labelTitle.textContent = "Select Categories:";
+    labelTitle.textContent = "Select Category:";
     container.appendChild(labelTitle);
 
-    AVAILABLE_CATEGORIES.forEach(catName => {
+    AVAILABLE_CATEGORIES.forEach((catName, index) => {
         const itemWrapper = document.createElement("div");
         itemWrapper.className = "category-item";
 
         const catId = catName.toLowerCase();
 
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.id = `cat-${catId}`; catName
-        checkbox.name = "post-categories";
-        checkbox.value = catName;
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.id = `cat-${catId}`;
+        radio.name = "post-category";
+        radio.value = catName;
+        if (index === 0) {
+            radio.checked = true;
+        }
 
         const label = document.createElement("label");
         label.htmlFor = `cat-${catId}`;
         label.textContent = catName;
 
-        itemWrapper.append(checkbox, label);
+        itemWrapper.append(radio, label);
         container.appendChild(itemWrapper);
     });
 

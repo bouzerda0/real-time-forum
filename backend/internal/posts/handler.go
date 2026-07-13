@@ -22,12 +22,15 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, http.StatusText(400), http.StatusBadRequest)
 			return
 		}
-		// post.UserID = userid
+		post.UserID = userId
 		err = CreatePost(post)
 		if err != nil {
 			http.Error(w, http.StatusText(500), http.StatusInternalServerError)
 			return
 		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(map[string]string{"status": "success"})
 	} else if r.Method == http.MethodGet {
 		category := r.URL.Query().Get("category")
 		posts, err := GetAllPosts(category)

@@ -1,20 +1,23 @@
 import { ApiRequest } from "../api.js"
 import { createReaction } from "./reactionPost.js"
 
-export async function leadfeed() {
+export async function loadFeed() {
     const feed = document.getElementById("feed-container");
 
     feed.innerHTML = "<p>Loading...</p>";
-    const posts = await ApiRequest("/posts");
+    try {
+        const posts = await ApiRequest("/posts");
 
-    if (posts.length === 0) {
-        showEmpty();
-        return;
+        if (!posts || posts.length === 0) {
+            showEmpty();
+            return;
+        }
+
+        renderPosts(posts);
+    } catch (error) {
+        console.error("Error loading feed:", error);
+        feed.innerHTML = "<p>Error loading posts.</p>";
     }
-
-    renderPosts(posts);
-
-
 }
 
 export function showEmpty() {

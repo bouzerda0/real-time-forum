@@ -344,9 +344,8 @@ body {
     background: #fff;
     border: 1px solid #e5e7eb;
     border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 1.25rem;
-    transition: 0.2s ease;
+    padding: 20px;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
     cursor: pointer;
 }
 
@@ -364,6 +363,8 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
+    gap: 10px;
+    flex-wrap: wrap; /* keeps username + category badge from overlapping on narrow cards */
 }
 
 .post-user {
@@ -371,13 +372,15 @@ body {
     color: #1f2937;
 }
 
-.post-category {
-    background: var(--primary);
+/* Category badge shown on a feed post (e.g. <span class="post-category">) */
+span.post-category {
+    background: #0066ff;
     color: white;
     padding: 4px 12px;
     border-radius: 999px;
     font-size: .8rem;
     font-weight: 600;
+    white-space: nowrap;
 }
 
 /* ==========================
@@ -401,8 +404,9 @@ body {
 
     display: -webkit-box;
     -webkit-line-clamp: 3;
-    line-clamp: 3;
+    line-clamp: 3; /* standard property so Firefox/newer Chromium also clamp, not just -webkit- */
     -webkit-box-orient: vertical;
+    box-orient: vertical;
 
     overflow: hidden;
 }
@@ -415,6 +419,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
 
     padding-top: 15px;
     border-top: 1px solid #e5e7eb;
@@ -818,4 +824,270 @@ body {
 .btn-publish:hover {
     box-shadow: 0 6px 20px rgba(124, 58, 237, 0.5);
     transform: translateY(-2px);
+}
+
+/* ==========================
+   Interactive Category Pills (Create Post)
+========================== */
+.category-pills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+    gap: 0.85rem;
+    margin-top: 0.35rem;
+}
+
+.category-pill {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.85rem 1rem;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+}
+
+.category-pill input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.category-pill:hover {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.category-pill.selected,
+.category-pill:has(input[type="radio"]:checked) {
+    background: #ffffff;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3.5px rgba(124, 58, 237, 0.14), 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.category-pill-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.25s ease;
+}
+
+.category-pill:hover .category-pill-icon,
+.category-pill.selected .category-pill-icon,
+.category-pill:has(input[type="radio"]:checked) .category-pill-icon {
+    transform: scale(1.12);
+}
+
+.category-pill-label {
+    font-weight: 700;
+    font-size: 0.93rem;
+    color: #334155;
+    transition: color 0.2s ease;
+}
+
+.category-pill.selected .category-pill-label,
+.category-pill:has(input[type="radio"]:checked) .category-pill-label {
+    color: var(--primary);
+}
+
+/* ===== Post Form Container ===== */
+.post-box {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background-color: #ffffff;
+    border: 1px solid #d6e4f0;
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 4px 14px rgba(30, 90, 200, 0.08);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* ===== Title Input ===== */
+input.post-title,
+.post-box .post-title {
+    padding: 12px 16px;
+    border: 1px solid #cfe0f5;
+    border-radius: 10px;
+    font-size: 16px;
+    color: #1e3a5f;
+    background-color: #f7fafd;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input.post-title:focus,
+.post-box .post-title:focus {
+    border-color: #2b7de9;
+    box-shadow: 0 0 0 3px rgba(43, 125, 233, 0.15);
+}
+
+input.post-title::placeholder,
+.post-box .post-title::placeholder {
+    color: #9fb3c8;
+}
+
+/* ===== Content Textarea ===== */
+textarea.post-content,
+.post-box .post-content {
+    padding: 12px 16px;
+    border: 1px solid #cfe0f5;
+    border-radius: 10px;
+    font-size: 15px;
+    color: #1e3a5f;
+    background-color: #f7fafd;
+    min-height: 140px;
+    resize: vertical;
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+textarea.post-content:focus,
+.post-box .post-content:focus {
+    border-color: #2b7de9;
+    box-shadow: 0 0 0 3px rgba(43, 125, 233, 0.15);
+}
+
+textarea.post-content::placeholder,
+.post-box .post-content::placeholder {
+    color: #9fb3c8;
+}
+
+/* ===== Categories Section ===== */
+.post-categories-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.categories-title {
+    flex-basis: 100%;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e3a5f;
+    margin-bottom: 4px;
+}
+
+/* Rounded pill-style item (div containing checkbox/radio + label) */
+.category-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #eaf2fd;
+    border: 1px solid #bcd6f5;
+    border-radius: 999px; /* fully rounded pill */
+    padding: 6px 16px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+}
+
+.category-item:hover {
+    background-color: #d6e8fc;
+}
+
+.category-item:active {
+    transform: scale(0.97);
+}
+
+/* Hide default checkbox/radio, style label instead */
+.category-item input[type="checkbox"],
+.category-item input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border: 2px solid #2b7de9;
+    border-radius: 50%;
+    margin: 0;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.category-item input[type="checkbox"]:checked,
+.category-item input[type="radio"]:checked {
+    background-color: #2b7de9;
+}
+
+.category-item input[type="checkbox"]:checked::after,
+.category-item input[type="radio"]:checked::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.category-item label {
+    font-size: 14px;
+    color: #2b5faa;
+    cursor: pointer;
+}
+
+/* Whole pill lights up blue when its checkbox/radio is checked */
+.category-item:has(input:checked) {
+    background-color: #2b7de9;
+    border-color: #2b7de9;
+}
+
+.category-item:has(input:checked) label {
+    color: #ffffff;
+}
+
+/* ===== Submit Button ===== */
+.post-submit {
+    align-self: flex-end;
+    background-color: #2b7de9;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.post-submit:hover {
+    background-color: #1f66c4;
+}
+
+.post-submit:active {
+    transform: scale(0.98);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .post-box {
+        padding: 18px;
+        margin: 20px 15px;
+        width: auto;
+    }
+
+    .post-submit {
+        width: 100%;
+        align-self: stretch;
+        text-align: center;
+    }
+
+    .post-card { padding: 16px; }
+    .feed-container { padding: 12px; gap: 14px; }
 }

@@ -6,9 +6,9 @@ import (
 )
 
 func CreatePost(post models.Post) error {
-	_, err := database.DB.Exec(`INSERT INTO posts (user_id, title, content, category, created_at)
-	 VALUES (?, ?, ?, ?, ?)`,
-		post.UserID, post.Title, post.Content, post.Category, post.CreatedAt,
+	_, err := database.DB.Exec(`INSERT INTO posts (user_id, title, content, category)
+	 VALUES (?, ?, ?, ?)`,
+		post.UserID, post.Title, post.Content, post.Category,
 	)
 	if err != nil {
 		return err

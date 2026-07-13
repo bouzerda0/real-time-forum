@@ -1,6 +1,6 @@
 import { LoginView } from '/js/auth/login.js';
 import { RegisterView } from '/js/auth/register.js';
-import { leadfeed } from '/js/post/feed.js';
+import { loadFeed } from '/js/post/feed.js';
 import { filterByCategory } from '/js/post/filterPosts.js';
 import { CreatePostView } from '/js/post/createPost.js';
 
@@ -11,7 +11,7 @@ const routes = {
         const dom = document.createElement('div');
         return {
             dom,
-            logic: () => leadfeed()
+            logic: () => loadFeed()
         };
     },
     '/login': LoginView,
