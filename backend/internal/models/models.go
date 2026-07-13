@@ -21,6 +21,8 @@ type Post struct {
 	Content   string
 	Category  string
 	CreatedAt string
+	Likes     int
+	Dislikes  int
 }
 
 
