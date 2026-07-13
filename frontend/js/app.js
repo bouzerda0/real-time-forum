@@ -1,6 +1,10 @@
 import { LoginView } from '/js/auth/login.js';
 import { RegisterView } from '/js/auth/register.js';
 import { leadfeed } from '/js/post/feed.js';
+import { filterByCategory } from '/js/post/filterPosts.js';
+import { CreatePostView } from '/js/post/createPost.js';
+
+window.filterByCategory = filterByCategory;
 
 const routes = {
     '/': () => {
@@ -12,16 +16,7 @@ const routes = {
     },
     '/login': LoginView,
     '/register': RegisterView,
-    '/create-post': () => {
-        const dom = document.createElement('div');
-        dom.innerHTML = `
-            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 32px;">
-                <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Create Post</h1>
-                <p style="color: #64748b;">Post creation form coming soon...</p>
-            </div>
-        `;
-        return { dom };
-    }
+    '/create-post': CreatePostView
 };
 
 async function checkSession() {

@@ -17,7 +17,7 @@ export async function leadfeed() {
 
 }
 
-function showEmpty() {
+export function showEmpty() {
     const feedContainer = document.getElementById("feed-container");
 
     feedContainer.innerHTML = "";
@@ -25,19 +25,40 @@ function showEmpty() {
     const container = document.createElement("div");
     container.className = "empty-feed";
 
+    const iconContainer = document.createElement("div");
+    iconContainer.className = "empty-feed-icon";
+    iconContainer.innerHTML = `
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+    `;
+
     const title = document.createElement("h2");
     title.textContent = "No Posts Yet";
 
     const message = document.createElement("p");
-    message.textContent = "Be the first to create a post.";
+    message.textContent = "Be the first to create a post and start a conversation in this category.";
 
+    const createBtn = document.createElement("button");
+    createBtn.className = "empty-feed-btn";
+    createBtn.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        <span>Create First Post</span>
+    `;
+    createBtn.onclick = () => window.navigateTo ? window.navigateTo('/create-post') : null;
+
+    container.appendChild(iconContainer);
     container.appendChild(title);
     container.appendChild(message);
+    container.appendChild(createBtn);
 
     feedContainer.appendChild(container);
 }
 
-function renderPosts(posts) {
+export function renderPosts(posts) {
     const feedContainer = document.getElementById("feed-container");
 
     feedContainer.innerHTML = "";
