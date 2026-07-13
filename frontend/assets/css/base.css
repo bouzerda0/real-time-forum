@@ -7,14 +7,26 @@
     --sidebar-w: 260px;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-body { 
-    font-family: 'Inter', sans-serif; 
-    background: var(--bg); 
-    color: var(--text); 
-    display: flex; 
-    min-height: 100vh; 
+html {
+    -webkit-text-size-adjust: 100%; /* prevent iOS Safari auto text zoom */
+    text-size-adjust: 100%;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
 }
 
 /* Sidebar */
@@ -31,12 +43,21 @@ body {
     flex-direction: column;
     z-index: 100;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* smooth momentum scroll on iOS */
     transition: transform 0.2s ease;
 }
 
 .logo { font-size: 1.5rem; font-weight: 800; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.5rem; }
 
-.sidebar-close { display: none; background: none; border: none; cursor: pointer; position: absolute; top: 1rem; right: 1rem; }
+.sidebar-close {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
 
 /* Navigation & Categories */
 .nav-list { list-style: none; margin-bottom: 1.5rem; }
@@ -45,11 +66,31 @@ body {
 
 .sidebar-categories { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem; }
 .sidebar-cat-card { display: flex; align-items: center; gap: 0.65rem; padding: 0.5rem 0.65rem; border-radius: 6px; cursor: pointer; }
-.sidebar-cat-icon-wrap { width: 28px; height: 28px; border-radius: 6px; background: #eff6ff; color: var(--primary); display: flex; align-items: center; justify-content: center; }
+.sidebar-cat-icon-wrap {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: #eff6ff;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* keep icon from squishing in a flex row */
+}
 
 /* Sidebar Footer */
 .sidebar-footer { margin-top: auto; padding-top: 1rem; border-top: 1px solid #e2e8f0; }
-.btn-logout-sidebar { background: none; border: none; cursor: pointer; width: 100%; text-align: left; padding: 0.5rem; font-weight: 600; font-size: 0.9rem; }
+.btn-logout-sidebar {
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    padding: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    font-family: inherit; /* Safari/Firefox reset buttons to a different font by default */
+}
 
 /* Main Area */
 .main {
@@ -57,7 +98,7 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    min-width: 0;
+    min-width: 0; /* allows flex children to shrink instead of overflowing */
 }
 
 .navbar {
@@ -71,6 +112,8 @@ body {
     position: sticky;
     top: 0;
     z-index: 90;
+    gap: 1rem;
+    flex-wrap: wrap; /* avoids overflow if title + buttons don't fit on narrow screens */
 }
 
 .menu-toggle { display: none; background: none; border: none; cursor: pointer; }
@@ -79,6 +122,7 @@ body {
 .content {
     padding: 2.5rem;
     max-width: 1000px;
+    width: 100%;
 }
 
 .btn-create {
@@ -90,12 +134,22 @@ body {
     width: 100%;
     cursor: pointer;
     font-weight: 600;
+    font-family: inherit;
 }
 
 /* Auth Buttons */
-.auth-buttons { display: flex; gap: 1rem; align-items: center; }
-.btn-login { cursor: pointer; background: none; border: none; font-weight: 600; }
-.btn-register { cursor: pointer; background: var(--primary); color: white; padding: 0.5rem 1rem; border-radius: 6px; border: none; font-weight: 600; }
+.auth-buttons { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+.btn-login { cursor: pointer; background: none; border: none; font-weight: 600; font-family: inherit; }
+.btn-register {
+    cursor: pointer;
+    background: var(--primary);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: none;
+    font-weight: 600;
+    font-family: inherit;
+}
 
 /* Responsive Fix */
 @media (max-width: 768px) {
@@ -103,6 +157,8 @@ body {
     .sidebar.open { transform: translateX(0); }
     .sidebar-close, .menu-toggle { display: block; }
     .main { margin-left: 0; }
+    .navbar { padding: 0 1.25rem; }
+    .content { padding: 1.5rem; }
 }
 
 /* ==========================
@@ -114,6 +170,7 @@ body {
     flex-direction: column;
     gap: 20px;
     padding: 20px;
+    width: 100%;
 }
 
 /* ==========================
@@ -125,12 +182,12 @@ body {
     border: 1px solid #e5e7eb;
     border-radius: 12px;
     padding: 20px;
-    transition: 0.2s ease;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
     cursor: pointer;
 }
 
 .post-card:hover {
-    box-shadow: 0 8px 20px rgba(0,0,0,.08);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .08);
     transform: translateY(-2px);
 }
 
@@ -143,6 +200,8 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
+    gap: 10px;
+    flex-wrap: wrap; /* keeps username + category badge from overlapping on narrow cards */
 }
 
 .post-user {
@@ -150,13 +209,15 @@ body {
     color: #1f2937;
 }
 
-.post-category {
+/* Category badge shown on a feed post (e.g. <span class="post-category">) */
+span.post-category {
     background: #0066ff;
     color: white;
     padding: 4px 12px;
     border-radius: 999px;
     font-size: .8rem;
     font-weight: 600;
+    white-space: nowrap;
 }
 
 /* ==========================
@@ -180,7 +241,9 @@ body {
 
     display: -webkit-box;
     -webkit-line-clamp: 3;
+    line-clamp: 3; /* standard property so Firefox/newer Chromium also clamp, not just -webkit- */
     -webkit-box-orient: vertical;
+    box-orient: vertical;
 
     overflow: hidden;
 }
@@ -193,10 +256,143 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
 
     padding-top: 15px;
     border-top: 1px solid #e5e7eb;
 
     font-size: .9rem;
     color: #9ca3af;
+}
+
+/* =========================
+   Create Post Form
+========================= */
+
+.post-box {
+    width: 100%;
+    max-width: 700px;
+    margin: 30px auto;
+    padding: 24px;
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* Shared field styles, scoped by element type so the form's
+   input/select/textarea never inherit the feed's .post-title/.post-category/.post-content styles */
+.post-box input.post-title,
+.post-box select.post-category,
+.post-box textarea.post-content {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 16px; /* keep >=16px to stop iOS Safari from auto-zooming on focus */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+    font-family: inherit;
+    color: var(--text);
+    background: #fff;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+/* Focus effect */
+.post-box input.post-title:focus,
+.post-box select.post-category:focus,
+.post-box textarea.post-content:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* Input */
+.post-box input.post-title {
+    height: 45px;
+}
+
+/* Category select */
+.post-box select.post-category {
+    min-height: 48px;
+    cursor: pointer;
+    /* custom dropdown arrow so it renders consistently across browsers
+       instead of each browser's default select styling */
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 40px;
+}
+
+/* If a multi-select is used instead of a single-select dropdown */
+.post-box select.post-category[multiple] {
+    min-height: 120px;
+    background-image: none;
+    padding-right: 15px;
+}
+
+.post-box select.post-category option {
+    padding: 8px;
+}
+
+/* Textarea */
+.post-box textarea.post-content {
+    min-height: 180px;
+    resize: vertical;
+}
+
+/* Submit button */
+.post-submit {
+    align-self: flex-end;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.post-submit:hover {
+    background: #1d4ed8;
+}
+
+.post-submit:active {
+    transform: scale(0.98);
+}
+
+/* Placeholder color */
+.post-box input.post-title::placeholder,
+.post-box textarea.post-content::placeholder {
+    color: #888;
+    opacity: 1; /* Firefox lowers placeholder opacity by default, this normalizes it */
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .post-box {
+        padding: 18px;
+        margin: 20px 15px;
+        width: auto;
+    }
+
+    .post-submit {
+        width: 100%;
+        align-self: stretch;
+        text-align: center;
+    }
+
+    .post-card { padding: 16px; }
+    .feed-container { padding: 12px; gap: 14px; }
 }
