@@ -19,12 +19,21 @@ export async function leadfeed() {
 function showEmpty() {
     const feedContainer = document.getElementById("feed-container");
 
-    feedContainer.innerHTML = `
-        <div class="empty-feed">
-            <h2>No Posts Yet</h2>
-            <p>Be the first to create a post.</p>
-        </div>
-    `;
+    feedContainer.innerHTML = "";
+
+    const container = document.createElement("div");
+    container.className = "empty-feed";
+
+    const title = document.createElement("h2");
+    title.textContent = "No Posts Yet";
+
+    const message = document.createElement("p");
+    message.textContent = "Be the first to create a post.";
+
+    container.appendChild(title);
+    container.appendChild(message);
+
+    feedContainer.appendChild(container);
 }
 
 function renderPosts(posts) {
@@ -40,26 +49,51 @@ function renderPosts(posts) {
 
 function createPostCard(post) {
     const article = document.createElement("article");
-
     article.className = "post-card";
 
-    article.innerHTML = `
-    <div class="post-header">
-        <span class="post-user">${post.Nickname}</span>
-        <span class="post-category">${post.Category}</span>
-    </div>
+    // Header
+    const header = document.createElement("div");
+    header.className = "post-header";
 
-    <h2 class="post-title">${post.Title}</h2>
+    const user = document.createElement("span");
+    user.className = "post-user";
+    user.textContent = post.Nickname;
 
-    <p class="post-content">
-        ${post.Content}
-    </p>
+    const category = document.createElement("span");
+    category.className = "post-category";
+    category.textContent = post.Category;
 
-    <div class="post-footer">
-        <span>${formatDate(post.CreatedAt)}</span>
-        <span>0 Comments</span>
-    </div>
-`;
+    header.appendChild(user);
+    header.appendChild(category);
+
+    // Title
+    const title = document.createElement("h2");
+    title.className = "post-title";
+    title.textContent = post.Title;
+
+    // Content
+    const content = document.createElement("p");
+    content.className = "post-content";
+    content.textContent = post.Content;
+
+    // Footer
+    const footer = document.createElement("div");
+    footer.className = "post-footer";
+
+    const date = document.createElement("span");
+    date.textContent = formatDate(post.CreatedAt);
+
+    const comments = document.createElement("span");
+    comments.textContent = "0 Comments";
+
+    footer.appendChild(date);
+    footer.appendChild(comments);
+
+    // Build article
+    article.appendChild(header);
+    article.appendChild(title);
+    article.appendChild(content);
+    article.appendChild(footer);
 
     return article;
 }
