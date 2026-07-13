@@ -16,9 +16,9 @@ func CreatePost(post models.Post) error {
 	return nil
 }
 
-func GetAllPosts() ([]models.Post, error) {
+func GetAllPosts(category string) ([]models.Post, error) {
 	var posts []models.Post
-	rows, err := database.DB.Query(`SELECT 
+	query := `SELECT 
 		posts.id, 
 		COALESCE(users.username, 'Anonymous'), 
 		posts.user_id, 
@@ -30,10 +30,18 @@ func GetAllPosts() ([]models.Post, error) {
 		COALESCE(SUM(CASE WHEN likes.is_like = 0 THEN 1 ELSE 0 END), 0)
 	FROM posts
 	LEFT JOIN users ON posts.user_id = users.id
-	LEFT JOIN likes ON posts.id = likes.post_id
+	LEFT JOIN likes ON posts.id = likes.post_id`
+
+	var args []any
+	if category != "" && category != "all" {
+		query += " WHERE posts.category = ?"
+		args = append(args, category)
+	}
+	query += `
 	GROUP BY posts.id
-	ORDER BY posts.created_at DESC
-	`)
+	ORDER BY posts.created_at DESC`
+
+	rows, err := database.DB.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
