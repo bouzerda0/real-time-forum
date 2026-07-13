@@ -71,8 +71,8 @@ async function handleCreatePost(event) {
     const content = document.getElementById("post-content").value.trim();
 
     const categories = Array.from(
-        document.getElementById("post-category").selectedOptions
-    ).map(option => option.value);
+        document.querySelectorAll('input[name="post-categories"]:checked')
+    ).map(checkbox => checkbox.value);
 
     if (!title || !content || categories.length === 0) {
         alert("Please fill all fields.");
@@ -84,16 +84,17 @@ async function handleCreatePost(event) {
         content,
         categories,
     };
-
+    console.log(post)
 
     try {
         await ApiRequest("/posts", {
             method: "POST",
-            body: JSON.stringify(post),
+            body: post,
         });
 
         console.log("Post created successfully.");
     } catch (error) {
+        console.log(error)
         console.error(error);
         alert("Failed to create post.");
     }
@@ -118,9 +119,9 @@ function createCategorySection() {
 
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
-        checkbox.id = `cat-${catId}`;catName
-        checkbox.name = "post-categories"; 
-        checkbox.value = catName; 
+        checkbox.id = `cat-${catId}`; catName
+        checkbox.name = "post-categories";
+        checkbox.value = catName;
 
         const label = document.createElement("label");
         label.htmlFor = `cat-${catId}`;

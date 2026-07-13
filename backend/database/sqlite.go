@@ -22,8 +22,8 @@ func InitDB(){
 	}
 
 	_, err = DB.Exec(string(createTable))
-if err != nil {
+	if err != nil {
 	log.Fatal("Unable to create table:", err)
-}
+	}
 
 }
