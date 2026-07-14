@@ -2,6 +2,7 @@ package posts
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -15,22 +16,31 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 	if r.Method == http.MethodPost {
+		fmt.Println("method post")
 		var post models.Post
 		err := json.NewDecoder(r.Body).Decode(&post)
+		if err != nil {
+			http.Error(w , http.StatusText(400) , http.StatusBadRequest)
+			return
+		}
+
 		defer r.Body.Close()
 		if !ValidatePostInput(post) {
+			fmt.Println("1")
 			http.Error(w, http.StatusText(400), http.StatusBadRequest)
 			return
 		}
 		// post.UserID = userid
 		err = CreatePost(post)
 		if err != nil {
+			fmt.Println("3")
 			http.Error(w, http.StatusText(500), http.StatusInternalServerError)
 			return
 		}
 	} else if r.Method == http.MethodGet {
 		posts, err := GetAllPosts()
 		if err != nil {
+			
 			http.Error(w, http.StatusText(500), http.StatusInternalServerError)
 			return
 		}
@@ -44,33 +54,33 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, http.StatusText(500), http.StatusInternalServerError)
 			return
 		}
-	}else {
-		http.Error(w , http.StatusText(405), http.StatusMethodNotAllowed)
+	} else {
+		http.Error(w, http.StatusText(405), http.StatusMethodNotAllowed)
 		return
 	}
 }
 
 func GetPostHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		http.Error(w , http.StatusText(405), http.StatusMethodNotAllowed)
+		http.Error(w, http.StatusText(405), http.StatusMethodNotAllowed)
 		return
 	}
 	idstring := r.PathValue("id")
-	post_id , err := strconv.Atoi(idstring)
+	post_id, err := strconv.Atoi(idstring)
 	if err != nil {
 		http.Error(w, http.StatusText(400), http.StatusBadRequest)
 		return
-	} 
-	post , err := GetPostByID(post_id)
+	}
+	post, err := GetPostByID(post_id)
 	if err != nil {
-		http.Error(w , http.StatusText(404) , http.StatusNotFound)
+		http.Error(w, http.StatusText(404), http.StatusNotFound)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(post)
 	if err != nil {
-		http.Error(w , http.StatusText(405), http.StatusMethodNotAllowed)
+		http.Error(w, http.StatusText(405), http.StatusMethodNotAllowed)
 		return
 	}
 }

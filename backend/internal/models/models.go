@@ -19,7 +19,6 @@ type Post struct {
 	Nickname string
 	Title     string
 	Content   string
-	Category  string
 	CreatedAt time.Time
 }
 

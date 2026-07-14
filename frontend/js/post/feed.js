@@ -5,7 +5,6 @@ export async function leadfeed() {
 
     feed.innerHTML = "<p>Loading...</p>";
         const posts = await ApiRequest("/posts");
-
         if (posts.length === 0) {
             showEmpty();
             return;

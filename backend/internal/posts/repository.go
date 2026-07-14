@@ -8,7 +8,7 @@ import (
 func CreatePost(post models.Post) error {
 	_, err := database.DB.Exec(`INSERT INTO posts (posts.user_id , posts.title , posts.content , posts.category , posts.created_at)
 	 VALUES (?, ?, ? , ? ,?)`,
-		post.UserID, post.Title, post.Content, post.Category, post.CreatedAt,
+		post.UserID, post.Title, post.Content, post.CreatedAt,
 	)
 	if err != nil {
 		return err
@@ -28,7 +28,7 @@ func GetAllPosts() ([]models.Post, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var p models.Post
-		err := rows.Scan(&p.ID,&p.Nickname, &p.UserID, &p.Title, &p.Content,  &p.Category, &p.CreatedAt)
+		err := rows.Scan(&p.ID,&p.Nickname, &p.UserID, &p.Title, &p.Content,&p.CreatedAt)
 		if err != nil {
 			return nil, err
 		}

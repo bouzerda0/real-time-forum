@@ -1,8 +1,9 @@
 package posts
 
 import (
-	"strings"
 	"net/http"
+	"strings"
+
 	"real-time-forum/backend/database"
 	"real-time-forum/backend/internal/models"
 )
@@ -21,9 +22,10 @@ func ValidatePostInput(post models.Post) bool {
 		return false
 	}
 
-	if (!checkCategories(categories , post.Category)) {
-		return  false
-	}
+	// if !checkCategories(categories, post.Category) {
+	// 	fmt.Println("is enter")
+	// 	return false
+	// }
 
 	if len(strings.TrimSpace(post.Content)) == 0 || len(strings.TrimSpace(post.Content)) > 4500 {
 		return false
@@ -31,13 +33,23 @@ func ValidatePostInput(post models.Post) bool {
 	return true
 }
 
-func checkCategories(arr []string, category string) bool {
-	for _, v := range arr {
-		if v == category {
-			return true
+func checkCategories(categories []string, selected []string) bool {
+	for _, sel := range selected {
+		found := false
+
+		for _, cat := range categories {
+			if cat == sel {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			return false
 		}
 	}
-	return false
+
+	return true
 }
 
 func GetUserID(r *http.Request) (int, error) {

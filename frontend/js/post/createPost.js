@@ -10,9 +10,7 @@ const AVAILABLE_CATEGORIES = [
 ];
 
 export function createPost() {
-    console.log("is called")
     const createButton = document.querySelector(".btn-create");
-    console.log(createButton)
     if (!createButton) return;
 
     createButton.addEventListener("click", renderCreatePost);
@@ -73,8 +71,9 @@ async function handleCreatePost(event) {
     const categories = Array.from(
         document.querySelectorAll('input[name="post-categories"]:checked')
     ).map(checkbox => checkbox.value);
-
+    
     if (!title || !content || categories.length === 0) {
+        console.log("hers is the error")
         alert("Please fill all fields.");
         return;
     }
@@ -84,7 +83,7 @@ async function handleCreatePost(event) {
         content,
         categories,
     };
-    console.log(post)
+   
 
     try {
         await ApiRequest("/posts", {
@@ -94,8 +93,6 @@ async function handleCreatePost(event) {
 
         console.log("Post created successfully.");
     } catch (error) {
-        console.log(error)
-        console.error(error);
         alert("Failed to create post.");
     }
 }
