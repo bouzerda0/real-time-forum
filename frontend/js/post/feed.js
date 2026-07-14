@@ -56,31 +56,29 @@ function createPostCard(post) {
 
     const user = document.createElement("span");
     user.className = "post-user";
-    user.textContent = post.Nickname;
+    user.textContent = post.nickname;
 
-    const category = document.createElement("span");
-    category.className = "post-category";
-    category.textContent = post.Category;
+  
 
     header.appendChild(user);
-    header.appendChild(category);
+
 
     // Title
     const title = document.createElement("h2");
     title.className = "post-title";
-    title.textContent = post.Title;
+    title.textContent = post.title;
 
     // Content
     const content = document.createElement("p");
     content.className = "post-content";
-    content.textContent = post.Content;
+    content.textContent = post.content;
 
     // Footer
     const footer = document.createElement("div");
     footer.className = "post-footer";
 
     const date = document.createElement("span");
-    date.textContent = formatDate(post.CreatedAt);
+    date.textContent = formatDate(post.created_at);
 
     const comments = document.createElement("span");
     comments.textContent = "0 Comments";

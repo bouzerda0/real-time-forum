@@ -1,5 +1,5 @@
 import { ApiRequest } from "../api.js";
-
+import { leadfeed } from "./feed.js";
 const AVAILABLE_CATEGORIES = [
     "General",
     "Technology",
@@ -90,8 +90,9 @@ async function handleCreatePost(event) {
             method: "POST",
             body: post,
         });
-
+        
         console.log("Post created successfully.");
+         await leadfeed();
     } catch (error) {
         alert("Failed to create post.");
     }

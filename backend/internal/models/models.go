@@ -14,14 +14,14 @@ type User struct {
 }
 
 type Post struct {
-	ID        int
-	UserID    int
-	Nickname string
-	Title     string
-	Content   string
-	CreatedAt time.Time
+	ID        int       `json:"id"`
+	UserID    int       `json:"user_id"`
+	Nickname  string    `json:"nickname"`
+	Title     string    `json:"title"`
+	Category  []string  `json:"categories"`
+	Content   string    `json:"content"`
+	CreatedAt time.Time `json:"created_at"`
 }
-
 
 
 type Comment struct {

@@ -20,9 +20,9 @@ func main() {
 	http.HandleFunc("/posts", posts.PostHandler)
 	http.HandleFunc("/posts/{id}", posts.GetPostHandler)
 
-	log.Println("Server started at http://localhost:8081")
+	log.Println("Server started at http://localhost:8080")
 
-	err := http.ListenAndServe(":8081", nil)
+	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		log.Fatal(err)
 	}

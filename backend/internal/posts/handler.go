@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"real-time-forum/backend/internal/models"
 )
@@ -16,31 +17,36 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 	if r.Method == http.MethodPost {
-		fmt.Println("method post")
-		var post models.Post
-		err := json.NewDecoder(r.Body).Decode(&post)
-		if err != nil {
-			http.Error(w , http.StatusText(400) , http.StatusBadRequest)
-			return
-		}
+		
 
-		defer r.Body.Close()
-		if !ValidatePostInput(post) {
-			fmt.Println("1")
+		var post models.Post
+		if err := json.NewDecoder(r.Body).Decode(&post); err != nil {
 			http.Error(w, http.StatusText(400), http.StatusBadRequest)
 			return
 		}
-		// post.UserID = userid
-		err = CreatePost(post)
-		if err != nil {
-			fmt.Println("3")
+		defer r.Body.Close()
+
+		if !ValidatePostInput(post) {
+			http.Error(w, http.StatusText(400), http.StatusBadRequest)
+			return
+		}
+
+		post.UserID = 1
+		post.CreatedAt = time.Now()
+
+		if err := CreatePost(post); err != nil {
+			fmt.Println("CreatePost error:", err)
 			http.Error(w, http.StatusText(500), http.StatusInternalServerError)
 			return
 		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(post) // أو غير object صغير زعما {"message": "post created"}
 	} else if r.Method == http.MethodGet {
 		posts, err := GetAllPosts()
 		if err != nil {
-			
+
 			http.Error(w, http.StatusText(500), http.StatusInternalServerError)
 			return
 		}
