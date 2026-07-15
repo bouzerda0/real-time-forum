@@ -45,25 +45,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cookie, err := r.Cookie("session_token")
-
-	if err == nil && cookie != nil && cookie.Value != "" {
-		var dbToken string
-		var expiresAt time.Time
-		errDB := database.DB.QueryRow("SELECT session_token, expires_at FROM user_sessions WHERE session_token = ?", cookie.Value).Scan(&dbToken, &expiresAt)
-		// if we find cookie
-		if errDB == nil {
-			if time.Now().Before(expiresAt) {
-				http.Redirect(w, r, "/", http.StatusSeeOther)
-				return
-			} else {
-				database.DB.Exec("DELETE FROM user_sessions WHERE session_token = ?", cookie.Value)
-			}
-		}
-	}
 
 	var req LoginRequest
-	err = json.NewDecoder(r.Body).Decode(&req)
+	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Invalid request formatting"})
@@ -71,14 +55,14 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var dbID int
-	var dbusername, dbEmail, dbFirstName, dbLastName string
+	var dbNickname, dbEmail, dbFirstName, dbLastName string
 	var dbPasswordHash string
 
-	// Check if this user exists in the database by email or username
+	// Check if this user exists in the database by email or nickname
 	err = database.DB.QueryRow(
-		"SELECT id, username, email, COALESCE(first_name, ''), COALESCE(last_name, ''), password FROM users WHERE email = ? OR username = ?",
+		"SELECT id, nickname, email, COALESCE(first_name, ''), COALESCE(last_name, ''), password FROM users WHERE email = ? OR nickname = ?",
 		req.Identifier, req.Identifier,
-	).Scan(&dbID, &dbusername, &dbEmail, &dbFirstName, &dbLastName, &dbPasswordHash)
+	).Scan(&dbID, &dbNickname, &dbEmail, &dbFirstName, &dbLastName, &dbPasswordHash)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			w.WriteHeader(http.StatusUnauthorized)
@@ -133,7 +117,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		"message": "Logged in successfully",
 		"user": map[string]interface{}{
 			"id":         dbID,
-			"username":   dbusername,
+			"nickname":   dbNickname,
+			"username":   dbNickname,
 			"email":      dbEmail,
 			"first_name": dbFirstName,
 			"last_name":  dbLastName,

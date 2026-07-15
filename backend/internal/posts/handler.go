@@ -11,13 +11,12 @@ import (
 )
 
 func PostHandler(w http.ResponseWriter, r *http.Request) {
-	// userid, err := GetUserID(r)
-	// if err != nil {
-	// 	http.Error(w, http.StatusText(500), http.StatusInternalServerError)
-	// 	return
-	// }
 	if r.Method == http.MethodPost {
-		
+		userID, err := GetUserID(r)
+		if err != nil {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
 
 		var post models.Post
 		if err := json.NewDecoder(r.Body).Decode(&post); err != nil {
@@ -31,7 +30,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		post.UserID = 1
+		post.UserID = userID
 		post.CreatedAt = time.Now()
 
 		if err := CreatePost(post); err != nil {

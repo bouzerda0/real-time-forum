@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
-	"time"
 
 	"real-time-forum/database"
 
@@ -32,22 +31,7 @@ type RegisterRequest struct {
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	cookie, err := r.Cookie("session_token")
-	if err == nil && cookie != nil && cookie.Value != "" {
-		var dbToken string
-		var expiresAt time.Time
-		errDB := database.DB.QueryRow("SELECT session_token, expires_at FROM user_sessions WHERE session_token = ?", cookie.Value).Scan(&dbToken, &expiresAt)
 
-		if errDB == nil {
-			if time.Now().Before(expiresAt) {
-				w.WriteHeader(http.StatusOK)
-				json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "You are already logged in"})
-				return
-			} else {
-				database.DB.Exec("DELETE FROM user_sessions WHERE session_token = ?", cookie.Value)
-			}
-		}
-	}
 
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)
@@ -56,7 +40,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req RegisterRequest
-	err = json.NewDecoder(r.Body).Decode(&req)
+	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Invalid request formatting"})
@@ -106,10 +90,10 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var existingID int
-	err = database.DB.QueryRow("SELECT id FROM users WHERE email = ? OR username = ?", req.Email, req.Username).Scan(&existingID)
+	err = database.DB.QueryRow("SELECT id FROM users WHERE email = ? OR nickname = ?", req.Email, req.Username).Scan(&existingID)
 	if err != sql.ErrNoRows {
 		w.WriteHeader(http.StatusConflict)
-		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Email or username already exists"})
+		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Email or nickname already exists"})
 		return
 	}
 
@@ -145,7 +129,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err = database.DB.Exec(
-		"INSERT INTO users (username, email, password, age, gender, first_name, last_name) VALUES (?, ?, ?, ?, ?, ?, ?)",
+		"INSERT INTO users (nickname, email, password, age, gender, first_name, last_name) VALUES (?, ?, ?, ?, ?, ?, ?)",
 		req.Username, req.Email, string(hashedPassword), req.Age, req.Gender, req.FirstName, req.LastName,
 	)
 	if err != nil {
