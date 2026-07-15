@@ -1,5 +1,6 @@
 import { ApiRequest } from "../api.js"
 import { createReaction } from "./reactionPost.js"
+import { renderCommentsSection, fetchComments } from "./postDetails.js"
 
 export async function loadFeed() {
     const feed = document.getElementById("feed-container");
@@ -114,7 +115,15 @@ function createPostCard(post) {
     date.textContent = formatDate(post.created_at);
 
     const comments = document.createElement("span");
-    comments.textContent = "0 Comments";
+    comments.className = "post-comments-toggle";
+    comments.style.cursor = "pointer";
+    comments.textContent = "💬 Comments";
+
+    fetchComments(post.id).then(list => {
+        if (Array.isArray(list)) {
+            comments.textContent = `💬 ${list.length} Comment${list.length === 1 ? '' : 's'}`;
+        }
+    }).catch(() => {});
 
     // MERGE: Adjusted to lowercase fields from Developer A's source of truth model
     const reactionsUI = createReaction(post.id, post.likes || 0, post.dislikes || 0);
@@ -123,11 +132,26 @@ function createPostCard(post) {
     footer.appendChild(comments);
     footer.appendChild(reactionsUI);
 
+    const commentsContainer = document.createElement("div");
+    commentsContainer.className = "post-comments-container";
+    commentsContainer.style.display = "none";
+    commentsContainer.style.marginTop = "15px";
+
+    comments.addEventListener("click", async () => {
+        if (commentsContainer.style.display === "none") {
+            commentsContainer.style.display = "block";
+            await renderCommentsSection(post.id, commentsContainer);
+        } else {
+            commentsContainer.style.display = "none";
+        }
+    });
+
     // Build article
     article.appendChild(header);
     article.appendChild(title);
     article.appendChild(content);
     article.appendChild(footer);
+    article.appendChild(commentsContainer);
 
     return article;
 }
