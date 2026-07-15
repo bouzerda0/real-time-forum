@@ -40,17 +40,17 @@ func ReactionHandler(w http.ResponseWriter, r *http.Request) {
 
 	// If same reaction exists, delete it (undo). Otherwise insert/replace.
 	var current int
-	err = database.DB.QueryRow("SELECT is_like FROM likes WHERE user_id=? AND post_id=?", userID, req.PostID).Scan(&current)
+	err = database.DB.QueryRow("SELECT reaction FROM likes WHERE user_id=? AND post_id=?", userID, req.PostID).Scan(&current)
 	if err == nil && current == req.IsLike {
 		database.DB.Exec("DELETE FROM likes WHERE user_id=? AND post_id=?", userID, req.PostID)
 	} else {
-		database.DB.Exec("INSERT OR REPLACE INTO likes (user_id, post_id, is_like) VALUES (?, ?, ?)",
+		database.DB.Exec("INSERT OR REPLACE INTO likes (user_id, post_id, reaction) VALUES (?, ?, ?)",
 			userID, req.PostID, req.IsLike)
 	}
 
 	// Count updated likes and dislikes in 1 query
 	var likes, dislikes int
-	database.DB.QueryRow("SELECT COALESCE(SUM(is_like=1),0), COALESCE(SUM(is_like=0),0) FROM likes WHERE post_id=?", req.PostID).Scan(&likes, &dislikes)
+	database.DB.QueryRow("SELECT COALESCE(SUM(reaction=1),0), COALESCE(SUM(reaction=0),0) FROM likes WHERE post_id=?", req.PostID).Scan(&likes, &dislikes)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]any{"status": "success", "likes": likes, "dislikes": dislikes})

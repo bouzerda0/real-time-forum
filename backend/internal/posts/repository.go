@@ -1,45 +1,65 @@
 package posts
 
 import (
+	"fmt"
+	"strings"
+
 	"real-time-forum/database"
 	"real-time-forum/internal/models"
 )
 
 func CreatePost(post models.Post) error {
-	_, err := database.DB.Exec(`INSERT INTO posts (user_id, title, content, category)
-	 VALUES (?, ?, ?, ?)`,
-		post.UserID, post.Title, post.Content, post.Category,
+	result, err := database.DB.Exec(`
+        INSERT INTO posts (user_id, title, content, created_at)
+        VALUES (?, ?, ?, ?)`,
+		post.UserID, post.Title, post.Content, post.CreatedAt,
 	)
 	if err != nil {
+		fmt.Println("insert post error:", err)
 		return err
+	}
+	postID, err := result.LastInsertId()
+	if err != nil {
+		fmt.Println("last insert id error:", err)
+		return err
+	}
+
+	for _, category := range post.Category {
+		var categoryID int
+		err = database.DB.QueryRow(`SELECT id FROM categories WHERE name = ?`, category).Scan(&categoryID)
+		if err != nil {
+			fmt.Println("category lookup error:", err, "category:", category)
+			return err
+		}
+		_, err = database.DB.Exec(`INSERT INTO post_categories (post_id, category_id) VALUES (?, ?)`, postID, categoryID)
+		if err != nil {
+			fmt.Println("insert post_category error:", err)
+			return err
+		}
 	}
 	return nil
 }
 
+// MERGE: Added category filter logic
 func GetAllPosts(category string) ([]models.Post, error) {
 	var posts []models.Post
-	query := `SELECT 
-		posts.id, 
-		COALESCE(users.username, 'Anonymous'), 
-		posts.user_id, 
-		COALESCE(posts.title, ''), 
-		COALESCE(posts.content, ''), 
-		COALESCE(posts.category, 'General'), 
-		COALESCE(posts.created_at, ''),
-		COALESCE(SUM(CASE WHEN likes.is_like = 1 THEN 1 ELSE 0 END), 0),
-		COALESCE(SUM(CASE WHEN likes.is_like = 0 THEN 1 ELSE 0 END), 0)
+	query := `SELECT posts.id , users.nickname ,  posts.user_id ,posts.title , posts.content  , posts.created_at, group_concat(categories.name)
 	FROM posts
-	LEFT JOIN users ON posts.user_id = users.id
-	LEFT JOIN likes ON posts.id = likes.post_id`
+	JOIN users ON posts.user_id = users.id
+	LEFT JOIN post_categories ON posts.id = post_categories.post_id
+	LEFT JOIN categories ON post_categories.category_id = categories.id`
 
 	var args []any
 	if category != "" && category != "all" {
-		query += " WHERE posts.category = ?"
+		// MERGE: Added category filter logic
+		query += ` WHERE posts.id IN (
+			SELECT post_id FROM post_categories 
+			JOIN categories ON post_categories.category_id = categories.id 
+			WHERE categories.name = ?
+		)`
 		args = append(args, category)
 	}
-	query += `
-	GROUP BY posts.id
-	ORDER BY posts.created_at DESC`
+	query += ` GROUP BY posts.id`
 
 	rows, err := database.DB.Query(query, args...)
 	if err != nil {
@@ -48,9 +68,17 @@ func GetAllPosts(category string) ([]models.Post, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var p models.Post
-		err := rows.Scan(&p.ID, &p.Nickname, &p.UserID, &p.Title, &p.Content, &p.Category, &p.CreatedAt, &p.Likes, &p.Dislikes)
+		var catsString *string
+		err := rows.Scan(&p.ID, &p.Nickname, &p.UserID, &p.Title, &p.Content, &p.CreatedAt, &catsString)
 		if err != nil {
 			return nil, err
+		}
+		if catsString != nil && *catsString != "" {
+			// MERGE: Added category filter logic
+			p.Category = strings.Split(*catsString, ",")
+		} else {
+			// MERGE: Added category filter logic
+			p.Category = []string{}
 		}
 		posts = append(posts, p)
 	}
@@ -59,19 +87,11 @@ func GetAllPosts(category string) ([]models.Post, error) {
 
 func GetPostByID(postID int) (models.Post, error) {
 	var post models.Post
-	err := database.DB.QueryRow(`SELECT 
-		posts.id, 
-		COALESCE(users.username, 'Anonymous'), 
-		posts.user_id, 
-		COALESCE(posts.title, ''), 
-		COALESCE(posts.content, ''), 
-		COALESCE(posts.category, 'General'), 
-		COALESCE(posts.created_at, ''),
-		COALESCE(SUM(CASE WHEN likes.is_like = 1 THEN 1 ELSE 0 END), 0),
-		COALESCE(SUM(CASE WHEN likes.is_like = 0 THEN 1 ELSE 0 END), 0)
-	FROM posts 
-	LEFT JOIN users ON posts.user_id = users.id 
-	LEFT JOIN likes ON posts.id = likes.post_id
+	var catsString *string
+	err := database.DB.QueryRow(`SELECT posts.id, users.nickname ,posts.user_id, posts.title, posts.content, posts.created_at, group_concat(categories.name) FROM posts 
+	JOIN users ON posts.user_id = users.id 
+	LEFT JOIN post_categories ON posts.id = post_categories.post_id
+	LEFT JOIN categories ON post_categories.category_id = categories.id
 	WHERE posts.id = ?
 	GROUP BY posts.id`,
 		postID).Scan(
@@ -80,20 +100,27 @@ func GetPostByID(postID int) (models.Post, error) {
 		&post.UserID,
 		&post.Title,
 		&post.Content,
-		&post.Category,
 		&post.CreatedAt,
-		&post.Likes,
-		&post.Dislikes,
+		&catsString,
 	)
 	if err != nil {
 		return post, err
+	}
+	if catsString != nil && *catsString != "" {
+		// MERGE: Added category filter logic
+		post.Category = strings.Split(*catsString, ",")
+	} else {
+		// MERGE: Added category filter logic
+		post.Category = []string{}
 	}
 	return post, nil
 }
 
 func DeletePost(post_id int) error {
-	_, err := database.DB.Exec("DELETE FROM posts WHERE id = ?", post_id)
-
+	_, err := database.DB.Exec(`DELET FROM posts posts.id , users.nickname , posts.user_id ,posts.title, posts.content, posts.created_at 
+		JOIN users ON posts.user_id = users.id
+		WHER posts.id = ?`,
+		post_id)
 	if err != nil {
 		return err
 	}

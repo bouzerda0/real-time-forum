@@ -1,4 +1,5 @@
 import { ApiRequest } from "../api.js";
+import { loadFeed } from "./feed.js";
 
 const AVAILABLE_CATEGORIES = [
     "General",
@@ -34,7 +35,7 @@ function createPostForm() {
     title.className = "post-title";
     title.placeholder = "Enter post title";
     title.required = true;
-
+    
     const categories = createCategorySection();
 
     // Content
@@ -66,18 +67,19 @@ async function handleCreatePost(event) {
     const title = document.getElementById("post-title").value.trim();
     const content = document.getElementById("post-content").value.trim();
 
-    const selectedCategoryEl = document.querySelector('input[name="post-category"]:checked');
-    const category = selectedCategoryEl ? selectedCategoryEl.value : "";
-
-    if (!title || !content || !category) {
-        alert("Please fill all fields and select a category.");
+    const categories = Array.from(
+        document.querySelectorAll('input[name="post-categories"]:checked')
+    ).map(checkbox => checkbox.value);
+    
+    if (!title || !content || categories.length === 0) {
+        alert("Please fill all fields.");
         return;
     }
 
     const post = {
         title,
         content,
-        category,
+        categories,
     };
 
     try {
@@ -85,13 +87,14 @@ async function handleCreatePost(event) {
             method: "POST",
             body: post,
         });
-
+        
         console.log("Post created successfully.");
         if (window.navigateTo) {
             window.navigateTo("/");
+        } else {
+            await loadFeed();
         }
     } catch (error) {
-        console.error(error);
         alert("Failed to create post.");
     }
 }
@@ -102,29 +105,26 @@ function createCategorySection() {
 
     const labelTitle = document.createElement("label");
     labelTitle.className = "categories-title";
-    labelTitle.textContent = "Select Category:";
+    labelTitle.textContent = "Select Categories:";
     container.appendChild(labelTitle);
 
-    AVAILABLE_CATEGORIES.forEach((catName, index) => {
+    AVAILABLE_CATEGORIES.forEach(catName => {
         const itemWrapper = document.createElement("div");
         itemWrapper.className = "category-item";
 
         const catId = catName.toLowerCase();
 
-        const radio = document.createElement("input");
-        radio.type = "radio";
-        radio.id = `cat-${catId}`;
-        radio.name = "post-category";
-        radio.value = catName;
-        if (index === 0) {
-            radio.checked = true;
-        }
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.id = `cat-${catId}`;
+        checkbox.name = "post-categories";
+        checkbox.value = catName;
 
         const label = document.createElement("label");
         label.htmlFor = `cat-${catId}`;
         label.textContent = catName;
 
-        itemWrapper.append(radio, label);
+        itemWrapper.append(checkbox, label);
         container.appendChild(itemWrapper);
     });
 

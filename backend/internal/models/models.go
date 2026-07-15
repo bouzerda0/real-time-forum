@@ -4,7 +4,7 @@ import "time"
 
 type User struct {
 	ID        int
-	username  string
+	Nickname  string
 	Email     string
 	Password  string
 	Age       int
@@ -14,17 +14,14 @@ type User struct {
 }
 
 type Post struct {
-	ID        int
-	UserID    int
-	Nickname  string
-	Title     string
-	Content   string
-	Category  string
-	CreatedAt string
-	Likes     int
-	Dislikes  int
+	ID        int       `json:"id"`
+	UserID    int       `json:"user_id"`
+	Nickname  string    `json:"nickname"`
+	Title     string    `json:"title"`
+	Category  []string  `json:"categories"`
+	Content   string    `json:"content"`
+	CreatedAt time.Time `json:"created_at"`
 }
-
 
 
 type Comment struct {

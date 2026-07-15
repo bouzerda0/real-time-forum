@@ -82,11 +82,13 @@ function createPostCard(post) {
 
     const user = document.createElement("span");
     user.className = "post-user";
-    user.textContent = post.Nickname;
+    // MERGE: Adjusted to lowercase field from Developer A's source of truth model
+    user.textContent = post.nickname;
 
     const category = document.createElement("span");
     category.className = "post-category";
-    category.textContent = post.Category;
+    // MERGE: Adjusted to lowercase categories field and join from Developer A's source of truth model
+    category.textContent = post.categories ? post.categories.join(', ') : '';
 
     header.appendChild(user);
     header.appendChild(category);
@@ -94,24 +96,28 @@ function createPostCard(post) {
     // Title
     const title = document.createElement("h2");
     title.className = "post-title";
-    title.textContent = post.Title;
+    // MERGE: Adjusted to lowercase field from Developer A's source of truth model
+    title.textContent = post.title;
 
     // Content
     const content = document.createElement("p");
     content.className = "post-content";
-    content.textContent = post.Content;
+    // MERGE: Adjusted to lowercase field from Developer A's source of truth model
+    content.textContent = post.content;
 
     // Footer
     const footer = document.createElement("div");
     footer.className = "post-footer";
 
     const date = document.createElement("span");
-    date.textContent = formatDate(post.CreatedAt);
+    // MERGE: Adjusted to lowercase field from Developer A's source of truth model
+    date.textContent = formatDate(post.created_at);
 
     const comments = document.createElement("span");
     comments.textContent = "0 Comments";
 
-    const reactionsUI = createReaction(post.ID || post.Id || post.id, post.Likes || 0, post.Dislikes || 0);
+    // MERGE: Adjusted to lowercase fields from Developer A's source of truth model
+    const reactionsUI = createReaction(post.id, post.likes || 0, post.dislikes || 0);
 
     footer.appendChild(date);
     footer.appendChild(comments);
