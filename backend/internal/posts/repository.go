@@ -126,3 +126,41 @@ func DeletePost(post_id int) error {
 	}
 	return nil
 }
+
+// CreateComment inserts a new comment into the comments table securely using placeholders.
+func CreateComment(comment models.Comment) error {
+	query := `INSERT INTO comments (post_id, user_id, content, created_at) VALUES (?, ?, ?, ?)`
+	_, err := database.DB.Exec(query, comment.PostID, comment.UserID, comment.Content, comment.CreatedAt)
+	return err
+}
+
+// GetCommentsByPostID fetches all comments for a post and joins users to get the author nickname.
+func GetCommentsByPostID(postID int) ([]models.Comment, error) {
+	query := `
+		SELECT comments.id, comments.post_id, comments.user_id, users.nickname, comments.content, comments.created_at
+		FROM comments
+		JOIN users ON comments.user_id = users.id
+		WHERE comments.post_id = ?
+		ORDER BY comments.created_at ASC`
+
+	rows, err := database.DB.Query(query, postID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var comments []models.Comment
+	for rows.Next() {
+		var c models.Comment
+		if err := rows.Scan(&c.ID, &c.PostID, &c.UserID, &c.Nickname, &c.Content, &c.CreatedAt); err != nil {
+			return nil, err
+		}
+		comments = append(comments, c)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return comments, nil
+}

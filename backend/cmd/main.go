@@ -31,6 +31,7 @@ func main() {
 	http.HandleFunc("/posts", posts.PostHandler)
 	http.HandleFunc("/posts/{id}", posts.GetPostHandler)
 	http.HandleFunc("/api/reaction", posts.ReactionHandler)
+	http.HandleFunc("/api/comments", posts.CommentsHandler)
 
 	// Serving Frontend SPA (must be registered after specific API routes)
 	fs := http.FileServer(http.Dir(frontendDir))

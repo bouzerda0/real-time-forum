@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"real-time-forum/internal/models"
@@ -90,5 +91,62 @@ func GetPostHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, http.StatusText(405), http.StatusMethodNotAllowed)
 		return
+	}
+}
+
+func CommentsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	switch r.Method {
+	case http.MethodGet:
+		postIDStr := r.URL.Query().Get("post_id")
+		postID, err := strconv.Atoi(postIDStr)
+		if err != nil || postID <= 0 {
+			http.Error(w, `{"error":"Invalid post_id parameter"}`, http.StatusBadRequest)
+			return
+		}
+
+		comments, err := GetCommentsByPostID(postID)
+		if err != nil {
+			http.Error(w, `{"error":"Failed to fetch comments"}`, http.StatusInternalServerError)
+			return
+		}
+
+		if comments == nil {
+			comments = []models.Comment{}
+		}
+
+		json.NewEncoder(w).Encode(comments)
+
+	case http.MethodPost:
+		var comment models.Comment
+		if err := json.NewDecoder(r.Body).Decode(&comment); err != nil {
+			http.Error(w, `{"error":"Invalid JSON payload"}`, http.StatusBadRequest)
+			return
+		}
+		defer r.Body.Close()
+
+		if comment.PostID <= 0 || strings.TrimSpace(comment.Content) == "" {
+			http.Error(w, `{"error":"Post ID and content are required"}`, http.StatusBadRequest)
+			return
+		}
+
+		// Try to populate UserID dynamically if authenticated, otherwise allow default/fallback
+		if userID, err := GetUserID(r); err == nil && userID > 0 {
+			comment.UserID = userID
+		}
+
+		comment.CreatedAt = time.Now()
+
+		if err := CreateComment(comment); err != nil {
+			http.Error(w, `{"error":"Failed to save comment"}`, http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(map[string]string{"status": "success", "message": "Comment created successfully"})
+
+	default:
+		http.Error(w, `{"error":"Method not allowed"}`, http.StatusMethodNotAllowed)
 	}
 }
