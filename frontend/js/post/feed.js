@@ -82,8 +82,8 @@ function createPostCard(post) {
 
     const user = document.createElement("span");
     user.className = "post-user";
-    // MERGE: Adjusted to lowercase field from Developer A's source of truth model
-    user.textContent = post.nickname;
+    // Map dynamic author nickname with fallback
+    user.textContent = post.nickname || post.Nickname || "Anonymous";
 
     const category = document.createElement("span");
     category.className = "post-category";
