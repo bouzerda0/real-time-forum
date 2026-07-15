@@ -1,0 +1,147 @@
+/* ==========================================
+   Create Post View (.post-box)
+========================================== */
+.post-box {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background-color: #ffffff;
+    border: 1px solid #d6e4f0;
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 4px 14px rgba(30, 90, 200, 0.08);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* ===== Title & Content Inputs ===== */
+.post-box .post-title,
+.post-box .post-content {
+    padding: 12px 16px;
+    border: 1px solid #cfe0f5;
+    border-radius: 10px;
+    color: #1e3a5f;
+    background-color: #f7fafd;
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.post-box .post-title { font-size: 16px; }
+.post-box .post-content {
+    font-size: 15px;
+    min-height: 140px;
+    resize: vertical;
+}
+
+.post-box .post-title:focus,
+.post-box .post-content:focus {
+    border-color: #2b7de9;
+    box-shadow: 0 0 0 3px rgba(43, 125, 233, 0.15);
+}
+
+.post-box .post-title::placeholder,
+.post-box .post-content::placeholder {
+    color: #9fb3c8;
+}
+
+/* ===== Categories Section ===== */
+.post-categories-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+.categories-title {
+    flex-basis: 100%;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e3a5f;
+    margin-bottom: 4px;
+}
+
+.category-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #eaf2fd;
+    border: 1px solid #bcd6f5;
+    border-radius: 999px;
+    padding: 6px 16px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+}
+.category-item:hover { background-color: #d6e8fc; }
+.category-item:active { transform: scale(0.97); }
+
+.category-item input[type="checkbox"],
+.category-item input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border: 2px solid #2b7de9;
+    border-radius: 50%;
+    margin: 0;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+}
+.category-item input[type="checkbox"]:checked,
+.category-item input[type="radio"]:checked {
+    background-color: #2b7de9;
+}
+.category-item input[type="checkbox"]:checked::after,
+.category-item input[type="radio"]:checked::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.category-item label {
+    font-size: 14px;
+    color: #2b5faa;
+    cursor: pointer;
+}
+
+.category-item:has(input:checked) {
+    background-color: #2b7de9;
+    border-color: #2b7de9;
+}
+.category-item:has(input:checked) label { color: #ffffff; }
+
+/* ===== Submit Button ===== */
+.post-submit {
+    align-self: flex-end;
+    background-color: #2b7de9;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+.post-submit:hover { background-color: #1f66c4; }
+.post-submit:active { transform: scale(0.98); }
+
+/* ===== Mobile Responsive ===== */
+@media (max-width: 768px) {
+    .post-box {
+        padding: 18px;
+        margin: 20px 15px;
+        width: auto;
+    }
+    .post-submit {
+        width: 100%;
+        align-self: stretch;
+        text-align: center;
+    }
+}

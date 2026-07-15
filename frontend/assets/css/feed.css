@@ -1,0 +1,71 @@
+/* Feed Container & Post Card */
+.feed-container { display: flex; flex-direction: column; gap: 20px; padding: 20px; }
+.post-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+.post-card:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.08); transform: translateY(-2px); }
+
+/* Header, Title, Content */
+.post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; gap: 10px; flex-wrap: wrap; }
+.post-user { font-weight: 600; color: #0066ff; }
+span.post-category { background: #0066ff; color: #fff; padding: 4px 12px; border-radius: 999px; font-size: 0.8rem; font-weight: 600; white-space: nowrap; }
+.post-title { margin-bottom: 10px; font-size: 1.35rem; color: #111827; }
+.post-content {
+    color: #6b7280; line-height: 1.6; margin-bottom: 18px;
+    display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+/* Footer & Reaction Buttons */
+.post-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; padding-top: 14px; border-top: 1px solid #e5e7eb; font-size: 0.9rem; color: #9ca3af; }
+.post-actions { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+.btn-react {
+    display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px;
+    font-size: 0.875rem; font-weight: 600; font-family: inherit; border: 1.5px solid #e2e8f0;
+    background: #fff; color: #475569; cursor: pointer; user-select: none; transition: all 0.2s ease;
+}
+.btn-react .react-icon { font-size: 1.1rem; line-height: 1; transition: transform 0.25s; }
+.btn-react .react-count { font-weight: 700; font-size: 0.8rem; padding: 2px 8px; border-radius: 999px; background: #f1f5f9; color: #475569; transition: 0.2s; }
+
+.like-btn:hover { background: #eff6ff; border-color: #93c5fd; color: #1d4ed8; transform: translateY(-2px); }
+.like-btn:hover .react-icon { transform: scale(1.2) rotate(-8deg); }
+.like-btn:hover .react-count { background: #bfdbfe; color: #1e40af; }
+.like-btn.active, .like-btn.liked { background: linear-gradient(135deg, #2563eb, #1d4ed8); border-color: #1d4ed8; color: #fff; }
+
+.dislike-btn:hover { background: #fef2f2; border-color: #fca5a5; color: #e11d48; transform: translateY(-2px); }
+.dislike-btn:hover .react-icon { transform: scale(1.2) rotate(8deg); }
+.dislike-btn:hover .react-count { background: #fecaca; color: #9f1239; }
+.dislike-btn.active, .dislike-btn.disliked { background: linear-gradient(135deg, #e11d48, #be123c); border-color: #be123c; color: #fff; }
+
+.btn-react.active .react-count, .btn-react.liked .react-count, .btn-react.disliked .react-count { background: rgba(255,255,255,0.25); color: #fff; }
+.btn-react.active .react-icon svg, .btn-react.liked .react-icon svg, .btn-react.disliked .react-icon svg { fill: currentColor; }
+
+@keyframes reactPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+.btn-react.active, .btn-react.liked, .btn-react.disliked { animation: reactPulse 0.3s ease; }
+
+/* Empty Feed State */
+.empty-feed {
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    padding: 4rem 2rem; background: #fff; border: 1px solid #f1f5f9; border-radius: 20px;
+    margin: 2rem auto; max-width: 600px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.04); transition: 0.3s;
+}
+.empty-feed:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.07); }
+.empty-feed-icon { width: 68px; height: 68px; border-radius: 18px; background: #f5f3ff; color: var(--primary); display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem; }
+.empty-feed h2 { font-size: 1.6rem; font-weight: 800; color: #0f172a; margin-bottom: 0.5rem; }
+.empty-feed p { font-size: 0.98rem; color: #64748b; max-width: 360px; line-height: 1.6; margin: 0; }
+.empty-feed-btn {
+    display: inline-flex; align-items: center; gap: 8px; margin-top: 1.5rem; padding: 12px 22px;
+    background: linear-gradient(135deg, #7c3aed, #5b21b6); color: #fff; border: none; border-radius: 12px;
+    font-weight: 700; font-size: 0.95rem; font-family: inherit; cursor: pointer; transition: 0.25s;
+}
+.empty-feed-btn:hover { box-shadow: 0 6px 20px rgba(124,58,237,0.5); transform: translateY(-2px); }
+
+/* Mobile */
+@media (max-width: 768px) {
+    .post-card { padding: 16px; }
+    .feed-container { padding: 12px; gap: 14px; }
+}
