@@ -41,15 +41,20 @@ func CreatePost(post models.Post) error {
 }
 
 // MERGE: Added category filter logic
-func GetAllPosts(category string) ([]models.Post, error) {
+func GetAllPosts(category string, userID int) ([]models.Post, error) {
 	var posts []models.Post
-	query := `SELECT posts.id , users.nickname ,  posts.user_id ,posts.title , posts.content  , posts.created_at, group_concat(categories.name)
+	query := `SELECT posts.id, users.nickname, posts.user_id, posts.title, posts.content, posts.created_at, group_concat(categories.name),
+		(SELECT COALESCE(SUM(reaction=1), 0) FROM likes WHERE post_id = posts.id) as likes_count,
+		(SELECT COALESCE(SUM(reaction=0), 0) FROM likes WHERE post_id = posts.id) as dislikes_count,
+		(SELECT reaction FROM likes WHERE post_id = posts.id AND user_id = ? LIMIT 1) as user_reaction
 	FROM posts
 	JOIN users ON posts.user_id = users.id
 	LEFT JOIN post_categories ON posts.id = post_categories.post_id
 	LEFT JOIN categories ON post_categories.category_id = categories.id`
 
 	var args []any
+	args = append(args, userID)
+
 	if category != "" && category != "all" {
 		// MERGE: Added category filter logic
 		query += ` WHERE posts.id IN (
@@ -59,7 +64,7 @@ func GetAllPosts(category string) ([]models.Post, error) {
 		)`
 		args = append(args, category)
 	}
-	query += ` GROUP BY posts.id`
+	query += ` GROUP BY posts.id ORDER BY posts.created_at DESC`
 
 	rows, err := database.DB.Query(query, args...)
 	if err != nil {
@@ -69,10 +74,12 @@ func GetAllPosts(category string) ([]models.Post, error) {
 	for rows.Next() {
 		var p models.Post
 		var catsString *string
-		err := rows.Scan(&p.ID, &p.Nickname, &p.UserID, &p.Title, &p.Content, &p.CreatedAt, &catsString)
+		var userReact *int
+		err := rows.Scan(&p.ID, &p.Nickname, &p.UserID, &p.Title, &p.Content, &p.CreatedAt, &catsString, &p.Likes, &p.Dislikes, &userReact)
 		if err != nil {
 			return nil, err
 		}
+		p.UserReaction = userReact
 		if catsString != nil && *catsString != "" {
 			// MERGE: Added category filter logic
 			p.Category = strings.Split(*catsString, ",")
@@ -85,16 +92,21 @@ func GetAllPosts(category string) ([]models.Post, error) {
 	return posts, nil
 }
 
-func GetPostByID(postID int) (models.Post, error) {
+func GetPostByID(postID int, userID int) (models.Post, error) {
 	var post models.Post
 	var catsString *string
-	err := database.DB.QueryRow(`SELECT posts.id, users.nickname ,posts.user_id, posts.title, posts.content, posts.created_at, group_concat(categories.name) FROM posts 
+	var userReact *int
+	err := database.DB.QueryRow(`SELECT posts.id, users.nickname, posts.user_id, posts.title, posts.content, posts.created_at, group_concat(categories.name),
+		(SELECT COALESCE(SUM(reaction=1), 0) FROM likes WHERE post_id = posts.id),
+		(SELECT COALESCE(SUM(reaction=0), 0) FROM likes WHERE post_id = posts.id),
+		(SELECT reaction FROM likes WHERE post_id = posts.id AND user_id = ? LIMIT 1)
+	FROM posts 
 	JOIN users ON posts.user_id = users.id 
 	LEFT JOIN post_categories ON posts.id = post_categories.post_id
 	LEFT JOIN categories ON post_categories.category_id = categories.id
 	WHERE posts.id = ?
 	GROUP BY posts.id`,
-		postID).Scan(
+		userID, postID).Scan(
 		&post.ID,
 		&post.Nickname,
 		&post.UserID,
@@ -102,10 +114,14 @@ func GetPostByID(postID int) (models.Post, error) {
 		&post.Content,
 		&post.CreatedAt,
 		&catsString,
+		&post.Likes,
+		&post.Dislikes,
+		&userReact,
 	)
 	if err != nil {
 		return post, err
 	}
+	post.UserReaction = userReact
 	if catsString != nil && *catsString != "" {
 		// MERGE: Added category filter logic
 		post.Category = strings.Split(*catsString, ",")
@@ -116,15 +132,9 @@ func GetPostByID(postID int) (models.Post, error) {
 	return post, nil
 }
 
-func DeletePost(post_id int) error {
-	_, err := database.DB.Exec(`DELET FROM posts posts.id , users.nickname , posts.user_id ,posts.title, posts.content, posts.created_at 
-		JOIN users ON posts.user_id = users.id
-		WHER posts.id = ?`,
-		post_id)
-	if err != nil {
-		return err
-	}
-	return nil
+func DeletePost(postID int) error {
+	_, err := database.DB.Exec(`DELETE FROM posts WHERE id = ?`, postID)
+	return err
 }
 
 // CreateComment inserts a new comment into the comments table securely using placeholders.

@@ -44,10 +44,11 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(post) // أو غير object صغير زعما {"message": "post created"}
 	} else if r.Method == http.MethodGet {
+		userID, _ := GetUserID(r)
 		// MERGE: Added category filter logic
 		category := r.URL.Query().Get("category")
 		// MERGE: Added category filter logic
-		posts, err := GetAllPosts(category)
+		posts, err := GetAllPosts(category, userID)
 		if err != nil {
 
 			http.Error(w, http.StatusText(500), http.StatusInternalServerError)
@@ -80,7 +81,8 @@ func GetPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(400), http.StatusBadRequest)
 		return
 	}
-	post, err := GetPostByID(post_id)
+	userID, _ := GetUserID(r)
+	post, err := GetPostByID(post_id, userID)
 	if err != nil {
 		http.Error(w, http.StatusText(404), http.StatusNotFound)
 		return

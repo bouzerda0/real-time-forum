@@ -63,7 +63,8 @@ CREATE TABLE IF NOT EXISTS likes (
     reaction INTEGER NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (post_id) REFERENCES posts(id)
+    FOREIGN KEY (post_id) REFERENCES posts(id),
+    UNIQUE(user_id, post_id)
 );
 
 CREATE TABLE IF NOT EXISTS messages (

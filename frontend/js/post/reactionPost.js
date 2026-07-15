@@ -1,6 +1,6 @@
 import { ApiRequest } from "../api.js";
 
-export function createReaction(postId, initialLikes, initialDislikes) {
+export function createReaction(postId, initialLikes, initialDislikes, initialUserReaction) {
     // div to store actions
     const actionsDiv = document.createElement('div');
     actionsDiv.className = 'post-actions';
@@ -8,6 +8,9 @@ export function createReaction(postId, initialLikes, initialDislikes) {
     // Like button
     const likeBtn = document.createElement('button');
     likeBtn.className = 'btn-react like-btn';
+    if (initialUserReaction === 1) {
+        likeBtn.classList.add('liked');
+    }
 
     const likeIcon = document.createElement('span');
     likeIcon.className = 'react-icon';
@@ -21,13 +24,12 @@ export function createReaction(postId, initialLikes, initialDislikes) {
     likeBtn.appendChild(likeIcon);
     likeBtn.appendChild(likesSpan);
 
-    likeBtn.addEventListener('click', function () {
-        reactToPost(postId, 1, this);
-    });
-
     // Dislike button
     const dislikeBtn = document.createElement('button');
     dislikeBtn.className = 'btn-react dislike-btn';
+    if (initialUserReaction === 0) {
+        dislikeBtn.classList.add('disliked');
+    }
 
     const dislikeIcon = document.createElement('span');
     dislikeIcon.className = 'react-icon';
@@ -41,8 +43,12 @@ export function createReaction(postId, initialLikes, initialDislikes) {
     dislikeBtn.appendChild(dislikeIcon);
     dislikeBtn.appendChild(dislikesSpan);
 
+    likeBtn.addEventListener('click', function () {
+        reactToPost(postId, 1, likeBtn, dislikeBtn);
+    });
+
     dislikeBtn.addEventListener('click', function () {
-        reactToPost(postId, 0, this);
+        reactToPost(postId, 0, likeBtn, dislikeBtn);
     });
 
     // add buttons to the div
@@ -53,8 +59,9 @@ export function createReaction(postId, initialLikes, initialDislikes) {
     return actionsDiv;
 }
 
-async function reactToPost(postId, isLike, btn) {
-    if (btn) btn.disabled = true;
+async function reactToPost(postId, isLike, likeBtn, dislikeBtn) {
+    if (likeBtn) likeBtn.disabled = true;
+    if (dislikeBtn) dislikeBtn.disabled = true;
     try {
         const data = await ApiRequest("/api/reaction", {
             method: "POST",
@@ -66,9 +73,15 @@ async function reactToPost(postId, isLike, btn) {
 
         if (likesEl && data.likes !== undefined) likesEl.textContent = data.likes;
         if (dislikesEl && data.dislikes !== undefined) dislikesEl.textContent = data.dislikes;
+
+        if (data.user_reaction !== undefined) {
+            if (likeBtn) likeBtn.classList.toggle('liked', data.user_reaction === 1);
+            if (dislikeBtn) dislikeBtn.classList.toggle('disliked', data.user_reaction === 0);
+        }
     } catch (err) {
         console.error("Error reacting to post:", err);
     } finally {
-        if (btn) btn.disabled = false;
+        if (likeBtn) likeBtn.disabled = false;
+        if (dislikeBtn) dislikeBtn.disabled = false;
     }
 }

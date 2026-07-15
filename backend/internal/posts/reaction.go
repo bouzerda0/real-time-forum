@@ -12,10 +12,10 @@ type ReactionRequest struct {
 	IsLike int `json:"is_like"` // 1 for like, 0 for dislike
 }
 
-// ReactionHandler handles POST requests to like or dislike a post.
+// ReactionHandler handles POST requests to like or dislike a post securely and atomically.
 func ReactionHandler(w http.ResponseWriter, r *http.Request) {
 	userID, err := GetUserID(r)
-	if err != nil || userID == 0 || r.Method != http.MethodPost {
+	if err != nil || userID <= 0 || r.Method != http.MethodPost {
 		http.Error(w, "Unauthorized or bad method", http.StatusUnauthorized)
 		return
 	}
@@ -38,20 +38,58 @@ func ReactionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// If same reaction exists, delete it (undo). Otherwise insert/replace.
+	// Begin atomic transaction to prevent concurrent race conditions or double likes
+	tx, err := database.DB.Begin()
+	if err != nil {
+		http.Error(w, "Database error", http.StatusInternalServerError)
+		return
+	}
+	defer tx.Rollback()
+
+	// Check existing reaction and clean up any duplicates
 	var current int
-	err = database.DB.QueryRow("SELECT reaction FROM likes WHERE user_id=? AND post_id=?", userID, req.PostID).Scan(&current)
-	if err == nil && current == req.IsLike {
-		database.DB.Exec("DELETE FROM likes WHERE user_id=? AND post_id=?", userID, req.PostID)
-	} else {
-		database.DB.Exec("INSERT OR REPLACE INTO likes (user_id, post_id, reaction) VALUES (?, ?, ?)",
-			userID, req.PostID, req.IsLike)
+	var count int
+	err = tx.QueryRow("SELECT reaction, COUNT(*) FROM likes WHERE user_id=? AND post_id=?", userID, req.PostID).Scan(&current, &count)
+	if err != nil {
+		count = 0
 	}
 
-	// Count updated likes and dislikes in 1 query
+	userReaction := -1
+	if count > 0 && current == req.IsLike {
+		// User clicked the same reaction again -> Undo (remove reaction completely)
+		_, err = tx.Exec("DELETE FROM likes WHERE user_id=? AND post_id=?", userID, req.PostID)
+		userReaction = -1
+	} else {
+		// User switched reaction or first time reacting -> Clean all duplicate/old entries and insert exactly 1 row
+		_, err = tx.Exec("DELETE FROM likes WHERE user_id=? AND post_id=?", userID, req.PostID)
+		if err == nil {
+			_, err = tx.Exec("INSERT INTO likes (user_id, post_id, reaction) VALUES (?, ?, ?)", userID, req.PostID, req.IsLike)
+		}
+		userReaction = req.IsLike
+	}
+	if err != nil {
+		http.Error(w, "Failed to update reaction", http.StatusInternalServerError)
+		return
+	}
+
+	// Count updated likes and dislikes inside the transaction
 	var likes, dislikes int
-	database.DB.QueryRow("SELECT COALESCE(SUM(reaction=1),0), COALESCE(SUM(reaction=0),0) FROM likes WHERE post_id=?", req.PostID).Scan(&likes, &dislikes)
+	err = tx.QueryRow("SELECT COALESCE(SUM(reaction=1),0), COALESCE(SUM(reaction=0),0) FROM likes WHERE post_id=?", req.PostID).Scan(&likes, &dislikes)
+	if err != nil {
+		http.Error(w, "Failed to count reactions", http.StatusInternalServerError)
+		return
+	}
+
+	if err = tx.Commit(); err != nil {
+		http.Error(w, "Failed to commit transaction", http.StatusInternalServerError)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]any{"status": "success", "likes": likes, "dislikes": dislikes})
+	json.NewEncoder(w).Encode(map[string]any{
+		"status":        "success",
+		"likes":         likes,
+		"dislikes":      dislikes,
+		"user_reaction": userReaction,
+	})
 }

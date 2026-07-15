@@ -126,7 +126,7 @@ function createPostCard(post) {
     }).catch(() => {});
 
     // MERGE: Adjusted to lowercase fields from Developer A's source of truth model
-    const reactionsUI = createReaction(post.id, post.likes || 0, post.dislikes || 0);
+    const reactionsUI = createReaction(post.id, post.likes || 0, post.dislikes || 0, post.user_reaction);
 
     footer.appendChild(date);
     footer.appendChild(comments);
