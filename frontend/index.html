@@ -118,7 +118,15 @@
         </header>
 
         <!-- DYNAMIC CONTENT  -->
-        <main id="feed-container"></main>
+        <main id="app"></main>
+    </div>
+
+    <!-- FULLSCREEN GLASSMORPHIC OVERLAY & MODAL FOR CREATE POST -->
+    <div class="modal-overlay" id="createPostModal" role="dialog" aria-modal="true" aria-labelledby="modalCreateTitle">
+        <div class="modal-container" id="createPostModalContainer">
+            <button class="modal-close-btn" id="closeCreatePostModal" aria-label="Close modal">&times;</button>
+            <div id="createPostModalContent"></div>
+        </div>
     </div>
 
     <!-- Scripts -->
