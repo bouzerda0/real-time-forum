@@ -56,7 +56,13 @@ func GetAllPosts(category string, userID int) ([]models.Post, error) {
 	var args []any
 	args = append(args, userID)
 
-	if category != "" && category != "all" {
+	if strings.ToLower(category) == "liked" || strings.ToLower(category) == "liked posts" {
+		query += ` WHERE posts.id IN (
+			SELECT post_id FROM likes 
+			WHERE user_id = ? AND reaction = 1
+		)`
+		args = append(args, userID)
+	} else if category != "" && category != "all" {
 		// MERGE: Added category filter logic
 		query += ` WHERE posts.id IN (
 			SELECT post_id FROM post_categories 

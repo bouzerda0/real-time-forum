@@ -244,6 +244,50 @@ body {
     cursor: pointer;
 }
 
+/* === TOP CATEGORIES PILL BAR === */
+.top-categories-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    flex: 1;
+    margin: 0 24px;
+}
+.top-categories-bar::-webkit-scrollbar {
+    display: none;
+}
+.top-cat-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    color: #475569;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    font-family: inherit;
+}
+.top-cat-btn:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #0f172a;
+    transform: translateY(-1px);
+}
+.top-cat-btn.active {
+    background: #eff6ff;
+    border-color: #3b82f6;
+    color: #2563eb;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+}
+
 /* === AUTH NAVBAR BUTTONS === */
 .auth-buttons {
     display: flex;
