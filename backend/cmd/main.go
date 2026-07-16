@@ -8,6 +8,7 @@ import (
 
 	"real-time-forum/database"
 	"real-time-forum/internal/auth"
+	"real-time-forum/internal/comments"
 	"real-time-forum/internal/middleware"
 	"real-time-forum/internal/posts"
 )
@@ -32,7 +33,9 @@ func main() {
 	http.HandleFunc("/posts", posts.PostHandler)
 	http.HandleFunc("/posts/{id}", posts.GetPostHandler)
 	http.HandleFunc("/api/reaction", posts.ReactionHandler)
-	http.HandleFunc("/api/comments", posts.CommentsHandler)
+
+	// Comments API Routes
+	http.HandleFunc("/api/comments", comments.CommentsHandler)
 
 	// Serving Frontend SPA (must be registered after specific API routes)
 	fs := http.FileServer(http.Dir(frontendDir))
