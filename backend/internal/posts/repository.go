@@ -46,7 +46,8 @@ func GetAllPosts(category string, userID int) ([]models.Post, error) {
 	query := `SELECT posts.id, users.nickname, posts.user_id, posts.title, posts.content, posts.created_at, group_concat(categories.name),
 		(SELECT COALESCE(SUM(reaction=1), 0) FROM likes WHERE post_id = posts.id) as likes_count,
 		(SELECT COALESCE(SUM(reaction=0), 0) FROM likes WHERE post_id = posts.id) as dislikes_count,
-		(SELECT reaction FROM likes WHERE post_id = posts.id AND user_id = ? LIMIT 1) as user_reaction
+		(SELECT reaction FROM likes WHERE post_id = posts.id AND user_id = ? LIMIT 1) as user_reaction,
+		(SELECT COUNT(*) FROM comments WHERE post_id = posts.id) as comments_count
 	FROM posts
 	JOIN users ON posts.user_id = users.id
 	LEFT JOIN post_categories ON posts.id = post_categories.post_id
@@ -75,7 +76,7 @@ func GetAllPosts(category string, userID int) ([]models.Post, error) {
 		var p models.Post
 		var catsString *string
 		var userReact *int
-		err := rows.Scan(&p.ID, &p.Nickname, &p.UserID, &p.Title, &p.Content, &p.CreatedAt, &catsString, &p.Likes, &p.Dislikes, &userReact)
+		err := rows.Scan(&p.ID, &p.Nickname, &p.UserID, &p.Title, &p.Content, &p.CreatedAt, &catsString, &p.Likes, &p.Dislikes, &userReact, &p.CommentsCount)
 		if err != nil {
 			return nil, err
 		}
@@ -99,7 +100,8 @@ func GetPostByID(postID int, userID int) (models.Post, error) {
 	err := database.DB.QueryRow(`SELECT posts.id, users.nickname, posts.user_id, posts.title, posts.content, posts.created_at, group_concat(categories.name),
 		(SELECT COALESCE(SUM(reaction=1), 0) FROM likes WHERE post_id = posts.id),
 		(SELECT COALESCE(SUM(reaction=0), 0) FROM likes WHERE post_id = posts.id),
-		(SELECT reaction FROM likes WHERE post_id = posts.id AND user_id = ? LIMIT 1)
+		(SELECT reaction FROM likes WHERE post_id = posts.id AND user_id = ? LIMIT 1),
+		(SELECT COUNT(*) FROM comments WHERE post_id = posts.id)
 	FROM posts 
 	JOIN users ON posts.user_id = users.id 
 	LEFT JOIN post_categories ON posts.id = post_categories.post_id
@@ -117,6 +119,7 @@ func GetPostByID(postID int, userID int) (models.Post, error) {
 		&post.Likes,
 		&post.Dislikes,
 		&userReact,
+		&post.CommentsCount,
 	)
 	if err != nil {
 		return post, err
@@ -138,18 +141,26 @@ func DeletePost(postID int) error {
 }
 
 // CreateComment inserts a new comment into the comments table securely using placeholders.
-func CreateComment(comment models.Comment) error {
+func CreateComment(comment models.Comment) (models.Comment, error) {
 	query := `INSERT INTO comments (post_id, user_id, content, created_at) VALUES (?, ?, ?, ?)`
-	_, err := database.DB.Exec(query, comment.PostID, comment.UserID, comment.Content, comment.CreatedAt)
-	return err
+	result, err := database.DB.Exec(query, comment.PostID, comment.UserID, comment.Content, comment.CreatedAt)
+	if err != nil {
+		return comment, err
+	}
+	id, err := result.LastInsertId()
+	if err != nil {
+		return comment, err
+	}
+	comment.ID = int(id)
+	return comment, nil
 }
 
 // GetCommentsByPostID fetches all comments for a post and joins users to get the author nickname.
 func GetCommentsByPostID(postID int) ([]models.Comment, error) {
 	query := `
-		SELECT comments.id, comments.post_id, comments.user_id, users.nickname, comments.content, comments.created_at
+		SELECT comments.id, comments.post_id, comments.user_id, COALESCE(users.nickname, 'Anonymous'), comments.content, comments.created_at
 		FROM comments
-		JOIN users ON comments.user_id = users.id
+		LEFT JOIN users ON comments.user_id = users.id
 		WHERE comments.post_id = ?
 		ORDER BY comments.created_at ASC`
 

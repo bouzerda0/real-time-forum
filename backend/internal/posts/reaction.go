@@ -47,15 +47,22 @@ func ReactionHandler(w http.ResponseWriter, r *http.Request) {
 	defer tx.Rollback()
 
 	// Check existing reaction and clean up any duplicates
-	var current int
-	var count int
-	err = tx.QueryRow("SELECT reaction, COUNT(*) FROM likes WHERE user_id=? AND post_id=?", userID, req.PostID).Scan(&current, &count)
-	if err != nil {
-		count = 0
+	rows, err := tx.Query("SELECT reaction FROM likes WHERE user_id=? AND post_id=?", userID, req.PostID)
+	var existingCount int
+	var existingReaction int = -1
+	if err == nil {
+		for rows.Next() {
+			var r int
+			if rows.Scan(&r) == nil {
+				existingCount++
+				existingReaction = r
+			}
+		}
+		rows.Close()
 	}
 
 	userReaction := -1
-	if count > 0 && current == req.IsLike {
+	if existingCount > 0 && existingReaction == req.IsLike {
 		// User clicked the same reaction again -> Undo (remove reaction completely)
 		_, err = tx.Exec("DELETE FROM likes WHERE user_id=? AND post_id=?", userID, req.PostID)
 		userReaction = -1

@@ -8,11 +8,13 @@ import (
 	"strings"
 	"time"
 
+	"real-time-forum/database"
 	"real-time-forum/internal/models"
 )
 
 func PostHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
+	switch r.Method {
+	case http.MethodPost:
 		userID, err := GetUserID(r)
 		if err != nil {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
@@ -43,14 +45,14 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(post) // أو غير object صغير زعما {"message": "post created"}
-	} else if r.Method == http.MethodGet {
+
+	case http.MethodGet:
 		userID, _ := GetUserID(r)
 		// MERGE: Added category filter logic
 		category := r.URL.Query().Get("category")
 		// MERGE: Added category filter logic
 		posts, err := GetAllPosts(category, userID)
 		if err != nil {
-
 			http.Error(w, http.StatusText(500), http.StatusInternalServerError)
 			return
 		}
@@ -64,9 +66,9 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, http.StatusText(500), http.StatusInternalServerError)
 			return
 		}
-	} else {
+
+	default:
 		http.Error(w, http.StatusText(405), http.StatusMethodNotAllowed)
-		return
 	}
 }
 
@@ -121,6 +123,12 @@ func CommentsHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(comments)
 
 	case http.MethodPost:
+		userID, err := GetUserID(r)
+		if err != nil || userID <= 0 {
+			http.Error(w, `{"error":"Unauthorized. Please login to comment."}`, http.StatusUnauthorized)
+			return
+		}
+
 		var comment models.Comment
 		if err := json.NewDecoder(r.Body).Decode(&comment); err != nil {
 			http.Error(w, `{"error":"Invalid JSON payload"}`, http.StatusBadRequest)
@@ -133,20 +141,23 @@ func CommentsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Try to populate UserID dynamically if authenticated, otherwise allow default/fallback
-		if userID, err := GetUserID(r); err == nil && userID > 0 {
-			comment.UserID = userID
+		comment.UserID = userID
+		var nickname string
+		database.DB.QueryRow("SELECT nickname FROM users WHERE id = ?", userID).Scan(&nickname)
+		if nickname == "" {
+			nickname = "User"
 		}
-
+		comment.Nickname = nickname
 		comment.CreatedAt = time.Now()
 
-		if err := CreateComment(comment); err != nil {
+		createdComment, err := CreateComment(comment)
+		if err != nil {
 			http.Error(w, `{"error":"Failed to save comment"}`, http.StatusInternalServerError)
 			return
 		}
 
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(map[string]string{"status": "success", "message": "Comment created successfully"})
+		json.NewEncoder(w).Encode(createdComment)
 
 	default:
 		http.Error(w, `{"error":"Method not allowed"}`, http.StatusMethodNotAllowed)
