@@ -25,7 +25,8 @@ func CommentsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		postComments, err := GetCommentsByPostID(postID)
+		userID, _ := posts.GetUserID(r)
+		postComments, err := GetCommentsByPostID(postID, userID)
 		if err != nil {
 			fmt.Printf("CommentsHandler: GetCommentsByPostID error: %v\n", err)
 			http.Error(w, `{"error":"Failed to fetch comments"}`, http.StatusInternalServerError)

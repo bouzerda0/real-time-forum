@@ -36,6 +36,7 @@ func main() {
 
 	// Comments API Routes
 	http.HandleFunc("/api/comments", comments.CommentsHandler)
+	http.HandleFunc("/api/comments/reaction", comments.ReactionHandler)
 
 	// Serving Frontend SPA (must be registered after specific API routes)
 	fs := http.FileServer(http.Dir(frontendDir))

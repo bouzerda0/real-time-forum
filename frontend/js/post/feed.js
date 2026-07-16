@@ -140,7 +140,8 @@ function createPostCard(post) {
     date.textContent = formatDate(post.created_at);
 
     const comments = document.createElement("span");
-    comments.textContent = "0 Comments";
+    const count = post.comments_count || post.CommentsCount || 0;
+    comments.textContent = `${count} ${count === 1 ? 'Comment' : 'Comments'}`;
 
     // MERGE: Adjusted to lowercase fields from Developer A's source of truth model
     const reactionsUI = createReaction(post.id, post.likes || 0, post.dislikes || 0);

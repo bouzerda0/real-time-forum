@@ -23,15 +23,20 @@ func CreateComment(comment models.Comment) (models.Comment, error) {
 	return comment, nil
 }
 
-func GetCommentsByPostID(postID int) ([]models.Comment, error) {
+func GetCommentsByPostID(postID int, userID int) ([]models.Comment, error) {
 	query := `
-		SELECT comments.id, comments.post_id, comments.user_id, COALESCE(users.nickname, 'Anonymous'), comments.content, comments.created_at
+		SELECT 
+			comments.id, comments.post_id, comments.user_id, COALESCE(users.nickname, 'Anonymous'), comments.content, comments.created_at,
+			(SELECT COALESCE(SUM(reaction=1), 0) FROM comment_likes WHERE comment_id = comments.id) as likes_count,
+			(SELECT COALESCE(SUM(reaction=0), 0) FROM comment_likes WHERE comment_id = comments.id) as dislikes_count,
+			(SELECT reaction FROM comment_likes WHERE comment_id = comments.id AND user_id = ? LIMIT 1) as user_reaction
 		FROM comments
 		LEFT JOIN users ON comments.user_id = users.id
 		WHERE comments.post_id = ?
+		GROUP BY comments.id
 		ORDER BY comments.created_at ASC`
 
-	rows, err := database.DB.Query(query, postID)
+	rows, err := database.DB.Query(query, userID, postID)
 	if err != nil {
 		return nil, fmt.Errorf("get comments for post %d: %w", postID, err)
 	}
@@ -40,9 +45,11 @@ func GetCommentsByPostID(postID int) ([]models.Comment, error) {
 	var comments []models.Comment
 	for rows.Next() {
 		var comment models.Comment
-		if err := rows.Scan(&comment.ID, &comment.PostID, &comment.UserID, &comment.Nickname, &comment.Content, &comment.CreatedAt); err != nil {
+		var userReact *int
+		if err := rows.Scan(&comment.ID, &comment.PostID, &comment.UserID, &comment.Nickname, &comment.Content, &comment.CreatedAt, &comment.Likes, &comment.Dislikes, &userReact); err != nil {
 			return nil, fmt.Errorf("get comments: scan row: %w", err)
 		}
+		comment.UserReaction = userReact
 		comments = append(comments, comment)
 	}
 

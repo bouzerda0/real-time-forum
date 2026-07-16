@@ -50,59 +50,55 @@ export function RegisterView() {
     `;
 
     const logic = () => {
-        const registerForm = mainContainer.querySelector('#registerForm');
-        const errorMessage = mainContainer.querySelector('#register-error');
-        const registerButton = mainContainer.querySelector('button[type="submit"]');
+        const [form, errBox, btn] = ['#registerForm', '#register-error', 'button[type="submit"]'].map(s => mainContainer.querySelector(s));
+        const getVal = id => mainContainer.querySelector(id).value.trim();
 
-        const usernameInput = mainContainer.querySelector('#username');
-        const firstNameInput = mainContainer.querySelector('#firstName');
-        const lastNameInput = mainContainer.querySelector('#lastName');
-        const ageInput = mainContainer.querySelector('#age');
-        const genderSelect = mainContainer.querySelector('#gender');
-        const emailInput = mainContainer.querySelector('#email');
-        const passwordInput = mainContainer.querySelector('#password');
-
+        // 1. Handle navigation to login
         mainContainer.querySelector('#login-link').addEventListener('click', (e) => {
             e.preventDefault();
             window.navigateTo('/login');
         });
 
-        registerForm.addEventListener('submit', async (e) => {
+        // 2. Handle registration form submission
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            errorMessage.textContent = '';
-            registerButton.disabled = true;
-            registerButton.textContent = 'Creating account...';
+            errBox.textContent = '';
+            btn.disabled = true;
+            btn.textContent = 'Creating account...';
 
+            // 3. Extract form payload
             const payload = {
-                username: usernameInput.value.trim(),
-                first_name: firstNameInput.value.trim(),
-                last_name: lastNameInput.value.trim(),
-                age: parseInt(ageInput.value, 10),
-                gender: genderSelect.value,
-                email: emailInput.value.trim(),
-                password: passwordInput.value
+                username: getVal('#username'),
+                first_name: getVal('#firstName'),
+                last_name: getVal('#lastName'),
+                age: parseInt(getVal('#age'), 10),
+                gender: mainContainer.querySelector('#gender').value,
+                email: getVal('#email'),
+                password: mainContainer.querySelector('#password').value
             };
 
             try {
-                const response = await fetch('/api/register', {
+                // 4. Call registration API
+                const res = await fetch('/api/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
+                const data = await res.json();
 
-                const data = await response.json();
-
-                if (response.ok) {
-                    window.navigateTo('/login');
-                } else {
-                    errorMessage.textContent = data.message || 'Registration failed. Please try again.';
+                // 5. Handle API response with early return
+                if (!res.ok) {
+                    errBox.textContent = data.message || 'Registration failed. Please try again.';
+                    return;
                 }
-            } catch (error) {
-                errorMessage.textContent = 'Network error. Is the server running?';
+
+                window.navigateTo('/login');
+            } catch {
+                errBox.textContent = 'Network error. Is the server running?';
             } finally {
-                registerButton.disabled = false;
-                registerButton.textContent = 'Create Account';
+                btn.disabled = false;
+                btn.textContent = 'Create Account';
             }
         });
     };

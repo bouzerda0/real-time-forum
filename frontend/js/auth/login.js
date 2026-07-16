@@ -22,50 +22,48 @@ export function LoginView() {
     `;
 
     const logic = () => {
-        const loginForm = mainContainer.querySelector('#loginForm');
-        const errorMessage = mainContainer.querySelector('#login-error');
-        const loginButton = mainContainer.querySelector('button[type="submit"]');
-        const identifyInput = mainContainer.querySelector('#identify');
-        const passwordInput = mainContainer.querySelector('#password');
+        const [form, errBox, btn] = ['#loginForm', '#login-error', 'button[type="submit"]'].map(s => mainContainer.querySelector(s));
 
+        // 1. Handle navigation to registration
         mainContainer.querySelector('#signup-link').addEventListener('click', (e) => {
             e.preventDefault();
             window.navigateTo('/register');
         });
 
-        loginForm.addEventListener('submit', async (e) => {
+        // 2. Handle form submission
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            const identify = mainContainer.querySelector('#identify').value.trim();
+            const password = mainContainer.querySelector('#password').value;
 
-            errorMessage.textContent = '';
-            loginButton.disabled = true;
-            loginButton.textContent = 'Signing in...';
-
-            const identify = identifyInput.value.trim();
-            const password = passwordInput.value;
+            errBox.textContent = '';
+            btn.disabled = true;
+            btn.textContent = 'Signing in...';
 
             try {
-                const response = await fetch('/api/login', {
+                // 3. Call login API
+                const res = await fetch('/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ identify, password })
                 });
+                const data = await res.json();
 
-                const data = await response.json();
-
-                if (response.ok) {
-                    localStorage.setItem('isAuthenticated', 'true');
-                    if (data.user) {
-                        localStorage.setItem('currentUser', JSON.stringify(data.user));
-                    }
-                    window.navigateTo('/');
-                } else {
-                    errorMessage.textContent = data.message || 'Login failed. Please check your credentials.';
+                // 4. Handle API response with early return
+                if (!res.ok) {
+                    errBox.textContent = data.message || 'Login failed. Please check your credentials.';
+                    return;
                 }
-            } catch (error) {
-                errorMessage.textContent = 'Network error. Is the server running?';
+
+                // 5. Store authentication state and navigate home
+                localStorage.setItem('isAuthenticated', 'true');
+                if (data.user) localStorage.setItem('currentUser', JSON.stringify(data.user));
+                window.navigateTo('/');
+            } catch {
+                errBox.textContent = 'Network error. Is the server running?';
             } finally {
-                loginButton.disabled = false;
-                loginButton.textContent = 'Sign In';
+                btn.disabled = false;
+                btn.textContent = 'Sign In';
             }
         });
     };

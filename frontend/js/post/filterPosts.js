@@ -29,7 +29,7 @@ export async function filterByCategory(category) {
             return;
         }
 
-        if (feed) renderPosts(posts); 
+        if (feed) renderPosts(posts);
     } catch (error) {
         console.error("Error fetching filtered posts:", error);
         if (feed) feed.innerHTML = "<p>Error loading posts.</p>";
