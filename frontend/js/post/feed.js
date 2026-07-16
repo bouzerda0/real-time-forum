@@ -4,6 +4,14 @@ import { loadPostCard } from "./postDetails.js";
 
 export async function loadFeed() {
     const feed = document.getElementById("feed-container");
+    if (!feed) return;
+
+    document.querySelectorAll('.cat-btn, .top-cat-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('data-cat') === 'all') {
+            btn.classList.add('active');
+        }
+    });
 
     feed.innerHTML = "<p>Loading...</p>";
     try {
@@ -21,7 +29,7 @@ export async function loadFeed() {
     }
 }
 
-export function showEmpty() {
+export function showEmpty(category) {
     const feedContainer = document.getElementById("feed-container");
 
     feedContainer.innerHTML = "";
@@ -38,10 +46,12 @@ export function showEmpty() {
     `;
 
     const title = document.createElement("h2");
-    title.textContent = "No Posts Yet";
+    title.textContent = category === "liked" ? "No Liked Posts Yet" : "No Posts Yet";
 
     const message = document.createElement("p");
-    message.textContent = "Be the first to create a post and start a conversation in this category.";
+    message.textContent = category === "liked" 
+        ? "Posts that you like will appear here once you react to them."
+        : "Be the first to create a post and start a conversation in this category.";
 
     const createBtn = document.createElement("button");
     createBtn.className = "empty-feed-btn";
@@ -52,7 +62,11 @@ export function showEmpty() {
         </svg>
         <span>Create First Post</span>
     `;
-    createBtn.onclick = () => window.navigateTo ? window.navigateTo('/create-post') : null;
+    if (category === "liked") {
+        createBtn.style.display = "none";
+    } else {
+        createBtn.onclick = () => window.navigateTo ? window.navigateTo('/create-post') : null;
+    }
 
     container.appendChild(iconContainer);
     container.appendChild(title);
@@ -126,7 +140,8 @@ function createPostCard(post) {
     date.textContent = formatDate(post.created_at);
 
     const comments = document.createElement("span");
-    comments.textContent = "0 Comments";
+    const count = post.comments_count || post.CommentsCount || 0;
+    comments.textContent = `${count} ${count === 1 ? 'Comment' : 'Comments'}`;
 
     // MERGE: Adjusted to lowercase fields from Developer A's source of truth model
     const reactionsUI = createReaction(post.id, post.likes || 0, post.dislikes || 0);

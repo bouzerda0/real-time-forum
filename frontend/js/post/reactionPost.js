@@ -1,96 +1,62 @@
 import { ApiRequest } from "../api.js";
 
-export function createReaction(postId, initialLikes, initialDislikes, initialUserReaction) {
-    // div to store actions
-    const actionsDiv = document.createElement('div');
-    actionsDiv.className = 'post-actions';
+export function createReaction(postId, initialLikes = 0, initialDislikes = 0, initialUserReaction, itemType = "post") {
+    // 1. Create actions container
+    const actionsDiv = document.createElement("div");
+    actionsDiv.className = "post-actions";
 
-    // Like button
-    const likeBtn = document.createElement('button');
-    likeBtn.className = 'btn-react like-btn';
-    likeBtn.setAttribute('data-post-id', postId);
-    if (initialUserReaction === 1) {
-        likeBtn.classList.add('liked');
-    }
-
-    const likeIcon = document.createElement('span');
-    likeIcon.className = 'react-icon';
-    likeIcon.textContent = '👍';
-
-    const likesSpan = document.createElement('span');
-    likesSpan.id = `likes-count-${postId}`;
-    likesSpan.className = 'react-count';
-    likesSpan.textContent = initialLikes || 0;
-
-    likeBtn.appendChild(likeIcon);
-    likeBtn.appendChild(likesSpan);
-
-    // Dislike button
-    const dislikeBtn = document.createElement('button');
-    dislikeBtn.className = 'btn-react dislike-btn';
-    dislikeBtn.setAttribute('data-post-id', postId);
-    if (initialUserReaction === 0) {
-        dislikeBtn.classList.add('disliked');
-    }
-
-    const dislikeIcon = document.createElement('span');
-    dislikeIcon.className = 'react-icon';
-    dislikeIcon.textContent = '👎';
-
-    const dislikesSpan = document.createElement('span');
-    dislikesSpan.id = `dislikes-count-${postId}`;
-    dislikesSpan.className = 'react-count';
-    dislikesSpan.textContent = initialDislikes || 0;
-
-    dislikeBtn.appendChild(dislikeIcon);
-    dislikeBtn.appendChild(dislikesSpan);
-
-    likeBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        reactToPost(postId, 1, likeBtn, dislikeBtn);
+    // 2. Build dynamic reaction buttons (DRY)
+    const buttons = [
+        { isLike: 1, type: "like", icon: "❤️", count: initialLikes, activeVal: 1 },
+        { isLike: 0, type: "dislike", icon: "💔", count: initialDislikes, activeVal: 0 }
+    ].map(({ isLike, type, icon, count, activeVal }) => {
+        const btn = document.createElement("button");
+        btn.className = `btn-react ${type}-btn${initialUserReaction === activeVal ? ` ${type}d` : ""}`;
+        btn.setAttribute(`data-${itemType}-id`, postId);
+        const countId = itemType === "post" ? `${type}s-count-${postId}` : `${type}s-count-${itemType}-${postId}`;
+        btn.innerHTML = `<span class="react-icon">${icon}</span><span id="${countId}" class="react-count">${count || 0}</span>`;
+        return btn;
     });
 
-    dislikeBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        reactToPost(postId, 0, likeBtn, dislikeBtn);
-    });
+    const [likeBtn, dislikeBtn] = buttons;
 
-    // add buttons to the div
-    actionsDiv.appendChild(likeBtn);
-    actionsDiv.appendChild(dislikeBtn);
+    // 3. Attach click handlers delegating to unified reactToPost
+    likeBtn.addEventListener("click", e => { e.stopPropagation(); reactToPost(postId, 1, likeBtn, dislikeBtn, itemType); });
+    dislikeBtn.addEventListener("click", e => { e.stopPropagation(); reactToPost(postId, 0, likeBtn, dislikeBtn, itemType); });
 
-    // return the div
+    actionsDiv.append(likeBtn, dislikeBtn);
     return actionsDiv;
 }
 
-async function reactToPost(postId, isLike, likeBtn, dislikeBtn) {
+async function reactToPost(postId, isLike, likeBtn, dislikeBtn, itemType = "post") {
     if (likeBtn) likeBtn.disabled = true;
     if (dislikeBtn) dislikeBtn.disabled = true;
+
+    const endpoint = itemType === "post" ? "/api/reaction" : "/api/comments/reaction";
+    const body = itemType === "post"
+        ? { post_id: Number(postId), is_like: Number(isLike) }
+        : { comment_id: Number(postId), is_like: Number(isLike) };
+    const likesSelector = itemType === "post" ? `[id="likes-count-${postId}"]` : `[id="likes-count-${itemType}-${postId}"]`;
+    const dislikesSelector = itemType === "post" ? `[id="dislikes-count-${postId}"]` : `[id="dislikes-count-${itemType}-${postId}"]`;
+    const btnSelectorAttr = `[data-${itemType}-id="${postId}"]`;
+
     try {
-        const data = await ApiRequest("/api/reaction", {
-            method: "POST",
-            body: { post_id: Number(postId), is_like: Number(isLike) }
-        });
+        // 1. Send API request
+        const data = await ApiRequest(endpoint, { method: "POST", body });
 
-        document.querySelectorAll(`[id="likes-count-${postId}"]`).forEach(el => {
-            if (data.likes !== undefined) el.textContent = data.likes;
-        });
-        document.querySelectorAll(`[id="dislikes-count-${postId}"]`).forEach(el => {
-            if (data.dislikes !== undefined) el.textContent = data.dislikes;
-        });
+        // 2. Update UI counters
+        if (data.likes !== undefined) document.querySelectorAll(likesSelector).forEach(el => el.textContent = data.likes);
+        if (data.dislikes !== undefined) document.querySelectorAll(dislikesSelector).forEach(el => el.textContent = data.dislikes);
 
+        // 3. Update active button states
         if (data.user_reaction !== undefined) {
-            document.querySelectorAll(`.like-btn[data-post-id="${postId}"]`).forEach(btn => {
-                btn.classList.toggle('liked', data.user_reaction === 1);
-            });
-            document.querySelectorAll(`.dislike-btn[data-post-id="${postId}"]`).forEach(btn => {
-                btn.classList.toggle('disliked', data.user_reaction === 0);
-            });
+            document.querySelectorAll(`.like-btn${btnSelectorAttr}`).forEach(btn => btn.classList.toggle("liked", data.user_reaction === 1));
+            document.querySelectorAll(`.dislike-btn${btnSelectorAttr}`).forEach(btn => btn.classList.toggle("disliked", data.user_reaction === 0));
         }
     } catch (err) {
-        console.error("Error reacting to post:", err);
-        if (err && err.message && (err.message.includes("401") || err.message.includes("Unauthorized"))) {
-            alert("Please login to react to posts.");
+        console.error("Error reacting to post/comment:", err);
+        if (err?.message?.includes("401") || err?.message?.includes("Unauthorized")) {
+            alert("Please login to react.");
             if (window.navigateTo) window.navigateTo("/login");
         }
     } finally {

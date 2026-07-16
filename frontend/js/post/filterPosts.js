@@ -3,7 +3,14 @@ import { showEmpty, renderPosts } from "./feed.js";
 
 export async function filterByCategory(category) {
     const feed = document.getElementById("feed-container");
-    feed.innerHTML = "<p>Loading...</p>";
+    if (feed) feed.innerHTML = "<p>Loading...</p>";
+
+    document.querySelectorAll('.cat-btn, .top-cat-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('data-cat') === category) {
+            btn.classList.add('active');
+        }
+    });
 
     let url = "/posts";
     if (category !== "all") {
@@ -11,16 +18,20 @@ export async function filterByCategory(category) {
     }
 
     try {
-        const posts = await ApiRequest(url);
+        let posts = await ApiRequest(url);
+
+        if (Array.isArray(posts) && category === "liked") {
+            posts = posts.filter(p => p.user_reaction === 1 || p.UserReaction === 1);
+        }
 
         if (!posts || posts.length === 0) {
-            showEmpty();
+            if (feed) showEmpty(category);
             return;
         }
 
-        renderPosts(posts); 
+        if (feed) renderPosts(posts);
     } catch (error) {
         console.error("Error fetching filtered posts:", error);
-        feed.innerHTML = "<p>Error loading posts.</p>";
+        if (feed) feed.innerHTML = "<p>Error loading posts.</p>";
     }
 }

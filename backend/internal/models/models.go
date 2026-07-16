@@ -28,12 +28,15 @@ type Post struct {
 }
 
 type Comment struct {
-	ID        int       `json:"id"`
-	PostID    int       `json:"post_id"`
-	UserID    int       `json:"user_id"`
-	Nickname  string    `json:"nickname"`
-	Content   string    `json:"content"`
-	CreatedAt time.Time `json:"created_at"`
+	ID           int       `json:"id"`
+	PostID       int       `json:"post_id"`
+	UserID       int       `json:"user_id"`
+	Nickname     string    `json:"nickname"`
+	Content      string    `json:"content"`
+	CreatedAt    time.Time `json:"created_at"`
+	Likes        int       `json:"likes"`
+	Dislikes     int       `json:"dislikes"`
+	UserReaction *int      `json:"user_reaction"`
 }
 
 type Like struct {
