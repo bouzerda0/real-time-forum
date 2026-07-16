@@ -8,6 +8,7 @@ export function createReaction(postId, initialLikes, initialDislikes, initialUse
     // Like button
     const likeBtn = document.createElement('button');
     likeBtn.className = 'btn-react like-btn';
+    likeBtn.setAttribute('data-post-id', postId);
     if (initialUserReaction === 1) {
         likeBtn.classList.add('liked');
     }
@@ -27,6 +28,7 @@ export function createReaction(postId, initialLikes, initialDislikes, initialUse
     // Dislike button
     const dislikeBtn = document.createElement('button');
     dislikeBtn.className = 'btn-react dislike-btn';
+    dislikeBtn.setAttribute('data-post-id', postId);
     if (initialUserReaction === 0) {
         dislikeBtn.classList.add('disliked');
     }
@@ -43,11 +45,13 @@ export function createReaction(postId, initialLikes, initialDislikes, initialUse
     dislikeBtn.appendChild(dislikeIcon);
     dislikeBtn.appendChild(dislikesSpan);
 
-    likeBtn.addEventListener('click', function () {
+    likeBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
         reactToPost(postId, 1, likeBtn, dislikeBtn);
     });
 
-    dislikeBtn.addEventListener('click', function () {
+    dislikeBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
         reactToPost(postId, 0, likeBtn, dislikeBtn);
     });
 
@@ -68,18 +72,27 @@ async function reactToPost(postId, isLike, likeBtn, dislikeBtn) {
             body: { post_id: Number(postId), is_like: Number(isLike) }
         });
 
-        const likesEl = document.getElementById(`likes-count-${postId}`);
-        const dislikesEl = document.getElementById(`dislikes-count-${postId}`);
-
-        if (likesEl && data.likes !== undefined) likesEl.textContent = data.likes;
-        if (dislikesEl && data.dislikes !== undefined) dislikesEl.textContent = data.dislikes;
+        document.querySelectorAll(`[id="likes-count-${postId}"]`).forEach(el => {
+            if (data.likes !== undefined) el.textContent = data.likes;
+        });
+        document.querySelectorAll(`[id="dislikes-count-${postId}"]`).forEach(el => {
+            if (data.dislikes !== undefined) el.textContent = data.dislikes;
+        });
 
         if (data.user_reaction !== undefined) {
-            if (likeBtn) likeBtn.classList.toggle('liked', data.user_reaction === 1);
-            if (dislikeBtn) dislikeBtn.classList.toggle('disliked', data.user_reaction === 0);
+            document.querySelectorAll(`.like-btn[data-post-id="${postId}"]`).forEach(btn => {
+                btn.classList.toggle('liked', data.user_reaction === 1);
+            });
+            document.querySelectorAll(`.dislike-btn[data-post-id="${postId}"]`).forEach(btn => {
+                btn.classList.toggle('disliked', data.user_reaction === 0);
+            });
         }
     } catch (err) {
         console.error("Error reacting to post:", err);
+        if (err && err.message && (err.message.includes("401") || err.message.includes("Unauthorized"))) {
+            alert("Please login to react to posts.");
+            if (window.navigateTo) window.navigateTo("/login");
+        }
     } finally {
         if (likeBtn) likeBtn.disabled = false;
         if (dislikeBtn) dislikeBtn.disabled = false;

@@ -35,7 +35,7 @@ function createPostForm() {
     title.className = "post-title";
     title.placeholder = "Enter post title";
     title.required = true;
-    
+
     const categories = createCategorySection();
 
     // Content
@@ -44,6 +44,8 @@ function createPostForm() {
     content.className = "post-content";
     content.placeholder = "Write your post...";
     content.required = true;
+    content.maxLength = 4500;
+
 
     // Submit Button
     const submit = document.createElement("button");
@@ -70,7 +72,7 @@ async function handleCreatePost(event) {
     const categories = Array.from(
         document.querySelectorAll('input[name="post-categories"]:checked')
     ).map(checkbox => checkbox.value);
-    
+
     if (!title || !content || categories.length === 0) {
         alert("Please fill all fields.");
         return;
@@ -87,7 +89,7 @@ async function handleCreatePost(event) {
             method: "POST",
             body: post,
         });
-        
+
         console.log("Post created successfully.");
         if (window.navigateTo) {
             window.navigateTo("/");

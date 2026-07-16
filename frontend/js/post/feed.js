@@ -1,6 +1,6 @@
 import { ApiRequest } from "../api.js"
 import { createReaction } from "./reactionPost.js"
-import { renderCommentsSection, fetchComments } from "./postDetails.js"
+import { loadPostCard } from "./postDetails.js";
 
 export async function loadFeed() {
     const feed = document.getElementById("feed-container");
@@ -68,10 +68,21 @@ export function renderPosts(posts) {
     feedContainer.innerHTML = "";
 
     posts.forEach(post => {
-        const postCard = createPostCard(post);
+        const postCard = createPostCard(post)
+        postCard.addEventListener('click', () => {
+            if (window.navigateTo) {
+                window.navigateTo(`/post/${post.id}`);
+            } else {
+                window.location.href = `/post/${post.id}`;
+            }
+        })
         feedContainer.appendChild(postCard);
     });
 }
+
+export function renderHomeFeed(container) { // FIXED HERE
+    if (container) container.innerHTML = '<div id="feed-container"></div>'; // FIXED HERE
+} // FIXED HERE
 
 function createPostCard(post) {
     const article = document.createElement("article");
@@ -115,43 +126,20 @@ function createPostCard(post) {
     date.textContent = formatDate(post.created_at);
 
     const comments = document.createElement("span");
-    comments.className = "post-comments-toggle";
-    comments.style.cursor = "pointer";
-    comments.textContent = "💬 Comments";
-
-    fetchComments(post.id).then(list => {
-        if (Array.isArray(list)) {
-            comments.textContent = `💬 ${list.length} Comment${list.length === 1 ? '' : 's'}`;
-        }
-    }).catch(() => {});
+    comments.textContent = "0 Comments";
 
     // MERGE: Adjusted to lowercase fields from Developer A's source of truth model
-    const reactionsUI = createReaction(post.id, post.likes || 0, post.dislikes || 0, post.user_reaction);
+    const reactionsUI = createReaction(post.id, post.likes || 0, post.dislikes || 0);
 
     footer.appendChild(date);
     footer.appendChild(comments);
     footer.appendChild(reactionsUI);
-
-    const commentsContainer = document.createElement("div");
-    commentsContainer.className = "post-comments-container";
-    commentsContainer.style.display = "none";
-    commentsContainer.style.marginTop = "15px";
-
-    comments.addEventListener("click", async () => {
-        if (commentsContainer.style.display === "none") {
-            commentsContainer.style.display = "block";
-            await renderCommentsSection(post.id, commentsContainer);
-        } else {
-            commentsContainer.style.display = "none";
-        }
-    });
 
     // Build article
     article.appendChild(header);
     article.appendChild(title);
     article.appendChild(content);
     article.appendChild(footer);
-    article.appendChild(commentsContainer);
 
     return article;
 }
