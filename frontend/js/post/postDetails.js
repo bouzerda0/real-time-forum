@@ -82,12 +82,22 @@ export const fetchComments = (postId) => ApiRequest(`/api/comments?post_id=${pos
 export const submitComment = (postId, content) =>
     ApiRequest("/api/comments", { method: "POST", body: { post_id: Number(postId), content } });
 
-const commentItemHTML = (c) => `
-    <div class="comment-item">
-        <strong>${escapeHTML(c.nickname || c.Nickname || "Anonymous")}</strong>
-        <p>${escapeHTML(c.content || c.Content || "")}</p>
-    </div>
-`;
+function createCommentItem(c) {
+    const item = document.createElement("div");
+    item.className = "comment-item";
+
+    const header = document.createElement("strong");
+    header.textContent = c.nickname || c.Nickname || "Anonymous";
+
+    const content = document.createElement("p");
+    content.textContent = c.content || c.Content || "";
+
+    const reactionUI = createReaction(c.id || c.ID || 0, c.likes || 0, c.dislikes || 0, c.user_reaction);
+    reactionUI.style.marginTop = "8px";
+
+    item.append(header, content, reactionUI);
+    return item;
+}
 
 export async function renderCommentsSection(postId, container) {
     if (!container) return;
@@ -96,15 +106,18 @@ export async function renderCommentsSection(postId, container) {
     container.innerHTML = `
         <div class="comments-section">
             <h4>Comments</h4>
-            <div id="comments-list-${postId}">
-                ${Array.isArray(comments) ? comments.map(commentItemHTML).join("") : ""}
-            </div>
+            <div id="comments-list-${postId}"></div>
             <form id="reply-form-${postId}" style="margin-top: 10px;">
                 <textarea id="reply-input-${postId}" placeholder="Write a reply..." required rows="2" style="width:100%;"></textarea>
                 <button type="submit" style="margin-top: 5px;">Reply</button>
             </form>
         </div>
     `;
+
+    const commentsList = container.querySelector(`#comments-list-${postId}`);
+    if (Array.isArray(comments)) {
+        comments.forEach(c => commentsList.appendChild(createCommentItem(c)));
+    }
 
     container.querySelector(`#reply-form-${postId}`).addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -117,11 +130,11 @@ export async function renderCommentsSection(postId, container) {
             input.value = "";
 
             if (createdComment && (createdComment.id || createdComment.ID)) {
-                container.querySelector(`#comments-list-${postId}`).insertAdjacentHTML("beforeend", commentItemHTML(createdComment));
+                commentsList.appendChild(createCommentItem(createdComment));
             } else {
                 const user = JSON.parse(localStorage.getItem("currentUser") || "{}");
-                const newComment = { nickname: user.nickname || user.username || "You", content };
-                container.querySelector(`#comments-list-${postId}`).insertAdjacentHTML("beforeend", commentItemHTML(newComment));
+                const newComment = { id: 0, nickname: user.nickname || user.username || "You", content };
+                commentsList.appendChild(createCommentItem(newComment));
             }
         } catch (error) {
             console.error("Error submitting comment:", error);
