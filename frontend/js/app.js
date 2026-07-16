@@ -1,17 +1,21 @@
 import { LoginView } from '/js/auth/login.js';
 import { RegisterView } from '/js/auth/register.js';
-import { loadFeed } from '/js/post/feed.js';
+import { loadFeed, renderHomeFeed } from '/js/post/feed.js';
 import { filterByCategory } from '/js/post/filterPosts.js';
 import { CreatePostView } from '/js/post/createPost.js';
+import { loadPostCard } from '/js/post/postDetails.js';
 
 window.filterByCategory = filterByCategory;
 
 const routes = {
     '/': () => {
         const dom = document.createElement('div');
+        renderHomeFeed(dom);
         return {
             dom,
-            logic: () => loadFeed()
+            logic: async () => {
+                await loadFeed();
+            }
         };
     },
     '/login': LoginView,
@@ -69,7 +73,7 @@ function updateAuthUI() {
             navAuthArea.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <div style="display: flex; align-items: center; gap: 8px; background: #eff6ff; border: 1px solid #bfdbfe; padding: 6px 14px; border-radius: 9999px;">
-                        <div style="width: 24px; height: 24px; border-radius: 50%; background: #2563eb; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">
+                        <div style="width: 24px; height: 24px; border-radius: 50%; background: #8b5cf6; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">
                             ${initial}
                         </div>
                         <span style="font-weight: 600; font-size: 13.5px; color: #1e40af;">@${currentUser.username || 'User'}</span>
@@ -128,7 +132,7 @@ async function render(path) {
     const sidebar = document.querySelector('.sidebar');
     const navbar = document.querySelector('.navbar');
     const mainArea = document.querySelector('.main');
-    const container = document.getElementById('feed-container') || document.getElementById('app');
+    const app = document.getElementById('app');
 
     if (sidebar) sidebar.style.display = isAuthPage ? 'none' : '';
     if (navbar) navbar.style.display = isAuthPage ? 'none' : '';
@@ -136,18 +140,27 @@ async function render(path) {
         mainArea.style.marginLeft = isAuthPage ? '0' : '';
         mainArea.style.width = isAuthPage ? '100%' : '';
     }
-    if (container) {
-        container.style.padding = isAuthPage ? '0' : '';
-        container.style.maxWidth = isAuthPage ? 'none' : '';
+    if (app) {
+        app.style.padding = isAuthPage ? '0' : '';
+        app.style.maxWidth = isAuthPage ? 'none' : '';
     }
 
     updateAuthUI();
 
-    if (!container) return;
+    if (!app) return;
+
+    if (path.startsWith('/post/')) {
+        const postId = Number(path.split('/')[2]);
+        if (postId && !isNaN(postId)) {
+            app.innerHTML = '<div id="feed-container"></div>';
+            await loadPostCard(postId);
+            return;
+        }
+    }
 
     const route = routes[path];
     if (!route) {
-        container.innerHTML = `
+        app.innerHTML = `
             <div style="text-align: center; padding: 60px;">
                 <h1 style="font-size: 36px; color: #0f172a;">404</h1>
                 <p style="color: #64748b; margin-top: 8px;">Page not found</p>
@@ -158,11 +171,11 @@ async function render(path) {
 
     if (typeof route === 'function') {
         const view = route();
-        container.innerHTML = '';
-        container.appendChild(view.dom);
+        app.innerHTML = '';
+        app.appendChild(view.dom);
         if (view.logic) view.logic();
     } else {
-        container.innerHTML = route;
+        app.innerHTML = route;
     }
 }
 
