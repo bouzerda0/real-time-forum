@@ -25,6 +25,7 @@ func main() {
 	http.HandleFunc("/api/register", auth.RegisterHandler)
 	http.HandleFunc("/api/login", auth.LoginHandler)
 	http.HandleFunc("/api/session", auth.SessionHandler)
+	http.HandleFunc("/api/users", auth.UsersHandler)
 	http.HandleFunc("/api/logout", middleware.AuthMiddleware(auth.LogoutHandler))
 
 	// Posts API Routes
