@@ -42,7 +42,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(post) // أو غير object صغير زعما {"message": "post created"}
+		json.NewEncoder(w).Encode(post) 
 
 	case http.MethodGet:
 		userID, _ := GetUserID(r)
