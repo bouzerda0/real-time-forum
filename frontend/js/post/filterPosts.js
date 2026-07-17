@@ -5,7 +5,7 @@ export async function filterByCategory(category) {
     const feed = document.getElementById("feed-container");
     if (feed) feed.innerHTML = "<p>Loading...</p>";
 
-    document.querySelectorAll('.cat-btn, .top-cat-btn').forEach(btn => {
+    document.querySelectorAll('.cat-btn').forEach(btn => {
         btn.classList.remove('active');
         if (btn.getAttribute('data-cat') === category) {
             btn.classList.add('active');

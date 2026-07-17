@@ -6,7 +6,7 @@ export async function loadFeed() {
     const feed = document.getElementById("feed-container");
     if (!feed) return;
 
-    document.querySelectorAll('.cat-btn, .top-cat-btn').forEach(btn => {
+    document.querySelectorAll('.cat-btn').forEach(btn => {
         btn.classList.remove('active');
         if (btn.getAttribute('data-cat') === 'all') {
             btn.classList.add('active');

@@ -5,8 +5,19 @@ import { filterByCategory } from '/js/post/filterPosts.js';
 import { CreatePostView } from '/js/post/createPost.js';
 import { loadPostCard } from '/js/post/postDetails.js';
 
-window.filterByCategory = filterByCategory;
+const cursorBlur = document.getElementById('cursor-blur');
 
+if (window.innerWidth > 768) {
+    document.addEventListener('mousemove', (e) => {
+        const offset = cursorBlur.offsetWidth / 2;
+
+        const x = e.clientX - offset;
+        const y = e.clientY - offset;
+
+        cursorBlur.style.transform = `translate(${x}px, ${y}px)`;
+    });
+}
+window.filterByCategory = filterByCategory;
 const routes = {
     '/': () => {
         const dom = document.createElement('div');
