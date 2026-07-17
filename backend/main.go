@@ -11,6 +11,7 @@ import (
 	"real-time-forum/internal/comments"
 	"real-time-forum/internal/middleware"
 	"real-time-forum/internal/posts"
+	"real-time-forum/internal/users"
 )
 
 const frontendDir = "../frontend"
@@ -25,8 +26,8 @@ func main() {
 	// Auth API Routes
 	http.HandleFunc("/api/register", auth.RegisterHandler)
 	http.HandleFunc("/api/login", auth.LoginHandler)
-	http.HandleFunc("/api/session", auth.SessionHandler)
-	http.HandleFunc("/api/users", auth.UsersHandler)
+	http.HandleFunc("/api/session", users.SessionHandler)
+	http.HandleFunc("/api/users", users.UsersHandler)
 	http.HandleFunc("/api/logout", middleware.AuthMiddleware(auth.LogoutHandler))
 
 	// Posts API Routes

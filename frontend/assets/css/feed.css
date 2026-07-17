@@ -1,23 +1,35 @@
 /* =========================================================
    Modern Forum & Dashboard Feed Styles
-   Enhanced Post Card Sizing, Spacing & Reaction Alignment
+   Clean SaaS Dashboard Aesthetic — CSS-Only Redesign
 ========================================================= */
+
+/* --- Design Tokens --- */
 :root {
   --bg: #f8fafc;
   --card: #ffffff;
   --text: #0f172a;
+  --text-secondary: #334155;
   --muted: #64748b;
+  --muted-light: #94a3b8;
   --primary: #8b5cf6;
+  --primary-soft: #f5f3ff;
   --border: #e2e8f0;
-  --shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+  --border-light: #f1f5f9;
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.03);
+  --shadow-lg: 0 8px 24px rgba(15, 23, 42, 0.07), 0 2px 6px rgba(15, 23, 42, 0.03);
+  --radius-card: 16px;
+  --radius-pill: 999px;
+  --transition-fast: 200ms ease;
+  --transition-base: 250ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* --- Main Feed Container & Layout --- */
 #feed-container {
   display: flex;
   flex-direction: column;
-  gap: 28px;
-  padding: 36px 24px;
+  gap: 20px;
+  padding: 32px 24px;
   max-width: 940px;
   margin: 0 auto;
   width: 100%;
@@ -26,26 +38,27 @@
 .dashboard-feed {
   display: flex;
   flex-direction: column;
-  gap: 36px;
-  padding: 28px 24px;
+  gap: 40px;
+  padding: 32px 24px;
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
 }
 
+/* --- Section Headers --- */
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .section-header h3 {
-  font-size: 1.4rem;
-  font-weight: 800;
+  font-size: 1.25rem;
+  font-weight: 700;
   color: var(--text);
   margin: 0;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.01em;
 }
 
 .btn-view-all {
@@ -53,139 +66,151 @@
   border: 1.5px solid var(--border);
   color: var(--primary);
   padding: 6px 16px;
-  border-radius: 999px;
-  font-size: 0.88rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.84rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
+  font-family: inherit;
 }
 
 .btn-view-all:hover {
   border-color: var(--primary);
-  background: #eff6ff;
+  background: var(--primary-soft);
 }
 
-/* --- Post Cards & Base Cards --- */
+/* =========================================================
+   POST CARDS — Clean, Minimal, Elevated
+========================================================= */
 .post-card,
 .dash-card,
 .dash-card.post {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 28px 30px;
-  box-shadow: var(--shadow);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: var(--radius-card);
+  padding: 24px 28px;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-base),
+              box-shadow var(--transition-base),
+              border-color var(--transition-fast);
   cursor: pointer;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 320px;
+  min-height: 280px;
   width: 100%;
   position: relative;
-  overflow: hidden;
 }
 
-/* Specific sizing when inside horizontal carousel */
+/* Inside horizontal carousel */
 .carousel-container .post-card,
 .carousel-container .dash-card.post {
   flex: 0 0 auto;
-  width: 440px;
-  min-width: 380px;
+  width: 420px;
+  min-width: 360px;
   max-width: calc(100vw - 64px);
-  min-height: 280px;
+  min-height: 260px;
   scroll-snap-align: start;
 }
 
+/* Hover — subtle lift with shadow */
 .post-card:hover,
 .dash-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
   border-color: #cbd5e1;
 }
 
-/* --- Post Header & User Information Section --- */
+/* =========================================================
+   POST HEADER — Author & Category
+========================================================= */
 .post-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 18px;
-  gap: 14px;
+  margin-bottom: 14px;
+  gap: 12px;
 }
 
+/* Author badge with generated avatar */
 .post-user,
 .user-info {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  font-weight: 700;
-  font-size: 1rem;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 0.92rem;
   color: var(--text);
 }
 
 .post-user::before {
   content: '';
   display: inline-block;
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  background: var(--primary);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E");
-  background-size: 20px;
+  background-size: 18px;
   background-position: center;
   background-repeat: no-repeat;
   flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
 }
 
+/* Avatar element used in members / other views */
 .avatar {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  background: var(--primary);
   color: #ffffff;
   display: grid;
   place-items: center;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 700;
   flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+  letter-spacing: 0.02em;
 }
 
-/* --- Category Badges & Pills --- */
+/* =========================================================
+   CATEGORY BADGES — Clean Flat Pills
+========================================================= */
 .post-category,
 .pill {
   display: inline-flex;
   align-items: center;
-  background: linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%);
+  background: var(--primary-soft);
   color: var(--primary);
-  padding: 6px 16px;
-  border-radius: 999px;
-  font-size: 0.82rem;
-  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 0.78rem;
+  font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: capitalize;
-  border: 1px solid #bfdbfe;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.06);
+  border: 1px solid #ede9fe;
+  white-space: nowrap;
 }
 
 .pills-wrapper {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin: 4px 0 14px;
+  gap: 6px;
+  margin: 2px 0 12px;
 }
 
-/* --- Post Title & Content Typography --- */
+/* =========================================================
+   POST TITLE & CONTENT — Typography Hierarchy
+========================================================= */
 .post-title,
 .dash-card-title {
-  font-size: 1.4rem;
-  font-weight: 800;
+  font-size: 1.2rem;
+  font-weight: 700;
   color: var(--text);
-  margin: 0 0 14px 0;
+  margin: 0 0 10px 0;
   line-height: 1.4;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.01em;
   word-break: break-word;
-  transition: color 0.2s ease;
+  transition: color var(--transition-fast);
 }
 
 .post-card:hover .post-title,
@@ -195,44 +220,46 @@
 
 .post-content,
 .dash-card-snippet {
-  font-size: 1rem;
+  font-size: 0.93rem;
   color: var(--muted);
-  line-height: 1.7;
-  margin: 0 0 26px 0;
-  min-height: 80px;
+  line-height: 1.65;
+  margin: 0 0 20px 0;
+  min-height: 60px;
   display: -webkit-box;
-  -webkit-line-clamp: 5;
-  line-clamp: 5;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
   word-break: break-word;
   white-space: pre-line;
 }
 
-/* --- Post Footer: Like / Dislike / Comment Section --- */
+/* =========================================================
+   POST FOOTER — Date, Comments, Reactions
+========================================================= */
 .post-footer,
 .dash-card-footer {
   margin-top: auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-top: 1px solid #f1f5f9;
-  padding-top: 18px;
-  font-size: 0.88rem;
+  border-top: 1px solid var(--border-light);
+  padding-top: 16px;
+  font-size: 0.84rem;
   color: var(--muted);
-  font-weight: 600;
+  font-weight: 500;
   flex-wrap: wrap;
-  gap: 14px;
+  gap: 12px;
 }
 
-/* Date element positioned clearly on the left */
+/* Date — left-aligned */
 .post-footer>span:first-child,
 .dash-card-footer>span:first-child {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  color: #94a3b8;
-  font-size: 0.84rem;
+  gap: 5px;
+  color: var(--muted-light);
+  font-size: 0.82rem;
   font-weight: 500;
   margin-right: auto;
 }
@@ -240,23 +267,23 @@
 .post-footer>span:first-child::before,
 .dash-card-footer>span:first-child::before {
   content: '📅';
-  font-size: 0.88rem;
+  font-size: 0.84rem;
 }
 
-/* Comments count pill styled alongside Like / Dislike on the right */
+/* Comment count pill — right side */
 .post-footer>span:nth-child(2),
 .post-comments-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  background: #f8fafc;
+  gap: 5px;
+  background: var(--bg);
   border: 1px solid var(--border);
-  padding: 6px 14px;
-  border-radius: 999px;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
   color: var(--muted);
-  font-size: 0.86rem;
-  font-weight: 700;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: all var(--transition-fast);
   cursor: pointer;
   user-select: none;
   white-space: nowrap;
@@ -265,57 +292,60 @@
 .post-footer>span:nth-child(2)::before,
 .post-comments-toggle::before {
   content: '💬';
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   line-height: 1;
 }
 
 .post-card:hover .post-footer>span:nth-child(2),
 .dash-card:hover .post-comments-toggle {
   border-color: #cbd5e1;
-  background: #f1f5f9;
-  color: var(--text);
+  background: var(--border-light);
+  color: var(--text-secondary);
 }
 
-/* --- Like & Dislike Reaction Buttons --- */
+/* =========================================================
+   REACTION BUTTONS — Like & Dislike
+========================================================= */
 .post-actions {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .post-stats {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   font-weight: 600;
 }
 
 .btn-react {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border-radius: 999px;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
   border: 1px solid var(--border);
-  background: #f8fafc;
+  background: var(--bg);
   color: var(--muted);
-  font-size: 0.86rem;
-  font-weight: 700;
+  font-size: 0.82rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all var(--transition-base);
   user-select: none;
   white-space: nowrap;
+  font-family: inherit;
 }
 
 .btn-react:hover {
-  transform: translateY(-1.5px);
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.06);
 }
 
 .like-btn:hover {
-  border-color: #3b82f6;
-  background: #eff6ff;
-  color: #8b5cf6;
+  border-color: #818cf8;
+  background: var(--primary-soft);
+  color: var(--primary);
 }
 
 .dislike-btn:hover {
@@ -325,21 +355,21 @@
 }
 
 .btn-react.like-btn.liked {
-  background: #eff6ff;
-  border-color: #3b82f6;
-  color: #8b5cf6;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.18);
+  background: var(--primary-soft);
+  border-color: #818cf8;
+  color: var(--primary);
+  box-shadow: 0 2px 6px rgba(139, 92, 246, 0.15);
 }
 
 .btn-react.dislike-btn.disliked {
   background: #fef2f2;
   border-color: #ef4444;
   color: #dc2626;
-  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.18);
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.15);
 }
 
 .react-icon {
-  font-size: 0.98rem;
+  font-size: 0.92rem;
   line-height: 1;
   transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -347,14 +377,16 @@
 .btn-react:hover .react-icon,
 .liked .react-icon,
 .disliked .react-icon {
-  transform: scale(1.25);
+  transform: scale(1.2);
 }
 
 .react-count {
   font-variant-numeric: tabular-nums;
 }
 
-/* --- Carousels & Horizontal Scrolling --- */
+/* =========================================================
+   CAROUSELS — Horizontal Scrolling
+========================================================= */
 .carousel-wrapper {
   position: relative;
   display: flex;
@@ -363,7 +395,7 @@
 
 .carousel-container {
   display: flex;
-  gap: 18px;
+  gap: 16px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;
@@ -380,21 +412,22 @@
 .scroll-arrow {
   position: absolute;
   z-index: 5;
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 50%;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-md);
   display: grid;
   place-items: center;
   cursor: pointer;
-  font-size: 1.25rem;
-  transition: all 0.2s ease;
+  font-size: 1.15rem;
+  transition: all var(--transition-fast);
+  color: var(--muted);
 }
 
 .scroll-arrow:hover {
-  transform: scale(1.08);
+  transform: scale(1.06);
   background: var(--primary);
   color: #ffffff;
   border-color: var(--primary);
@@ -408,7 +441,9 @@
   right: -14px;
 }
 
-/* --- Members Section Card --- */
+/* =========================================================
+   MEMBERS SECTION — Matching Post Card Visual Language
+========================================================= */
 .dash-card.member {
   width: 230px;
   min-height: auto;
@@ -416,68 +451,85 @@
   align-items: center;
   gap: 14px;
   padding: 16px 20px;
+  border-radius: var(--radius-card);
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-base),
+              box-shadow var(--transition-base),
+              border-color var(--transition-fast);
+  cursor: default;
+}
+
+.dash-card.member:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: #cbd5e1;
 }
 
 .member .avatar {
-  width: 44px;
-  height: 44px;
-  font-size: 1.05rem;
+  width: 42px;
+  height: 42px;
+  font-size: 1rem;
 }
 
 .member-details {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .member-details strong {
-  font-size: 0.95rem;
+  font-size: 0.92rem;
+  font-weight: 600;
   color: var(--text);
 }
 
 .member-details span {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--muted);
   font-weight: 500;
 }
 
-/* --- Empty States --- */
+/* =========================================================
+   EMPTY STATES — Clean, Inviting
+========================================================= */
 .empty-feed,
 .empty-section-card {
   background: var(--card);
-  border: 1px dashed #cbd5e1;
-  border-radius: 20px;
-  padding: 64px 32px;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: var(--radius-card);
+  padding: 56px 32px;
   text-align: center;
-  max-width: 540px;
-  margin: 48px auto;
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.03);
+  max-width: 500px;
+  margin: 40px auto;
+  box-shadow: none;
 }
 
 .empty-feed-icon {
-  width: 68px;
-  height: 68px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  background: #eff6ff;
+  background: var(--primary-soft);
   color: var(--primary);
   display: grid;
   place-items: center;
-  margin: 0 auto 20px;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+  margin: 0 auto 18px;
 }
 
 .empty-feed h2,
 .empty-section-card h4 {
-  font-size: 1.4rem;
-  font-weight: 800;
+  font-size: 1.2rem;
+  font-weight: 700;
   color: var(--text);
-  margin: 0 0 10px;
+  margin: 0 0 8px;
 }
 
 .empty-feed p,
 .empty-section-card p {
-  font-size: 0.96rem;
+  font-size: 0.92rem;
   color: var(--muted);
-  margin: 0 0 26px;
+  margin: 0 0 24px;
   line-height: 1.55;
 }
 
@@ -486,62 +538,72 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: linear-gradient(135deg, #8b5cf6 0%, #8b5cf6 100%);
+  background: var(--primary);
   color: #ffffff;
   border: none;
-  padding: 12px 24px;
-  border-radius: 999px;
-  font-size: 0.92rem;
-  font-weight: 700;
+  padding: 10px 22px;
+  border-radius: var(--radius-pill);
+  font-size: 0.88rem;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.28);
-  transition: all 0.25s ease;
+  transition: all var(--transition-base);
+  font-family: inherit;
 }
 
 .empty-feed-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.38);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.3);
 }
 
-/* --- Responsive Adjustments --- */
+/* =========================================================
+   RESPONSIVE ADJUSTMENTS
+========================================================= */
 @media (max-width: 768px) {
 
   #feed-container,
   .dashboard-feed {
     padding: 16px;
-    gap: 20px;
+    gap: 16px;
   }
 
   .post-card,
   .dash-card,
   .dash-card.post {
-    padding: 22px 20px;
-    border-radius: 16px;
-    min-height: 250px;
+    padding: 20px 18px;
+    border-radius: 14px;
+    min-height: 220px;
   }
 
   .carousel-container .post-card,
   .carousel-container .dash-card.post {
-    width: 330px;
-    min-width: 300px;
+    width: 310px;
+    min-width: 280px;
   }
 
   .post-title,
   .dash-card-title {
-    font-size: 1.22rem;
+    font-size: 1.08rem;
+  }
+
+  .post-content,
+  .dash-card-snippet {
+    font-size: 0.88rem;
+    min-height: 40px;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
   }
 
   .post-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
+    gap: 8px;
   }
 
   .post-footer,
   .dash-card-footer {
     flex-direction: column;
     align-items: flex-start;
-    gap: 14px;
+    gap: 10px;
   }
 
   .post-footer>span:first-child,
@@ -552,5 +614,15 @@
 
   .post-actions {
     margin-left: 0;
+  }
+
+  .section-header h3 {
+    font-size: 1.1rem;
+  }
+
+  .empty-feed,
+  .empty-section-card {
+    padding: 40px 20px;
+    margin: 24px auto;
   }
 }

@@ -4,13 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"real-time-forum/internal/auth"
+	"real-time-forum/internal/users"
 )
 
 func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		userID, err := auth.GetUserIDFromCookie(r)
+		userID, err := users.GetUserIDFromCookie(r)
 
 		if err != nil {
 			w.Header().Set("Content-Type", "application/json")

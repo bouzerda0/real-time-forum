@@ -6,7 +6,7 @@ export async function loadFeed() {
     const feed = document.getElementById("feed-container");
     if (!feed) return;
 
-    document.querySelectorAll('.cat-btn, .top-cat-btn').forEach(btn => {
+    document.querySelectorAll('.cat-btn').forEach(btn => {
         btn.classList.remove('active');
         if (btn.getAttribute('data-cat') === 'all') {
             btn.classList.add('active');
@@ -49,7 +49,7 @@ export function showEmpty(category) {
     title.textContent = category === "liked" ? "No Liked Posts Yet" : "No Posts Yet";
 
     const message = document.createElement("p");
-    message.textContent = category === "liked" 
+    message.textContent = category === "liked"
         ? "Posts that you like will appear here once you react to them."
         : "Be the first to create a post and start a conversation in this category.";
 
