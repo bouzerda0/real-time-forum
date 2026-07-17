@@ -3,59 +3,30 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
-	"path/filepath"
 
 	"real-time-forum/database"
-	"real-time-forum/internal/auth"
-	"real-time-forum/internal/comments"
-	"real-time-forum/internal/middleware"
 	"real-time-forum/internal/posts"
-	"real-time-forum/internal/users"
 )
 
-const frontendDir = "../frontend"
-
 func main() {
+	// Initialize database
 	err := database.InitDB("../forum.db")
 	if err != nil {
 		log.Fatal("Failed to initialize database:", err)
 	}
-	defer database.DB.Close()
 
-	// Auth API Routes
-	http.HandleFunc("/api/register", auth.RegisterHandler)
-	http.HandleFunc("/api/login", auth.LoginHandler)
-	http.HandleFunc("/api/session", users.SessionHandler)
-	http.HandleFunc("/api/users", users.UsersHandler)
-	http.HandleFunc("/api/logout", middleware.AuthMiddleware(auth.LogoutHandler))
+	// Serve frontend files
+	fs := http.FileServer(http.Dir("./frontend"))
+	http.Handle("/", fs)
 
-	// Posts API Routes
+	// API Routes
 	http.HandleFunc("/posts", posts.PostHandler)
 	http.HandleFunc("/posts/{id}", posts.GetPostHandler)
-	http.HandleFunc("/api/reaction", posts.ReactionHandler)
 
-	// Comments API Routes
-	http.HandleFunc("/api/comments", comments.CommentsHandler)
-	http.HandleFunc("/api/comments/reaction", comments.ReactionHandler)
+	log.Println("Server started at http://localhost:8080")
 
-	// Serving Frontend SPA (must be registered after specific API routes)
-	fs := http.FileServer(http.Dir(frontendDir))
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		// If the file exists on disk, serve it directly (CSS, JS, images, etc.)
-		if _, err := os.Stat(filepath.Join(frontendDir, r.URL.Path)); err == nil {
-			fs.ServeHTTP(w, r)
-			return
-		}
-		// Otherwise, serve index.html for SPA client-side routing
-		http.ServeFile(w, r, filepath.Join(frontendDir, "index.html"))
-	})
-
-	port := ":8080"
-	log.Printf("🚀 Server is running on http://localhost%s\n", port)
-
-	err = http.ListenAndServe(port, nil)
+	err = http.ListenAndServe(":8080", nil)
 	if err != nil {
-		log.Fatal("Server failed to start:", err)
+		log.Fatal(err)
 	}
 }
