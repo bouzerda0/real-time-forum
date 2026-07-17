@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	"real-time-forum/backend/database"
-	"real-time-forum/backend/internal/models"
+	"real-time-forum/database"
+	"real-time-forum/internal/models"
 )
 
 var categories = []string{
@@ -32,6 +32,7 @@ func ValidatePostInput(post models.Post) bool {
 	}
 
 	if len(strings.TrimSpace(post.Content)) == 0 || len(strings.TrimSpace(post.Content)) > 4500 {
+		fmt.Println("=3")
 		return false
 	}
 	return true

@@ -7,17 +7,17 @@ import (
 	"strconv"
 	"time"
 
-	"real-time-forum/backend/internal/models"
+	"real-time-forum/internal/models"
 )
 
 func PostHandler(w http.ResponseWriter, r *http.Request) {
-	// userid, err := GetUserID(r)
-	// if err != nil {
-	// 	http.Error(w, http.StatusText(500), http.StatusInternalServerError)
-	// 	return
-	// }
-	if r.Method == http.MethodPost {
-		
+	switch r.Method {
+	case http.MethodPost:
+		userID, err := GetUserID(r)
+		if err != nil {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
 
 		var post models.Post
 		if err := json.NewDecoder(r.Body).Decode(&post); err != nil {
@@ -31,7 +31,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		post.UserID = 1
+		post.UserID = userID
 		post.CreatedAt = time.Now()
 
 		if err := CreatePost(post); err != nil {
@@ -42,9 +42,14 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(post) // أو غير object صغير زعما {"message": "post created"}
-	} else if r.Method == http.MethodGet {
-		posts, err := GetAllPosts()
+		json.NewEncoder(w).Encode(post) 
+
+	case http.MethodGet:
+		userID, _ := GetUserID(r)
+		// MERGE: Added category filter logic
+		category := r.URL.Query().Get("category")
+		// MERGE: Added category filter logic
+		posts, err := GetAllPosts(category, userID)
 		if err != nil {
 
 			http.Error(w, http.StatusText(500), http.StatusInternalServerError)
@@ -60,9 +65,9 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, http.StatusText(500), http.StatusInternalServerError)
 			return
 		}
-	} else {
+
+	default:
 		http.Error(w, http.StatusText(405), http.StatusMethodNotAllowed)
-		return
 	}
 }
 
@@ -77,7 +82,8 @@ func GetPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(400), http.StatusBadRequest)
 		return
 	}
-	post, err := GetPostByID(post_id)
+	userID, _ := GetUserID(r)
+	post, err := GetPostByID(post_id, userID)
 	if err != nil {
 		http.Error(w, http.StatusText(404), http.StatusNotFound)
 		return
