@@ -4,13 +4,16 @@ import (
 	"log"
 	"net/http"
 
-	"real-time-forum/backend/database"
-	"real-time-forum/backend/internal/posts"
+	"real-time-forum/database"
+	"real-time-forum/internal/posts"
 )
 
 func main() {
 	// Initialize database
-	database.InitDB()
+	err := database.InitDB("../forum.db")
+	if err != nil {
+		log.Fatal("Failed to initialize database:", err)
+	}
 
 	// Serve frontend files
 	fs := http.FileServer(http.Dir("./frontend"))
@@ -22,7 +25,7 @@ func main() {
 
 	log.Println("Server started at http://localhost:8080")
 
-	err := http.ListenAndServe(":8080", nil)
+	err = http.ListenAndServe(":8080", nil)
 	if err != nil {
 		log.Fatal(err)
 	}

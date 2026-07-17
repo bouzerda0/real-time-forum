@@ -45,25 +45,6 @@ func CreatePost(post models.Post) error {
 			return fmt.Errorf("link category %q: %w", category, err)
 		}
 	}
-	postID, err := result.LastInsertId()
-	if err != nil {
-		fmt.Println("last insert id error:", err)
-		return err
-	}
-
-	for _, category := range post.Category {
-		var categoryID int
-		err = database.DB.QueryRow(`SELECT id FROM categories WHERE name = ?`, category).Scan(&categoryID)
-		if err != nil {
-			fmt.Println("category lookup error:", err, "category:", category)
-			return err
-		}
-		_, err = database.DB.Exec(`INSERT INTO post_categories (post_id, category_id) VALUES (?, ?)`, postID, categoryID)
-		if err != nil {
-			fmt.Println("insert post_category error:", err)
-			return err
-		}
-	}
 	return nil
 }
 
