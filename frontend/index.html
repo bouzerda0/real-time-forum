@@ -185,15 +185,6 @@
 
     <!-- Scripts -->
     <script type="module" src="/js/app.js"></script>
-    <script>
-        const menuToggle = document.getElementById('menuToggle');
-        const sidebarClose = document.getElementById('sidebarClose');
-        const sidebar = document.querySelector('.sidebar');
-        const overlay = document.getElementById('sidebarOverlay');
-
-        menuToggle.addEventListener('click', () => { sidebar.classList.add('open'); overlay.classList.add('active'); });
-        sidebarClose.addEventListener('click', () => { sidebar.classList.remove('open'); overlay.classList.remove('active'); });
-    </script>
 </body>
 
 </html>

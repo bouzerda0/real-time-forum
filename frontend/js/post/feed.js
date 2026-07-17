@@ -49,7 +49,7 @@ export function showEmpty(category) {
     title.textContent = category === "liked" ? "No Liked Posts Yet" : "No Posts Yet";
 
     const message = document.createElement("p");
-    message.textContent = category === "liked" 
+    message.textContent = category === "liked"
         ? "Posts that you like will appear here once you react to them."
         : "Be the first to create a post and start a conversation in this category.";
 
