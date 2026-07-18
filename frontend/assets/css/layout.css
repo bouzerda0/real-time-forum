@@ -366,7 +366,52 @@ body {
     border-radius: 60%;
     filter: blur(140px);
     pointer-events: none;
-    z-index: -1;
-    transform: translate(-50%, -50%);
-    transition: transform 0.15s ease-out;
+}
+
+/* === NEW CLASSES FOR REMOVING INLINE STYLES === */
+.logo-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+}
+
+.cat-icon-all {
+    background: #eef2ff;
+    color: #6366f1;
+}
+
+.cat-icon-liked {
+    background: #ffe4e6;
+    color: #e11d48;
+}
+
+.cat-icon-general {
+    background: #fce7f3;
+    color: #ec4899;
+}
+
+.cat-icon-technology {
+    background: #e0f2fe;
+    color: #0ea5e9;
+}
+
+.cat-icon-programming {
+    background: #ede9fe;
+    color: #8b5cf6;
+}
+
+.cat-icon-gaming {
+    background: #dcfce7;
+    color: #22c55e;
+}
+
+.cat-icon-science {
+    background: #f3e8ff;
+    color: #a855f7;
+}
+
+.cat-icon-education {
+    background: #ffedd5;
+    color: #f97316;
 }

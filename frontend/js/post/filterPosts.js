@@ -12,9 +12,9 @@ export async function filterByCategory(category) {
         }
     });
 
-    let url = "/posts";
+    let url = "/api/posts";
     if (category !== "all") {
-        url = `/posts?category=${encodeURIComponent(category)}`;
+        url = `/api/posts?category=${encodeURIComponent(category)}`;
     }
 
     try {

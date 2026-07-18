@@ -1,5 +1,4 @@
 import { ApiRequest } from "../api.js";
-import { loadFeed } from "./feed.js";
 import { createReaction } from "./reactionPost.js";
 import { renderCommentsSection } from "../comment/comment.js";
 
@@ -8,7 +7,7 @@ export async function loadPostCard(postId) {
     const container = document.getElementById("feed-container");
 
     try {
-        const post = await ApiRequest(`/posts/${postId}`);
+        const post = await ApiRequest(`/api/posts/${postId}`);
         container.replaceChildren();
 
         container.appendChild(createPostDetails(post));

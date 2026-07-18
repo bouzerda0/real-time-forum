@@ -12,24 +12,23 @@
     <link rel="stylesheet" href="/assets/css/comments.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<div id="cursor-blur"></div>
 
 <body>
+    <!-- Cursor Blur Animation Element -->
+    <div id="cursor-blur"></div>
 
     <!-- SIDEBAR OVERLAY (mobile) -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-    <!-- SIDEBAR -->
+    <!-- Sidebar -->
     <aside class="sidebar">
-        <div class="logo" onclick="navigateTo('/')"
-            style="cursor: pointer; display: flex; align-items: center; gap: 10px; user-select: none;">
+        <div class="logo clickable-logo" onclick="navigateTo('/')">
             <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
                     d="M26 6H6C4.89543 6 4 6.89543 4 8V20C4 21.1046 4.89543 22 6 22H11L9.5 25.5C9.22386 26.1213 9.77614 26.5 10.5 26.5C11.2239 26.5 14.5 22 14.5 22H26C27.1046 22 28 21.1046 28 20V8C28 6.89543 27.1046 6 26 6Z"
                     stroke="#0066FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
-            <span style="font-size: 1.35rem; font-weight: 800; color: #0f172a; letter-spacing: -0.02em;">Zone
-                Forum</span>
+            <span class="logo-title">Zone Forum</span>
         </div>
         <button class="sidebar-close" id="sidebarClose"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -59,7 +58,7 @@
         <!-- Categories -->
         <div class="sidebar-categories" id="sidebarCategories">
             <button class="cat-btn active" data-cat="all" onclick="filterByCategory('all')">
-                <span class="cat-icon" style="background: #eef2ff; color: #6366f1;">
+                <span class="cat-icon cat-icon-all">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2.5">
                         <line x1="18" y1="20" x2="18" y2="10" />
@@ -70,7 +69,7 @@
                 All Posts
             </button>
             <button class="cat-btn" data-cat="liked" onclick="filterByCategory('liked')">
-                <span class="cat-icon" style="background: #ffe4e6; color: #e11d48;">
+                <span class="cat-icon cat-icon-liked">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor"
                         stroke-width="2">
                         <path
@@ -80,7 +79,7 @@
                 Liked Posts
             </button>
             <button class="cat-btn" data-cat="General" onclick="filterByCategory('General')">
-                <span class="cat-icon" style="background: #fce7f3; color: #ec4899;">
+                <span class="cat-icon cat-icon-general">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2.5">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -90,7 +89,7 @@
                 General
             </button>
             <button class="cat-btn" data-cat="Technology" onclick="filterByCategory('Technology')">
-                <span class="cat-icon" style="background: #e0f2fe; color: #0ea5e9;">
+                <span class="cat-icon cat-icon-technology">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2.5">
                         <rect x="2" y="3" width="20" height="14" rx="2" />
@@ -101,7 +100,7 @@
                 Technology
             </button>
             <button class="cat-btn" data-cat="Programming" onclick="filterByCategory('Programming')">
-                <span class="cat-icon" style="background: #ede9fe; color: #8b5cf6;">
+                <span class="cat-icon cat-icon-programming">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2.5">
                         <polyline points="16 18 22 12 16 6" />
@@ -111,7 +110,7 @@
                 Programming
             </button>
             <button class="cat-btn" data-cat="Gaming" onclick="filterByCategory('Gaming')">
-                <span class="cat-icon" style="background: #dcfce7; color: #22c55e;">
+                <span class="cat-icon cat-icon-gaming">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2.5">
                         <line x1="6" y1="12" x2="10" y2="12" />
@@ -125,7 +124,7 @@
                 Gaming
             </button>
             <button class="cat-btn" data-cat="Science" onclick="filterByCategory('Science')">
-                <span class="cat-icon" style="background: #f3e8ff; color: #a855f7;">
+                <span class="cat-icon cat-icon-science">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2.5">
                         <path d="M9 3h6v11a3 3 0 1 1-6 0V3z" />
@@ -136,7 +135,7 @@
                 Science
             </button>
             <button class="cat-btn" data-cat="Education" onclick="filterByCategory('Education')">
-                <span class="cat-icon" style="background: #ffedd5; color: #f97316;">
+                <span class="cat-icon cat-icon-education">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2.5">
                         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
@@ -152,9 +151,9 @@
         </div>
     </aside>
 
-    <!-- MAIN AREA -->
+    <!-- Main Content -->
     <div class="main">
-        <!-- TOP NAVBAR -->
+        <!-- Navbar -->
         <header class="navbar">
             <div class="nav-left">
                 <button class="menu-toggle" id="menuToggle"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -175,7 +174,7 @@
         <main id="app"></main>
     </div>
 
-    <!-- FULLSCREEN GLASSMORPHIC OVERLAY & MODAL FOR CREATE POST -->
+    <!-- Modal -->
     <div class="modal-overlay" id="createPostModal" role="dialog" aria-modal="true" aria-labelledby="modalCreateTitle">
         <div class="modal-container" id="createPostModalContainer">
             <button class="modal-close-btn" id="closeCreatePostModal" aria-label="Close modal">&times;</button>

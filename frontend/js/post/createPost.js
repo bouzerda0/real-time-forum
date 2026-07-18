@@ -85,7 +85,7 @@ async function handleCreatePost(event) {
     };
 
     try {
-        await ApiRequest("/posts", {
+        await ApiRequest("/api/posts", {
             method: "POST",
             body: post,
         });

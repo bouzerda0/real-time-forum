@@ -15,7 +15,7 @@ export async function loadFeed() {
 
     feed.innerHTML = "<p>Loading...</p>";
     try {
-        const posts = await ApiRequest("/posts");
+        const posts = await ApiRequest("/api/posts");
 
         if (!posts || posts.length === 0) {
             showEmpty();
