@@ -7,7 +7,7 @@ import (
 	"real-time-forum/internal/users"
 )
 
-func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
+func RequireAuth(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		userID, err := users.GetUserIDFromCookie(r)

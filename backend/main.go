@@ -24,20 +24,22 @@ func main() {
 	defer database.DB.Close()
 
 	// Auth API Routes
-	http.HandleFunc("/api/register", auth.RegisterHandler)
-	http.HandleFunc("/api/login", auth.LoginHandler)
-	http.HandleFunc("/api/session", users.SessionHandler)
-	http.HandleFunc("/api/users", users.UsersHandler)
-	http.HandleFunc("/api/logout", middleware.AuthMiddleware(auth.LogoutHandler))
+	http.HandleFunc("POST /api/register", auth.RegisterHandler)
+	http.HandleFunc("POST /api/login", auth.LoginHandler)
+	http.HandleFunc("GET /api/session", users.SessionHandler)
+	http.HandleFunc("GET /api/users", users.UsersHandler)
+	http.HandleFunc("POST /api/logout", middleware.RequireAuth(auth.LogoutHandler))
 
 	// Posts API Routes
-	http.HandleFunc("/posts", posts.PostHandler)
-	http.HandleFunc("/posts/{id}", posts.GetPostHandler)
-	http.HandleFunc("/api/reaction", posts.ReactionHandler)
+	http.HandleFunc("GET /api/posts", posts.PostHandler)
+	http.HandleFunc("POST /api/posts", middleware.RequireAuth(posts.PostHandler))
+	http.HandleFunc("GET /api/posts/{id}", posts.GetPostHandler)
+	http.HandleFunc("POST /api/reaction", middleware.RequireAuth(posts.ReactionHandler))
 
 	// Comments API Routes
-	http.HandleFunc("/api/comments", comments.CommentsHandler)
-	http.HandleFunc("/api/comments/reaction", comments.ReactionHandler)
+	http.HandleFunc("GET /api/comments", comments.CommentsHandler)
+	http.HandleFunc("POST /api/comments", middleware.RequireAuth(comments.CommentsHandler))
+	http.HandleFunc("POST /api/comments/reaction", middleware.RequireAuth(comments.ReactionHandler))
 
 	// Serving Frontend SPA (must be registered after specific API routes)
 	fs := http.FileServer(http.Dir(frontendDir))
