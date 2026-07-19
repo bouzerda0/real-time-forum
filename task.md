@@ -392,3 +392,42 @@ For example:
 - Finish the WebSocket infrastructure before implementing the chat interface.
 
 This approach makes debugging much easier and keeps the project progressing in a predictable, maintainable way.
+
+
+Frontend
+
+↓
+
+WebSocket
+
+↓
+
+ReadPump()
+
+↓
+
+Hub
+
+↓
+
+Service.SendMessage()
+
+↓
+
+Repository.SaveMessage()
+
+↓
+
+إذا كان المستقبل Online
+
+↓
+
+receiver.Send
+
+↓
+
+WritePump()
+
+↓
+
+Frontend
