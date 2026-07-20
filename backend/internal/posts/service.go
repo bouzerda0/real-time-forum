@@ -54,18 +54,15 @@ func checkCategories(categories []string, selected []string) bool {
 	return true
 }
 
+// GetUserID extracts logged-in user ID from request cookie.
 func GetUserID(r *http.Request) (int, error) {
-	// Get the cookie named session_token from the user's request
 	cookie, err := r.Cookie("session_token")
 	if err != nil {
 		return 0, err
 	}
-	// take the value of the cookie
-	token := cookie.Value
 
 	var userID int
-	// Query the database to find the user_id associated with the session_token
-	err = database.DB.QueryRow("SELECT user_id FROM user_sessions  WHERE session_token = ?", token).Scan(&userID)
+	err = database.DB.QueryRow("SELECT user_id FROM user_sessions WHERE session_token = ?", cookie.Value).Scan(&userID)
 	if err != nil {
 		return 0, err
 	}

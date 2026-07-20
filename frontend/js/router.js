@@ -42,7 +42,7 @@ async function checkSession() {
             return false;
         }
     } catch (error) {
-        // Fallback to local storage if network is briefly unavailable
+        // Network fallback
         return localStorage.getItem('isAuthenticated') === 'true';
     }
 }

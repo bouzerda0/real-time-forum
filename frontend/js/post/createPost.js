@@ -28,7 +28,7 @@ function createPostForm() {
 
     form.addEventListener("submit", handleCreatePost);
 
-    // Error bar (same style as login/register)
+    // Error box
     const errBox = document.createElement("div");
     errBox.id = "post-error";
     errBox.className = "form-error";
@@ -83,7 +83,7 @@ async function handleCreatePost(event) {
         document.querySelectorAll('input[name="post-categories"]:checked')
     ).map(checkbox => checkbox.value);
 
-    // Client-side validation — check raw .value BEFORE trim
+    // Validate inputs
     if (!titleInput.value.trim() || titleInput.value.length > 150) {
         showPostError("Title must be between 1 and 150 characters.");
         return;

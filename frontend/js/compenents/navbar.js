@@ -63,7 +63,7 @@ export function updateAuthUI() {
     }
 }
 
-// Initialize sidebar toggle events and cross-tab/popup auth sync
+// Initialize sidebar and auth sync
 export function initNavbar() {
     const menuToggle = document.getElementById('menuToggle');
     const sidebarClose = document.getElementById('sidebarClose');
@@ -91,7 +91,7 @@ export function initNavbar() {
     });
 }
 
-// Run initNavbar on load
+// Initialize on load
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initNavbar);
 } else {

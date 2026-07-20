@@ -1,7 +1,7 @@
 import { filterByCategory } from '/js/post/filterPosts.js';
 import { initRouter } from '/js/router.js';
 
-// Setup background cursor blur animation
+// Cursor glow effect
 const cursorBlur = document.getElementById('cursor-blur');
 
 if (window.innerWidth > 768) {

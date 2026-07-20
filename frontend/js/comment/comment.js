@@ -1,4 +1,4 @@
-// comments rendering
+// Comments rendering and actions
 import { ApiRequest } from "../api.js";
 import { createReaction } from "../post/reactionPost.js";
 
@@ -57,7 +57,6 @@ export async function renderCommentsSection(postId, container) {
 
         const input = container.querySelector(`#reply-input-${postId}`);
 
-        // Client-side validation — check raw .value BEFORE trim
         if (!input.value.trim() || input.value.length > 4500) {
             showError("Comment cannot exceed 4500 characters.");
             return;

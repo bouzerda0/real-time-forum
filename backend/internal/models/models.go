@@ -41,19 +41,3 @@ type Comment struct {
 	Dislikes     int       `json:"dislikes"`
 	UserReaction *int      `json:"user_reaction"`
 }
-
-type Like struct {
-	ID        int
-	UserID    int
-	PostID    int
-	Reaction  int
-	CreatedAt time.Time
-}
-
-type Message struct {
-	ID         int
-	SenderID   int
-	ReceiverID int
-	Content    string
-	CreatedAt  time.Time
-}

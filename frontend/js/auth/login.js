@@ -24,7 +24,6 @@ export function LoginView() {
     const logic = () => {
         const [form, errBox, btn] = ['#loginForm', '#login-error', 'button[type="submit"]'].map(s => mainContainer.querySelector(s));
 
-        // 1. Handle form submission
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const identify = mainContainer.querySelector('#identify').value.trim();
@@ -35,7 +34,6 @@ export function LoginView() {
             btn.textContent = 'Signing in...';
 
             try {
-                // 3. Call login API
                 const res = await fetch('/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -43,13 +41,12 @@ export function LoginView() {
                 });
                 const data = await res.json();
 
-                // 4. Handle API response with early return
                 if (!res.ok) {
                     errBox.textContent = data.message || 'Login failed. Please check your credentials.';
                     return;
                 }
 
-                // 5. Store authentication state and navigate home
+                // Save auth state and navigate home
                 localStorage.setItem('isAuthenticated', 'true');
                 if (data.user) localStorage.setItem('currentUser', JSON.stringify(data.user));
                 window.navigateTo('/');

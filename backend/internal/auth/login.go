@@ -28,7 +28,7 @@ type APIResponse struct {
 	Message string `json:"message"`
 }
 
-// creates a random secret code
+//  creates a random 32-byte session token.
 func generateSessionToken() string {
 	b := make([]byte, 32)
 	_, err := rand.Read(b)
@@ -61,7 +61,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var dbUsername, dbEmail, dbFirstName, dbLastName string
 	var dbPasswordHash string
 
-	// Check if this user exists in the database by email or username
+	// Lookup user by email or username
 	err = database.DB.QueryRow(
 		"SELECT id, username, email, COALESCE(first_name, ''), COALESCE(last_name, ''), password FROM users WHERE email = ? OR username = ?",
 		req.Identifier, req.Identifier,
@@ -77,7 +77,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// verify password
+	// Verify password
 	err = bcrypt.CompareHashAndPassword([]byte(dbPasswordHash), []byte(req.Password))
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -85,17 +85,16 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// delete old sessions
+	// Clear old sessions
 	deleteQuery := "DELETE FROM user_sessions WHERE user_id = ?"
 	_, err = database.DB.Exec(deleteQuery, dbID)
 	if err != nil {
 		log.Println("Error deleting old sessions:", err)
 	}
 
-	// Create a Session Token
+	// Create new session token
 	sessionToken := generateSessionToken()
 	expirationTime := time.Now().Add(SessionDuration)
-	// Save the token in the 'user_sessions' table in our Database
 	_, err = database.DB.Exec("INSERT INTO user_sessions (user_id, session_token, expires_at) VALUES (?, ?, ?)", dbID, sessionToken, expirationTime)
 	if err != nil {
 		log.Println("Error saving session to DB:", err)
@@ -104,7 +103,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Create a cookie
+	// Set session cookie
 	newCookie := http.Cookie{
 		Name:     "session_token",
 		Value:    sessionToken,

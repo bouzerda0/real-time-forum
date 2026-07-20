@@ -6,7 +6,7 @@ import (
 	"real-time-forum/internal/models"
 )
 
-// CreateComment inserts a new comment securely into the database.
+//  inserts a new comment into the DB.
 func CreateComment(comment models.Comment) (models.Comment, error) {
 	query := `INSERT INTO comments (post_id, user_id, content, created_at) VALUES (?, ?, ?, ?)`
 	result, err := database.DB.Exec(query, comment.PostID, comment.UserID, comment.Content, comment.CreatedAt)

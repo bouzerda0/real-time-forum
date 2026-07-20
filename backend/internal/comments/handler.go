@@ -2,7 +2,6 @@ package comments
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -28,7 +27,6 @@ func CommentsHandler(w http.ResponseWriter, r *http.Request) {
 		userID, _ := posts.GetUserID(r)
 		postComments, err := GetCommentsByPostID(postID, userID)
 		if err != nil {
-			fmt.Printf("CommentsHandler: GetCommentsByPostID error: %v\n", err)
 			http.Error(w, `{"error":"Failed to fetch comments"}`, http.StatusInternalServerError)
 			return
 		}
@@ -71,7 +69,6 @@ func CommentsHandler(w http.ResponseWriter, r *http.Request) {
 
 		savedComment, err := CreateComment(newCommentInput)
 		if err != nil {
-			fmt.Printf("CommentsHandler: CreateComment error: %v\n", err)
 			http.Error(w, `{"error":"Failed to save comment"}`, http.StatusInternalServerError)
 			return
 		}

@@ -8,7 +8,7 @@ import (
 	"real-time-forum/database"
 )
 
-// LogoutHandler handles the user logout process
+//  clears user session and cookie.
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
@@ -19,10 +19,9 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//  Get the session cookie from the user's browser
 	cookie, err := r.Cookie("session_token")
 
-	//  If the cookie exists, delete the session from the database
+	// Delete session from database
 	if err == nil && cookie.Value != "" {
 
 		query := "DELETE FROM user_sessions WHERE session_token = ?"
@@ -33,16 +32,15 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Create a "dead" cookie to delete the old one in the browser
+	// Expire session cookie immediately
 	deletedCookie := &http.Cookie{
 		Name:     "session_token",
-		Value:    "",   // Empty value
-		Path:     "/",  // Must match the original cookie path
-		MaxAge:   -1,   // -1 tells the browser to delete it immediately!
-		HttpOnly: true, // Keeps it secure from JavaScript
+		Value:    "",
+		Path:     "/",
+		MaxAge:   -1,
+		HttpOnly: true,
 	}
 
-	// 4. Send this "dead" cookie to the user's browser
 	http.SetCookie(w, deletedCookie)
 
 	w.WriteHeader(http.StatusOK)

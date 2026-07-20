@@ -20,7 +20,7 @@ const postSelectSQL = `
 	LEFT JOIN post_categories ON posts.id = post_categories.post_id
 	LEFT JOIN categories ON post_categories.category_id = categories.id`
 
-// CreatePost inserts a new post along with its associated category links.
+// CreatePost saves a new post and its categories to DB.
 func CreatePost(post models.Post) error {
 	result, err := database.DB.Exec(`
 		INSERT INTO posts (user_id, title, content, created_at)
@@ -48,7 +48,7 @@ func CreatePost(post models.Post) error {
 	return nil
 }
 
-// GetAllPosts retrieves all posts filtered by optional category and includes user reaction status.
+// GetAllPosts gets posts filtered by category with reaction status.
 func GetAllPosts(category string, userID int) ([]models.Post, error) {
 	query, args := postSelectSQL, []any{userID}
 
@@ -60,7 +60,6 @@ func GetAllPosts(category string, userID int) ([]models.Post, error) {
 			)`
 		args = append(args, userID)
 	case "", "all":
-		// No additional filtering required.
 	default:
 		query += `
 			WHERE posts.id IN (
@@ -89,7 +88,7 @@ func GetAllPosts(category string, userID int) ([]models.Post, error) {
 	return posts, rows.Err()
 }
 
-// GetPostByID fetches a single post along with its categories and user reaction status.
+// GetPostByID fetches a single post by ID.
 func GetPostByID(postID int, userID int) (models.Post, error) {
 	query := postSelectSQL + `
 		WHERE posts.id = ?
@@ -103,7 +102,7 @@ type rowScanner interface {
 	Scan(dest ...any) error
 }
 
-// scanPost extracts a single post model from a SQL row scanner.
+// scanPost scans a SQL row into a Post struct.
 func scanPost(s rowScanner) (models.Post, error) {
 	var (
 		post           models.Post
@@ -132,7 +131,7 @@ func scanPost(s rowScanner) (models.Post, error) {
 	return post, nil
 }
 
-// parseCategories splits a comma-separated category string into a slice of strings.
+// parseCategories splits a comma-separated category string into a slice.
 func parseCategories(categoryString *string) []string {
 	if categoryString != nil && *categoryString != "" {
 		return strings.Split(*categoryString, ",")

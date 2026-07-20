@@ -53,7 +53,6 @@ export function RegisterView() {
         const [form, errBox, btn] = ['#registerForm', '#register-error', 'button[type="submit"]'].map(s => mainContainer.querySelector(s));
         const getVal = id => mainContainer.querySelector(id).value.trim();
 
-        // 1. Handle registration form submission
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -61,7 +60,7 @@ export function RegisterView() {
             btn.disabled = true;
             btn.textContent = 'Creating account...';
 
-            // 3. Extract form payload
+            // Extract payload
             const payload = {
                 username: getVal('#username'),
                 first_name: getVal('#firstName'),
@@ -73,7 +72,6 @@ export function RegisterView() {
             };
 
             try {
-                // 4. Call registration API
                 const res = await fetch('/api/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -81,7 +79,6 @@ export function RegisterView() {
                 });
                 const data = await res.json();
 
-                // 5. Handle API response with early return
                 if (!res.ok) {
                     errBox.textContent = data.message || 'Registration failed. Please try again.';
                     return;

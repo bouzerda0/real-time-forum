@@ -1,6 +1,5 @@
 import { ApiRequest } from "../api.js"
 import { createReaction } from "./reactionPost.js"
-import { loadPostCard } from "./postDetails.js";
 
 export async function loadFeed() {
     const feed = document.getElementById("feed-container");
@@ -90,9 +89,9 @@ export function renderPosts(posts) {
     });
 }
 
-export function renderHomeFeed(container) { // FIXED HERE
-    if (container) container.innerHTML = '<div id="feed-container"></div>'; // FIXED HERE
-} // FIXED HERE
+export function renderHomeFeed(container) {
+    if (container) container.innerHTML = '<div id="feed-container"></div>';
+}
 
 function createPostCard(post) {
     const article = document.createElement("article");
@@ -104,12 +103,10 @@ function createPostCard(post) {
 
     const user = document.createElement("span");
     user.className = "post-user";
-    // Map dynamic author nickname with fallback
     user.textContent = post.nickname || post.Nickname || "Anonymous";
 
     const category = document.createElement("span");
     category.className = "post-category";
-    // MERGE: Adjusted to lowercase categories field and join from Developer A's source of truth model
     category.textContent = post.categories ? post.categories.join(', ') : '';
 
     header.appendChild(user);
@@ -118,13 +115,11 @@ function createPostCard(post) {
     // Title
     const title = document.createElement("h2");
     title.className = "post-title";
-    // MERGE: Adjusted to lowercase field from Developer A's source of truth model
     title.textContent = post.title;
 
     // Content
     const content = document.createElement("p");
     content.className = "post-content";
-    // MERGE: Adjusted to lowercase field from Developer A's source of truth model
     content.textContent = post.content;
 
     // Footer
@@ -132,14 +127,12 @@ function createPostCard(post) {
     footer.className = "post-footer";
 
     const date = document.createElement("span");
-    // MERGE: Adjusted to lowercase field from Developer A's source of truth model
     date.textContent = formatDate(post.created_at);
 
     const comments = document.createElement("span");
     const count = post.comments_count || post.CommentsCount || 0;
     comments.textContent = `${count} ${count === 1 ? 'Comment' : 'Comments'}`;
 
-    // MERGE: Adjusted to lowercase fields from Developer A's source of truth model
     const reactionsUI = createReaction(post.id, post.likes || 0, post.dislikes || 0);
 
     footer.appendChild(date);
