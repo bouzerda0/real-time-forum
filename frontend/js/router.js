@@ -4,6 +4,7 @@ import { loadFeed, renderHomeFeed } from '/js/post/feed.js';
 import { CreatePostView } from '/js/post/createPost.js';
 import { loadPostCard } from '/js/post/postDetails.js';
 import { updateAuthUI } from '/js/compenents/navbar.js';
+import { ErrorPageView } from '/js/errorPage.js';
 
 const routes = {
     '/': () => {
@@ -18,7 +19,9 @@ const routes = {
     },
     '/login': LoginView,
     '/register': RegisterView,
-    '/create-post': CreatePostView
+    '/create-post': CreatePostView,
+    '/404': ErrorPageView,
+    '404': ErrorPageView
 };
 
 async function checkSession() {
@@ -44,10 +47,12 @@ async function checkSession() {
     }
 }
 
-window.navigateTo = async (path) => {
-    window.history.pushState({}, path, window.location.origin + path);
+export async function navigateTo(path) {
+    window.history.pushState(null, "", path);
     await render(path);
-};
+}
+
+window.navigateTo = navigateTo;
 
 async function render(path) {
     const isAuthPage = path === '/login' || path === '/register';
@@ -94,16 +99,7 @@ async function render(path) {
         }
     }
 
-    const route = routes[path];
-    if (!route) {
-        app.innerHTML = `
-            <div style="text-align: center; padding: 60px;">
-                <h1 style="font-size: 36px; color: #0f172a;">404</h1>
-                <p style="color: #64748b; margin-top: 8px;">Page not found</p>
-            </div>
-        `;
-        return;
-    }
+    const route = routes[path] || ErrorPageView;
 
     if (typeof route === 'function') {
         const view = route();
@@ -120,6 +116,20 @@ export function initRouter() {
         render(window.location.pathname);
     });
 
-    // Initial render
+    document.body.addEventListener('click', async (e) => {
+        const anchor = e.target.closest('a');
+        if (!anchor) return;
+        const href = anchor.getAttribute('href');
+        if (!href) return;
+
+        const isInternal = href.startsWith('/') || (anchor.origin && anchor.origin === window.location.origin);
+        if (isInternal) {
+            e.preventDefault();
+            const targetPath = href.startsWith('/') ? href : anchor.pathname + anchor.search + anchor.hash;
+            window.history.pushState(null, "", targetPath);
+            await render(targetPath);
+        }
+    });
+
     render(window.location.pathname);
 }

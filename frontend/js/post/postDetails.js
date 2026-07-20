@@ -11,10 +11,11 @@ export async function loadPostCard(postId) {
         container.replaceChildren();
 
         container.appendChild(createPostDetails(post));
-
     } catch (error) {
-        container.innerHTML = "<p>Error loading post.</p>";
-        console.error(error);
+        const { ErrorPageView } = await import("../errorPage.js");
+        const errorView = ErrorPageView();
+        container.replaceChildren(errorView.dom);
+        if (errorView.logic) errorView.logic();
     }
 }
 

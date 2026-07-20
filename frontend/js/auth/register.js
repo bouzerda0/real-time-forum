@@ -53,13 +53,7 @@ export function RegisterView() {
         const [form, errBox, btn] = ['#registerForm', '#register-error', 'button[type="submit"]'].map(s => mainContainer.querySelector(s));
         const getVal = id => mainContainer.querySelector(id).value.trim();
 
-        // 1. Handle navigation to login
-        mainContainer.querySelector('#login-link').addEventListener('click', (e) => {
-            e.preventDefault();
-            window.navigateTo('/login');
-        });
-
-        // 2. Handle registration form submission
+        // 1. Handle registration form submission
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 

@@ -24,13 +24,7 @@ export function LoginView() {
     const logic = () => {
         const [form, errBox, btn] = ['#loginForm', '#login-error', 'button[type="submit"]'].map(s => mainContainer.querySelector(s));
 
-        // 1. Handle navigation to registration
-        mainContainer.querySelector('#signup-link').addEventListener('click', (e) => {
-            e.preventDefault();
-            window.navigateTo('/register');
-        });
-
-        // 2. Handle form submission
+        // 1. Handle form submission
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const identify = mainContainer.querySelector('#identify').value.trim();

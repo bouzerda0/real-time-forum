@@ -6,11 +6,7 @@ export async function performLogout() {
     } finally {
         localStorage.removeItem('isAuthenticated');
         localStorage.removeItem('currentUser');
-        if (window.navigateTo) {
             window.navigateTo('/login');
-        } else {
-            window.location.href = '/login';
-        }
     }
 }
 

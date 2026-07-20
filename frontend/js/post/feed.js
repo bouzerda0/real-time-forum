@@ -84,11 +84,7 @@ export function renderPosts(posts) {
     posts.forEach(post => {
         const postCard = createPostCard(post)
         postCard.addEventListener('click', () => {
-            if (window.navigateTo) {
-                window.navigateTo(`/post/${post.id}`);
-            } else {
-                window.location.href = `/post/${post.id}`;
-            }
+            window.navigateTo(`/post/${post.id}`);
         })
         feedContainer.appendChild(postCard);
     });
