@@ -1,5 +1,10 @@
 import { connectWebSocket, sendWebSocketMessage, closeWebSocket } from "../websocket.js";
 
+const handleChatMessage = (message) => {
+    const messagesContainer = document.querySelector("#messages-container");
+    if (messagesContainer) appendMessage(messagesContainer, message);
+};
+
 export function ChatView() {
     const container = document.createElement("div");
     container.className = "chat-container";
@@ -21,13 +26,11 @@ export function ChatView() {
         const chatInput = container.querySelector("#chat-input");
         const receiverInput = container.querySelector("#receiver-id");
 
-        // Connect WebSocket and handle incoming messages
-        connectWebSocket((message) => {
-            appendMessage(messagesContainer, message);
-        });
+        // Connect WebSocket with single top-level handler
+        connectWebSocket(handleChatMessage);
 
         // Handle sending messages
-        chatForm.addEventListener("submit", (e) => {
+        chatForm.onsubmit = (e) => {
             e.preventDefault();
             const content = chatInput.value.trim();
             const receiverId = receiverInput.value.trim();
@@ -46,17 +49,18 @@ export function ChatView() {
             } else {
                 alert("WebSocket is not connected.");
             }
-        });
+        };
     };
 
     return { dom: container, logic };
 }
 
 function appendMessage(container, message) {
-    if (!container) return;
+    if (!container || (message.ID && container.querySelector(`[data-msg-id="${message.ID}"]`))) return;
 
     const msgElement = document.createElement("div");
     msgElement.className = `chat-message ${message.isSelf ? "self" : "other"}`;
+    if (message.ID) msgElement.dataset.msgId = message.ID;
 
     const sender = message.isSelf ? "You" : (message.SenderUsername || message.sender || message.username || document.getElementById('active-chat-username')?.textContent || "User");
     msgElement.innerHTML = `
