@@ -60,12 +60,13 @@ func CommentsHandler(w http.ResponseWriter, r *http.Request) {
 
 		newCommentInput.UserID = userID
 
-		var authorNickname string
-		database.DB.QueryRow("SELECT nickname FROM users WHERE id = ?", userID).Scan(&authorNickname)
-		if authorNickname == "" {
-			authorNickname = "User"
+		var authorUsername string
+		database.DB.QueryRow("SELECT username FROM users WHERE id = ?", userID).Scan(&authorUsername)
+		if authorUsername == "" {
+			authorUsername = "User"
 		}
-		newCommentInput.Nickname = authorNickname
+		newCommentInput.Username = authorUsername
+		newCommentInput.Nickname = authorUsername
 		newCommentInput.CreatedAt = time.Now()
 
 		savedComment, err := CreateComment(newCommentInput)
