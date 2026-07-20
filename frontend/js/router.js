@@ -30,10 +30,12 @@ async function checkSession() {
             if (data.user) {
                 localStorage.setItem('currentUser', JSON.stringify(data.user));
             }
+            updateAuthUI();
             return true;
         } else {
             localStorage.removeItem('isAuthenticated');
             localStorage.removeItem('currentUser');
+            updateAuthUI();
             return false;
         }
     } catch (error) {

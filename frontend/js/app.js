@@ -15,8 +15,6 @@ if (window.innerWidth > 768) {
     });
 }
 
-// Bind category filter logic to window for inline onclick attributes
 window.filterByCategory = filterByCategory;
 
-// Initialize Single Page Application Router
 initRouter();
