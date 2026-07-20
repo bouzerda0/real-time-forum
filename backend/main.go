@@ -49,7 +49,6 @@ func main() {
 
 	http.HandleFunc("/ws", websocket.WSHandler(hub))
 	http.HandleFunc("GET /chat", chat.ChatHandler)
-	http.HandleFunc("GET /api/chat", chat.ChatHandler)
 
 	// Serving Frontend SPA (must be registered after specific API routes)
 	fs := http.FileServer(http.Dir(frontendDir))
