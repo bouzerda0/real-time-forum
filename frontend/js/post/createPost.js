@@ -28,6 +28,11 @@ function createPostForm() {
 
     form.addEventListener("submit", handleCreatePost);
 
+    // Error bar (same style as login/register)
+    const errBox = document.createElement("div");
+    errBox.id = "post-error";
+    errBox.className = "form-error";
+
     // Title
     const title = document.createElement("input");
     title.type = "text";
@@ -44,8 +49,6 @@ function createPostForm() {
     content.className = "post-content";
     content.placeholder = "Write your post...";
     content.required = true;
-    content.maxLength = 4500;
-
 
     // Submit Button
     const submit = document.createElement("button");
@@ -54,6 +57,7 @@ function createPostForm() {
     submit.textContent = "Create Post";
 
     form.append(
+        errBox,
         title,
         categories,
         content,
@@ -63,41 +67,53 @@ function createPostForm() {
     return form;
 }
 
+function showPostError(msg) {
+    const errBox = document.getElementById("post-error");
+    if (errBox) errBox.textContent = msg;
+}
+
 async function handleCreatePost(event) {
     event.preventDefault();
+    showPostError("");
 
-    const title = document.getElementById("post-title").value.trim();
-    const content = document.getElementById("post-content").value.trim();
+    const titleInput = document.getElementById("post-title");
+    const contentInput = document.getElementById("post-content");
 
     const categories = Array.from(
         document.querySelectorAll('input[name="post-categories"]:checked')
     ).map(checkbox => checkbox.value);
 
-    if (!title || !content || categories.length === 0) {
-        alert("Please fill all fields.");
+    // Client-side validation — check raw .value BEFORE trim
+    if (!titleInput.value.trim() || titleInput.value.length > 150) {
+        showPostError("Title must be between 1 and 150 characters.");
+        return;
+    }
+    if (categories.length === 0) {
+        showPostError("Please select at least one category.");
+        return;
+    }
+    if (!contentInput.value.trim() || contentInput.value.length > 4500) {
+        showPostError("Post content cannot exceed 4500 characters.");
         return;
     }
 
-    const post = {
-        title,
-        content,
-        categories,
-    };
+    const title = titleInput.value.trim();
+    const content = contentInput.value.trim();
+
 
     try {
         await ApiRequest("/api/posts", {
             method: "POST",
-            body: post,
+            body: { title, content, categories },
         });
 
-        console.log("Post created successfully.");
         if (window.navigateTo) {
             window.navigateTo("/");
         } else {
             await loadFeed();
         }
     } catch (error) {
-        alert("Failed to create post.");
+        showPostError("Failed to create post. Please try again.");
     }
 }
 
