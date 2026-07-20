@@ -2,6 +2,7 @@ package posts
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -34,6 +35,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		post.CreatedAt = time.Now()
 
 		if err := CreatePost(post); err != nil {
+			fmt.Println("CreatePost error:", err)
 			http.Error(w, http.StatusText(500), http.StatusInternalServerError)
 			return
 		}

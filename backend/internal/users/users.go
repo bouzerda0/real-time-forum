@@ -5,12 +5,14 @@ import (
 	"net/http"
 
 	"real-time-forum/database"
+	"real-time-forum/internal/websocket"
 )
 
 type PublicUser struct {
 	ID       int    `json:"id"`
 	Username string `json:"username"`
 	Nickname string `json:"nickname"`
+	Online   bool   `json:"online"`
 }
 
 func UsersHandler(w http.ResponseWriter, r *http.Request) {
@@ -34,6 +36,7 @@ func UsersHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		u.Nickname = u.Username
+		u.Online = websocket.GlobalHub.IsOnline(u.ID)
 		users = append(users, u)
 	}
 

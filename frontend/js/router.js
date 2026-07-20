@@ -5,6 +5,7 @@ import { CreatePostView } from '/js/post/createPost.js';
 import { loadPostCard } from '/js/post/postDetails.js';
 import { updateAuthUI } from '/js/compenents/navbar.js';
 import { ErrorPageView } from '/js/errorPage.js';
+import { ChatView } from '/js/chat/chat.js';
 
 const routes = {
     '/': () => {
@@ -20,6 +21,7 @@ const routes = {
     '/login': LoginView,
     '/register': RegisterView,
     '/create-post': CreatePostView,
+    '/messages': ChatView,
     '/404': ErrorPageView,
     '404': ErrorPageView
 };

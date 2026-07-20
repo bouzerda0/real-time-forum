@@ -1,9 +1,12 @@
+import { closeWebSocket } from '/js/websocket.js';
+
 export async function performLogout() {
     try {
         await fetch('/api/logout', { method: 'POST' });
     } catch (error) {
         console.error('Logout request error:', error);
     } finally {
+        closeWebSocket();
         localStorage.removeItem('isAuthenticated');
         localStorage.removeItem('currentUser');
             window.navigateTo('/login');
@@ -15,6 +18,8 @@ export function updateAuthUI() {
     const sidebarFooter = document.getElementById('sidebarFooter');
     const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+    if (isAuthenticated) window.initOnlineSocket?.();
 
     if (navAuthArea) {
         if (isAuthenticated) {

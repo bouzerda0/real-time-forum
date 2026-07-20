@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/assets/css/create-post.css">
     <link rel="stylesheet" href="/assets/css/auth.css">
     <link rel="stylesheet" href="/assets/css/comments.css">
+    <link rel="stylesheet" href="/assets/css/chat.css">
     <link rel="stylesheet" href="/assets/css/errorPage.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -50,7 +51,7 @@
                 </svg>
                 Dashboard
             </li>
-            <li class="active" id="nav-messages" onclick="navigateTo('/messages')">
+            <li class="active" id="nav-messages" onclick="toggleChatSidebar()">
                 <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -180,8 +181,35 @@
             </div>
         </header>
 
-        <!-- DYNAMIC CONTENT  -->
-        <main id="app"></main>
+        <!-- DYNAMIC CONTENT & RIGHT CHAT SIDEBAR (Facebook Style) -->
+        <div class="content-layout" id="contentLayout">
+            <main id="app" class="main-feed"></main>
+            <aside class="chat-sidebar" id="chatSidebar">
+                <!-- VIEW A: User List -->
+                <div id="chat-view-users" class="chat-view">
+                    <div class="chat-sidebar-header">
+                        <h4>Members</h4>
+                        <button class="close-chat-btn" onclick="toggleChatSidebar()">&times;</button>
+                    </div>
+                    <div id="online-users-list" class="users-list"></div>
+                </div>
+
+                <!-- VIEW B: Conversation -->
+                <div id="chat-view-conversation" class="chat-view hidden">
+                    <div class="chat-sidebar-header">
+                        <button class="back-chat-btn" onclick="switchChatView('users')">&larr;</button>
+                        <h4 id="active-chat-username">Chat</h4>
+                        <button class="close-chat-btn" onclick="toggleChatSidebar()">&times;</button>
+                    </div>
+                    <input type="hidden" id="sidebar-receiver-id" />
+                    <div id="sidebar-messages" class="sidebar-messages"></div>
+                    <form id="sidebar-chat-form" class="sidebar-chat-form">
+                        <input type="text" id="sidebar-chat-input" placeholder="Type a message..." required autocomplete="off" />
+                        <button type="submit">Send</button>
+                    </form>
+                </div>
+            </aside>
+        </div>
     </div>
 
     <!-- Modal -->
