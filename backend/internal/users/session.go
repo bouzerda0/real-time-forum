@@ -48,11 +48,11 @@ func SessionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var nickname, email, firstName, lastName string
+	var username, email, firstName, lastName string
 	err = database.DB.QueryRow(
-		"SELECT nickname, email, COALESCE(first_name, ''), COALESCE(last_name, '') FROM users WHERE id = ?",
+		"SELECT username, email, COALESCE(first_name, ''), COALESCE(last_name, '') FROM users WHERE id = ?",
 		userID,
-	).Scan(&nickname, &email, &firstName, &lastName)
+	).Scan(&username, &email, &firstName, &lastName)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]interface{}{
@@ -67,8 +67,8 @@ func SessionHandler(w http.ResponseWriter, r *http.Request) {
 		"status": "success",
 		"user": map[string]interface{}{
 			"id":         userID,
-			"nickname":   nickname,
-			"username":   nickname,
+			"username":   username,
+			"nickname":   username,
 			"email":      email,
 			"first_name": firstName,
 			"last_name":  lastName,
