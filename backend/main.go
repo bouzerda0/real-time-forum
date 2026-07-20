@@ -15,6 +15,8 @@ import (
 	"real-time-forum/internal/websocket"
 )
 
+const frontendDir = "../frontend"
+
 func main() {
 	// Initialize database
 	err := database.InitDB("../forum.db")
