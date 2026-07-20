@@ -2,7 +2,10 @@ let ws = null;
 const listeners = new Set();
 
 export function connectWebSocket(onMessage, onError) {
-    if (onMessage) listeners.add(onMessage);
+    if (onMessage) {
+        listeners.clear();
+        listeners.add(onMessage);
+    }
     if (ws && ws.readyState === WebSocket.OPEN) return ws;
     ws = new WebSocket(`${window.location.protocol === "https:" ? "wss:" : "ws:"}//${window.location.host}/ws`);
     ws.onmessage = (e) => {

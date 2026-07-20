@@ -2,15 +2,17 @@ import { connectWebSocket, sendWebSocketMessage } from "../websocket.js";
 
 const $ = id => document.getElementById(id), myId = () => +(JSON.parse(localStorage.getItem('currentUser')||'{}').id || 0);
 
+const handleSocketMessage = m => {
+    if (m.Type === 'status') {
+        const d = $('online-users-list')?.querySelector(`.user-item[data-id="${m.UserID}"] .user-status`);
+        if (d) d.className = `user-status ${m.Online ? 'online' : 'offline'}`;
+    } else if (!$('chat-view-conversation')?.classList.contains('hidden') && +$('sidebar-receiver-id')?.value === +m.SenderID) {
+        appendMsg(m, +m.SenderID === myId());
+    } else notifyMsg(m);
+};
+
 export function initOnlineSocket() {
-    if (myId()) connectWebSocket(m => {
-        if (m.Type === 'status') {
-            const d = $('online-users-list')?.querySelector(`.user-item[data-id="${m.UserID}"] .user-status`);
-            if (d) d.className = `user-status ${m.Online ? 'online' : 'offline'}`;
-        } else if (!$('chat-view-conversation')?.classList.contains('hidden') && +$('sidebar-receiver-id')?.value === +m.SenderID) {
-            appendMsg(m, +m.SenderID === myId());
-        } else notifyMsg(m);
-    });
+    if (myId()) connectWebSocket(handleSocketMessage);
 }
 initOnlineSocket();
 
@@ -43,9 +45,10 @@ let chatOffset = 0, loadingOlder = false, hasMore = true;
 
 function appendMsg(msg, isSelf, prepend = false) {
     const box = $('sidebar-messages');
-    if (!box) return;
+    if (!box || (msg.ID && box.querySelector(`[data-msg-id="${msg.ID}"]`))) return;
     const el = document.createElement('div'), p = document.createElement('span');
     el.className = `chat-message ${isSelf ? 'self' : 'other'}`;
+    if (msg.ID) el.dataset.msgId = msg.ID;
     p.textContent = msg.Content || '';
     const time = new Date(msg.CreatedAt || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     el.innerHTML = `<span class="message-sender">${isSelf ? 'You' : ($('active-chat-username')?.textContent||'User')}:</span><span class="message-content">${p.innerHTML}</span><span class="msg-time">${time}</span>`;
@@ -53,7 +56,8 @@ function appendMsg(msg, isSelf, prepend = false) {
     if (!prepend) { box.scrollTop = box.scrollHeight; chatOffset++; }
 }
 
-$('sidebar-messages')?.addEventListener('scroll', async e => {
+const scrollBox = $('sidebar-messages');
+if (scrollBox) scrollBox.onscroll = async e => {
     const box = e.target, id = $('sidebar-receiver-id')?.value;
     if (box.scrollTop === 0 && !loadingOlder && hasMore && id) {
         loadingOlder = true;
@@ -69,9 +73,10 @@ $('sidebar-messages')?.addEventListener('scroll', async e => {
         } catch {}
         loadingOlder = false;
     }
-});
+};
 
-$('online-users-list')?.addEventListener('click', async e => {
+const userList = $('online-users-list');
+if (userList) userList.onclick = async e => {
     const item = e.target.closest('.user-item');
     if (!item) return;
     $('msg-badge')?.remove(); item.querySelector('.msg-badge')?.remove();
@@ -86,15 +91,16 @@ $('online-users-list')?.addEventListener('click', async e => {
         if ((chatOffset = msgs?.length || 0) < 10) hasMore = false;
         (msgs || []).reverse().forEach(m => appendMsg(m, m.SenderID === myId()));
     } catch {}
-});
+};
 
-$('sidebar-chat-form')?.addEventListener('submit', e => {
+const chatForm = $('sidebar-chat-form');
+if (chatForm) chatForm.onsubmit = e => {
     e.preventDefault();
     const inp = $('sidebar-chat-input'), id = $('sidebar-receiver-id')?.value, content = inp?.value.trim();
     if (content && id && sendWebSocketMessage(id, content)) {
         appendMsg({ Content: content, CreatedAt: new Date() }, true);
         inp.value = '';
     }
-});
+};
 
 Object.assign(window, { toggleChatSidebar, switchChatView, initOnlineSocket });
