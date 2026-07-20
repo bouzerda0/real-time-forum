@@ -41,3 +41,11 @@ type Comment struct {
 	Dislikes     int       `json:"dislikes"`
 	UserReaction *int      `json:"user_reaction"`
 }
+
+type Message struct {
+	ID         int
+	SenderID   int
+	ReceiverID int
+	Content    string
+	CreatedAt  time.Time
+}

@@ -7,10 +7,12 @@ import (
 
 	"real-time-forum/database"
 	"real-time-forum/internal/auth"
+	"real-time-forum/internal/chat"
 	"real-time-forum/internal/comments"
 	"real-time-forum/internal/middleware"
 	"real-time-forum/internal/posts"
 	"real-time-forum/internal/users"
+	"real-time-forum/internal/websocket"
 )
 
 const frontendDir = "../frontend"
@@ -39,6 +41,15 @@ func main() {
 	http.HandleFunc("GET /api/comments", middleware.RequireAuth(comments.CommentsHandler))
 	http.HandleFunc("POST /api/comments", middleware.RequireAuth(comments.CommentsHandler))
 	http.HandleFunc("POST /api/comments/reaction", middleware.RequireAuth(comments.ReactionHandler))
+
+	// Chat & WebSocket Routes
+	hub := websocket.NewHub()
+
+	go hub.Run()
+
+	http.HandleFunc("/ws", websocket.WSHandler(hub))
+	http.HandleFunc("GET /chat", chat.ChatHandler)
+	http.HandleFunc("GET /api/chat", chat.ChatHandler)
 
 	// Serving Frontend SPA (must be registered after specific API routes)
 	fs := http.FileServer(http.Dir(frontendDir))
