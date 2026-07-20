@@ -1,6 +1,7 @@
+
 import { filterByCategory } from '/js/post/filterPosts.js';
 import { initRouter } from '/js/router.js';
-
+import { socket } from "./websocket.js";
 // Setup background cursor blur animation
 const cursorBlur = document.getElementById('cursor-blur');
 
@@ -20,3 +21,4 @@ window.filterByCategory = filterByCategory;
 
 // Initialize Single Page Application Router
 initRouter();
+

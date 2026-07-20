@@ -33,6 +33,7 @@ func main() {
 	http.HandleFunc("/posts", posts.PostHandler)
 	http.HandleFunc("/posts/{id}", posts.GetPostHandler)
 	http.HandleFunc("/chat", chat.ChatHandler)
+
 	hub := websocket.NewHub()
 
 	go hub.Run()
