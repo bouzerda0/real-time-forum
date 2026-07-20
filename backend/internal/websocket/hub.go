@@ -1,5 +1,13 @@
 package websocket
 
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+
+	"real-time-forum/internal/chat"
+)
+
 type Hub struct {
 	Clients    map[int]*Client
 	Register   chan *Client
@@ -23,7 +31,32 @@ func (h *Hub) Run() {
 
 		case client := <-h.Register:
 			h.Clients[client.UserID] = client
-		// case msg := <-h.Messages:
+		case msg := <-h.Messages:
+			// Validate the message before processing it.
+			if !chat.Checkmessage(msg.Content) {
+				continue
+			}
+			err := chat.SaveMessage(msg.SenderID, msg.ReceiverID, msg.Content)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+			// Find the receiver.
+			receiver, ok := h.Clients[msg.ReceiverID]
+			if !ok {
+				// Receiver is offline.
+				continue
+			}
+			// Convert the message to JSON.
+			data, err := json.Marshal(msg)
+			if err != nil {
+				log.Println("marshal error:", err)
+				continue
+			}
+
+			// Send the message to the receiver.
+			receiver.Send <- data
+
 		case client := <-h.Unregister:
 			delete(h.Clients, client.UserID)
 		}
