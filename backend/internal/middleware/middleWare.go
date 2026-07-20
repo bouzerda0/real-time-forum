@@ -2,25 +2,30 @@ package middleware
 
 import (
 	"context"
-	"encoding/json"
 	"net/http"
-	"real-time-forum/internal/users"
+	"time"
+
+	"real-time-forum/database"
 )
 
 func RequireAuth(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
-		userID, err := users.GetUserIDFromCookie(r)
-
-		if err != nil {
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusUnauthorized)
-			json.NewEncoder(w).Encode(map[string]string{
-				"status":  "error",
-				"message": "Unauthorized. Please login.",
-			})
+		cookie, err := r.Cookie("session_token")
+		if err != nil || cookie.Value == "" {
+			clearCookie(w)
+			sendJSONError(w, "Unauthorized. Please login.", http.StatusUnauthorized)
 			return
 		}
+
+		var userID int
+		query := "SELECT user_id FROM user_sessions WHERE session_token = ? AND expires_at > ?"
+		err = database.DB.QueryRow(query, cookie.Value, time.Now()).Scan(&userID)
+		if err != nil {
+			clearCookie(w)
+			sendJSONError(w, "Unauthorized. Please login.", http.StatusUnauthorized)
+			return
+		}
+
 		ctx := context.WithValue(r.Context(), "userID", userID)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	}

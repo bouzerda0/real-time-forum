@@ -31,8 +31,6 @@ type RegisterRequest struct {
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-
-
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Method not allowed"})
@@ -90,10 +88,10 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var existingID int
-	err = database.DB.QueryRow("SELECT id FROM users WHERE email = ? OR nickname = ?", req.Email, req.Username).Scan(&existingID)
+	err = database.DB.QueryRow("SELECT id FROM users WHERE email = ? OR username = ?", req.Email, req.Username).Scan(&existingID)
 	if err != sql.ErrNoRows {
 		w.WriteHeader(http.StatusConflict)
-		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Email or nickname already exists"})
+		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Email or username already exists"})
 		return
 	}
 
@@ -129,7 +127,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err = database.DB.Exec(
-		"INSERT INTO users (nickname, email, password, age, gender, first_name, last_name) VALUES (?, ?, ?, ?, ?, ?, ?)",
+		"INSERT INTO users (username, email, password, age, gender, first_name, last_name) VALUES (?, ?, ?, ?, ?, ?, ?)",
 		req.Username, req.Email, string(hashedPassword), req.Age, req.Gender, req.FirstName, req.LastName,
 	)
 	if err != nil {
