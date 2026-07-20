@@ -35,6 +35,7 @@ export async function renderCommentsSection(postId, container) {
         <div class="comments-section">
             <h4>Comments</h4>
             <div id="comments-list-${postId}"></div>
+            <div id="comment-error-${postId}" class="form-error"></div>
             <form id="reply-form-${postId}" style="margin-top: 10px;">
                 <textarea id="reply-input-${postId}" placeholder="Write a reply..." required rows="2" style="width:100%;"></textarea>
                 <button type="submit" style="margin-top: 5px;">Reply</button>
@@ -47,11 +48,22 @@ export async function renderCommentsSection(postId, container) {
         comments.forEach(c => commentsList.appendChild(createCommentItem(c)));
     }
 
+    const errBox = container.querySelector(`#comment-error-${postId}`);
+    const showError = (msg) => { errBox.textContent = msg; };
+
     container.querySelector(`#reply-form-${postId}`).addEventListener("submit", async (e) => {
         e.preventDefault();
+        showError("");
+
         const input = container.querySelector(`#reply-input-${postId}`);
+
+        // Client-side validation — check raw .value BEFORE trim
+        if (!input.value.trim() || input.value.length > 4500) {
+            showError("Comment cannot exceed 4500 characters.");
+            return;
+        }
+
         const content = input.value.trim();
-        if (!content) return;
 
         try {
             const createdComment = await submitComment(postId, content);
@@ -65,12 +77,11 @@ export async function renderCommentsSection(postId, container) {
                 commentsList.appendChild(createCommentItem(newComment));
             }
         } catch (error) {
-            console.error("Error submitting comment:", error);
             if (error && error.message && (error.message.includes("401") || error.message.includes("Unauthorized"))) {
-                alert("Please login to comment.");
+                showError("Please login to comment.");
                 if (window.navigateTo) window.navigateTo("/login");
             } else {
-                alert("Failed to submit comment. Please try again.");
+                showError("Failed to submit comment. Please try again.");
             }
         }
     });
