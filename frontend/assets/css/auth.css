@@ -172,7 +172,8 @@
 }
 
 #login-error,
-#register-error {
+#register-error,
+.form-error {
     background-color: #fef2f2;
     border: 1px solid #fecaca;
     color: #dc2626;
@@ -185,6 +186,7 @@
 }
 
 #login-error:empty,
-#register-error:empty {
+#register-error:empty,
+.form-error:empty {
     display: none;
 }

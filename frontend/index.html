@@ -39,7 +39,7 @@
         <!-- MAIN MENU -->
         <div class="sidebar-section-label">MAIN MENU</div>
         <ul class="nav-list">
-            <li class="active" onclick="filterByCategory('all')">
+            <li class="active" onclick="navigateTo('/')">
                 <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                     stroke-width="2">
                     <rect x="3" y="3" width="7" height="7" rx="1.5" />
@@ -48,6 +48,15 @@
                     <rect x="14" y="14" width="7" height="7" rx="1.5" />
                 </svg>
                 Dashboard
+            </li>
+            <li class="active" id="nav-messages" onclick="navigateTo('/messages')">
+                <svg class="nav-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    <path d="M14 10H8" />
+                    <path d="M17 6H8" />
+                </svg>
+                Messages
             </li>
         </ul>
 

@@ -174,6 +174,7 @@
 ========================================== */
 .post-details,
 #postcard {
+    
     display: flex;
     flex-direction: column;
     background: #ffffff;
@@ -347,6 +348,7 @@
 
 /* Top Create Post Trigger Card in Feed */
 .create-post-trigger {
+    transform: translate(-50%, -50%);
     display: flex;
     align-items: center;
     gap: 14px;

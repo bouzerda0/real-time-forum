@@ -95,6 +95,9 @@ body {
 .nav-list {
     list-style: none;
     margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
 }
 
 .nav-list li {
@@ -366,6 +369,7 @@ body {
     border-radius: 60%;
     filter: blur(140px);
     pointer-events: none;
+    z-index: -1;
 }
 
 /* === NEW CLASSES FOR REMOVING INLINE STYLES === */
