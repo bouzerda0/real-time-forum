@@ -18,11 +18,11 @@ import (
 const frontendDir = "../frontend"
 
 func main() {
-	// Initialize database
 	err := database.InitDB("../forum.db")
 	if err != nil {
 		log.Fatal("Failed to initialize database:", err)
 	}
+	defer database.DB.Close()
 
 	// Auth API Routes
 	http.HandleFunc("POST /api/register", auth.RegisterHandler)
@@ -63,10 +63,8 @@ func main() {
 	port := ":8080"
 	log.Printf("Server is running on http://localhost%s\n", port)
 
-	log.Println("Server started at http://localhost:8080")
-
-	err = http.ListenAndServe(":8080", nil)
+	err = http.ListenAndServe(port, nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Server failed to start:", err)
 	}
 }
