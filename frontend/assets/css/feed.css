@@ -91,8 +91,8 @@
   padding: 24px 28px;
   box-shadow: var(--shadow-sm);
   transition: transform var(--transition-base),
-              box-shadow var(--transition-base),
-              border-color var(--transition-fast);
+    box-shadow var(--transition-base),
+    border-color var(--transition-fast);
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -456,8 +456,8 @@
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
   transition: transform var(--transition-base),
-              box-shadow var(--transition-base),
-              border-color var(--transition-fast);
+    box-shadow var(--transition-base),
+    border-color var(--transition-fast);
   cursor: default;
 }
 

@@ -1,16 +1,15 @@
+import { closeWebSocket } from '/js/websocket.js';
+
 export async function performLogout() {
     try {
         await fetch('/api/logout', { method: 'POST' });
     } catch (error) {
         console.error('Logout request error:', error);
     } finally {
+        closeWebSocket();
         localStorage.removeItem('isAuthenticated');
         localStorage.removeItem('currentUser');
-        if (window.navigateTo) {
             window.navigateTo('/login');
-        } else {
-            window.location.href = '/login';
-        }
     }
 }
 
@@ -20,16 +19,19 @@ export function updateAuthUI() {
     const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
 
+    if (isAuthenticated) window.initOnlineSocket?.();
+
     if (navAuthArea) {
         if (isAuthenticated) {
-            const initial = (currentUser.username || 'U').charAt(0).toUpperCase();
+            const displayName = currentUser.username || currentUser.nickname || currentUser.name || (currentUser.email ? currentUser.email.split('@')[0] : 'User');
+            const initial = (displayName || 'U').charAt(0).toUpperCase();
             navAuthArea.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <div style="display: flex; align-items: center; gap: 8px; background: #eff6ff; border: 1px solid #bfdbfe; padding: 6px 14px; border-radius: 9999px;">
                         <div style="width: 24px; height: 24px; border-radius: 50%; background: #8b5cf6; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">
                             ${initial}
                         </div>
-                        <span style="font-weight: 600; font-size: 13.5px; color: #1e40af;">@${currentUser.username || 'User'}</span>
+                        <span style="font-weight: 600; font-size: 13.5px; color: #1e40af;">@${displayName}</span>
                     </div>
                     <button id="navLogoutBtn" style="background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; padding: 7px 14px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s;">
                         Log Out
@@ -66,7 +68,7 @@ export function updateAuthUI() {
     }
 }
 
-// Initialize sidebar toggle events
+// Initialize sidebar and auth sync
 export function initNavbar() {
     const menuToggle = document.getElementById('menuToggle');
     const sidebarClose = document.getElementById('sidebarClose');
@@ -86,9 +88,15 @@ export function initNavbar() {
             overlay.classList.remove('active');
         });
     }
+
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'currentUser' || e.key === 'isAuthenticated') {
+            updateAuthUI();
+        }
+    });
 }
 
-// Run initNavbar on load
+// Initialize on load
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initNavbar);
 } else {

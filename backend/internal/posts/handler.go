@@ -42,13 +42,12 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(post) 
+		json.NewEncoder(w).Encode(post)
 
 	case http.MethodGet:
 		userID, _ := GetUserID(r)
-		// MERGE: Added category filter logic
 		category := r.URL.Query().Get("category")
-		// MERGE: Added category filter logic
+		// Filter by category if specified
 		posts, err := GetAllPosts(category, userID)
 		if err != nil {
 

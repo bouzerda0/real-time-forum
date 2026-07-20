@@ -9,9 +9,8 @@ import (
 	"real-time-forum/database"
 )
 
-// checks the cookie and returns the logged-in User's ID
+//  returns logged-in user ID from session token.
 func GetUserIDFromCookie(r *http.Request) (int, error) {
-	//  does the user have a session cookie
 	cookie, err := r.Cookie("session_token")
 	if err != nil {
 		return 0, fmt.Errorf("no cookie found")
@@ -20,18 +19,15 @@ func GetUserIDFromCookie(r *http.Request) (int, error) {
 	var userID int
 	var expiresAt time.Time
 
-	//  does this token exist in our database
 	err = database.DB.QueryRow("SELECT user_id, expires_at FROM user_sessions WHERE session_token = ?", cookie.Value).Scan(&userID, &expiresAt)
 	if err != nil {
 		return 0, fmt.Errorf("invalid session token")
 	}
 
-	//  is the session expired
 	if time.Now().After(expiresAt) {
 		return 0, fmt.Errorf("session expired")
 	}
 
-	//return the user's ID
 	return userID, nil
 }
 
@@ -48,11 +44,11 @@ func SessionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var nickname, email, firstName, lastName string
+	var username, email, firstName, lastName string
 	err = database.DB.QueryRow(
-		"SELECT nickname, email, COALESCE(first_name, ''), COALESCE(last_name, '') FROM users WHERE id = ?",
+		"SELECT username, email, COALESCE(first_name, ''), COALESCE(last_name, '') FROM users WHERE id = ?",
 		userID,
-	).Scan(&nickname, &email, &firstName, &lastName)
+	).Scan(&username, &email, &firstName, &lastName)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]interface{}{
@@ -67,8 +63,8 @@ func SessionHandler(w http.ResponseWriter, r *http.Request) {
 		"status": "success",
 		"user": map[string]interface{}{
 			"id":         userID,
-			"nickname":   nickname,
-			"username":   nickname,
+			"username":   username,
+			"nickname":   username,
 			"email":      email,
 			"first_name": firstName,
 			"last_name":  lastName,

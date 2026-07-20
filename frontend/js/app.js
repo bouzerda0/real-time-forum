@@ -1,8 +1,9 @@
 
 import { filterByCategory } from '/js/post/filterPosts.js';
 import { initRouter } from '/js/router.js';
-import { socket } from "./websocket.js";
-// Setup background cursor blur animation
+import '/js/chat/onlineUsers.js';
+
+// Cursor glow effect
 const cursorBlur = document.getElementById('cursor-blur');
 
 if (window.innerWidth > 768) {
@@ -16,9 +17,6 @@ if (window.innerWidth > 768) {
     });
 }
 
-// Bind category filter logic to window for inline onclick attributes
 window.filterByCategory = filterByCategory;
-
-// Initialize Single Page Application Router
 initRouter();
 

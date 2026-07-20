@@ -5,13 +5,14 @@ import (
 	"net/http"
 
 	"real-time-forum/database"
+	"real-time-forum/internal/websocket"
 )
 
 type PublicUser struct {
 	ID       int    `json:"id"`
-	Name     string `json:"name"`
+	Username string `json:"username"`
 	Nickname string `json:"nickname"`
-	Role     string `json:"role"`
+	Online   bool   `json:"online"`
 }
 
 func UsersHandler(w http.ResponseWriter, r *http.Request) {
@@ -20,7 +21,7 @@ func UsersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rows, err := database.DB.Query("SELECT id, nickname FROM users ORDER BY id ASC")
+	rows, err := database.DB.Query("SELECT id, username FROM users ORDER BY id ASC")
 	if err != nil {
 		http.Error(w, "Error fetching users", http.StatusInternalServerError)
 		return
@@ -30,16 +31,12 @@ func UsersHandler(w http.ResponseWriter, r *http.Request) {
 	var users []PublicUser
 	for rows.Next() {
 		var u PublicUser
-		if err := rows.Scan(&u.ID, &u.Nickname); err != nil {
+		if err := rows.Scan(&u.ID, &u.Username); err != nil {
 			http.Error(w, "Error scanning users", http.StatusInternalServerError)
 			return
 		}
-		u.Name = u.Nickname
-		if u.ID == 1 {
-			u.Role = "Senior Member"
-		} else {
-			u.Role = "Member"
-		}
+		u.Nickname = u.Username
+		u.Online = websocket.GlobalHub.IsOnline(u.ID)
 		users = append(users, u)
 	}
 

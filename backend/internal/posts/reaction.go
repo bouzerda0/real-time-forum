@@ -9,10 +9,10 @@ import (
 
 type ReactionRequest struct {
 	PostID int `json:"post_id"`
-	IsLike int `json:"is_like"` // 1 for like, 0 for dislike
+	IsLike int `json:"is_like"` // 1 = like, 0 = dislike
 }
 
-// ReactionHandler handles POST requests to like or dislike a post securely and atomically.
+// ReactionHandler handles post likes and dislikes atomically.
 func ReactionHandler(w http.ResponseWriter, r *http.Request) {
 	userID, err := GetUserID(r)
 	if err != nil || userID <= 0 || r.Method != http.MethodPost {
@@ -30,7 +30,7 @@ func ReactionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if the post actually exists
+	// Verify post exists
 	var postExists bool
 	err = database.DB.QueryRow("SELECT EXISTS(SELECT 1 FROM posts WHERE id=?)", req.PostID).Scan(&postExists)
 	if err != nil || !postExists {
@@ -38,7 +38,7 @@ func ReactionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Begin atomic transaction to prevent concurrent race conditions or double likes
+	// Begin atomic transaction
 	tx, err := database.DB.Begin()
 	if err != nil {
 		http.Error(w, "Database error", http.StatusInternalServerError)
@@ -46,7 +46,7 @@ func ReactionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer tx.Rollback()
 
-	// Check existing reaction and clean up any duplicates
+	// Check existing reaction
 	rows, err := tx.Query("SELECT reaction FROM likes WHERE user_id=? AND post_id=?", userID, req.PostID)
 	var existingCount int
 	var existingReaction int = -1
@@ -63,11 +63,11 @@ func ReactionHandler(w http.ResponseWriter, r *http.Request) {
 
 	userReaction := -1
 	if existingCount > 0 && existingReaction == req.IsLike {
-		// User clicked the same reaction again -> Undo (remove reaction completely)
+		// Undo reaction
 		_, err = tx.Exec("DELETE FROM likes WHERE user_id=? AND post_id=?", userID, req.PostID)
 		userReaction = -1
 	} else {
-		// User switched reaction or first time reacting -> Clean all duplicate/old entries and insert exactly 1 row
+		// Insert or switch reaction
 		_, err = tx.Exec("DELETE FROM likes WHERE user_id=? AND post_id=?", userID, req.PostID)
 		if err == nil {
 			_, err = tx.Exec("INSERT INTO likes (user_id, post_id, reaction) VALUES (?, ?, ?)", userID, req.PostID, req.IsLike)
@@ -79,7 +79,7 @@ func ReactionHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Count updated likes and dislikes inside the transaction
+	// Recalculate reaction counts
 	var likes, dislikes int
 	err = tx.QueryRow("SELECT COALESCE(SUM(reaction=1),0), COALESCE(SUM(reaction=0),0) FROM likes WHERE post_id=?", req.PostID).Scan(&likes, &dislikes)
 	if err != nil {

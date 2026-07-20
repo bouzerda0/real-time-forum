@@ -1,11 +1,10 @@
 import { ApiRequest } from "../api.js";
 
 export function createReaction(postId, initialLikes = 0, initialDislikes = 0, initialUserReaction, itemType = "post") {
-    // 1. Create actions container
     const actionsDiv = document.createElement("div");
     actionsDiv.className = "post-actions";
 
-    // 2. Build dynamic reaction buttons (DRY)
+    // Build reaction buttons
     const buttons = [
         { isLike: 1, type: "like", icon: "❤️", count: initialLikes, activeVal: 1 },
         { isLike: 0, type: "dislike", icon: "💔", count: initialDislikes, activeVal: 0 }
@@ -20,7 +19,7 @@ export function createReaction(postId, initialLikes = 0, initialDislikes = 0, in
 
     const [likeBtn, dislikeBtn] = buttons;
 
-    // 3. Attach click handlers delegating to unified reactToPost
+    // Attach click handlers
     likeBtn.addEventListener("click", e => { e.stopPropagation(); reactToPost(postId, 1, likeBtn, dislikeBtn, itemType); });
     dislikeBtn.addEventListener("click", e => { e.stopPropagation(); reactToPost(postId, 0, likeBtn, dislikeBtn, itemType); });
 
@@ -41,14 +40,12 @@ async function reactToPost(postId, isLike, likeBtn, dislikeBtn, itemType = "post
     const btnSelectorAttr = `[data-${itemType}-id="${postId}"]`;
 
     try {
-        // 1. Send API request
         const data = await ApiRequest(endpoint, { method: "POST", body });
 
-        // 2. Update UI counters
+        // Update counts and button styles
         if (data.likes !== undefined) document.querySelectorAll(likesSelector).forEach(el => el.textContent = data.likes);
         if (data.dislikes !== undefined) document.querySelectorAll(dislikesSelector).forEach(el => el.textContent = data.dislikes);
 
-        // 3. Update active button states
         if (data.user_reaction !== undefined) {
             document.querySelectorAll(`.like-btn${btnSelectorAttr}`).forEach(btn => btn.classList.toggle("liked", data.user_reaction === 1));
             document.querySelectorAll(`.dislike-btn${btnSelectorAttr}`).forEach(btn => btn.classList.toggle("disliked", data.user_reaction === 0));

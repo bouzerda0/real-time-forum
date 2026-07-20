@@ -4,6 +4,7 @@ import "time"
 
 type User struct {
 	ID        int
+	Username  string
 	Nickname  string
 	Email     string
 	Password  string
@@ -16,6 +17,7 @@ type User struct {
 type Post struct {
 	ID           int       `json:"id"`
 	UserID       int       `json:"user_id"`
+	Username     string    `json:"username"`
 	Nickname     string    `json:"nickname"`
 	Title        string    `json:"title"`
 	Category     []string  `json:"categories"`
@@ -31,20 +33,13 @@ type Comment struct {
 	ID           int       `json:"id"`
 	PostID       int       `json:"post_id"`
 	UserID       int       `json:"user_id"`
+	Username     string    `json:"username"`
 	Nickname     string    `json:"nickname"`
 	Content      string    `json:"content"`
 	CreatedAt    time.Time `json:"created_at"`
 	Likes        int       `json:"likes"`
 	Dislikes     int       `json:"dislikes"`
 	UserReaction *int      `json:"user_reaction"`
-}
-
-type Like struct {
-	ID        int
-	UserID    int
-	PostID    int
-	Reaction  int
-	CreatedAt time.Time
 }
 
 type Message struct {
