@@ -1,7 +1,6 @@
 package posts
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -27,12 +26,10 @@ func ValidatePostInput(post models.Post) bool {
 		return false
 	}
 	if !checkCategories(categories, post.Category) {
-		fmt.Println("=2")
 		return false
 	}
 
 	if len(strings.TrimSpace(post.Content)) == 0 || len(strings.TrimSpace(post.Content)) > 4500 {
-		fmt.Println("=3")
 		return false
 	}
 	return true

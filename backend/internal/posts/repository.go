@@ -10,7 +10,7 @@ import (
 
 const postSelectSQL = `
 	SELECT 
-		posts.id, users.nickname, posts.user_id, posts.title, posts.content, posts.created_at, group_concat(categories.name),
+		posts.id, users.username, posts.user_id, posts.title, posts.content, posts.created_at, group_concat(categories.name),
 		(SELECT COALESCE(SUM(reaction=1), 0) FROM likes WHERE post_id = posts.id) as likes_count,
 		(SELECT COALESCE(SUM(reaction=0), 0) FROM likes WHERE post_id = posts.id) as dislikes_count,
 		(SELECT reaction FROM likes WHERE post_id = posts.id AND user_id = ? LIMIT 1) as user_reaction,
@@ -98,11 +98,6 @@ func GetPostByID(postID int, userID int) (models.Post, error) {
 	return scanPost(database.DB.QueryRow(query, userID, postID))
 }
 
-// DeletePost removes a post by ID from the database.
-func DeletePost(postID int) error {
-	_, err := database.DB.Exec(`DELETE FROM posts WHERE id = ?`, postID)
-	return err
-}
 
 type rowScanner interface {
 	Scan(dest ...any) error
@@ -117,7 +112,7 @@ func scanPost(s rowScanner) (models.Post, error) {
 	)
 	err := s.Scan(
 		&post.ID,
-		&post.Nickname,
+		&post.Username,
 		&post.UserID,
 		&post.Title,
 		&post.Content,
@@ -131,6 +126,7 @@ func scanPost(s rowScanner) (models.Post, error) {
 	if err != nil {
 		return post, err
 	}
+	post.Nickname = post.Username
 	post.UserReaction = userReaction
 	post.Category = parseCategories(categoryString)
 	return post, nil
