@@ -12,6 +12,7 @@ import (
 
 var GlobalHub *Hub
 
+// this struct represents a WebSocket hub that manages connected clients and broadcasts messages to them.
 type Hub struct {
 	mu         sync.RWMutex
 	Clients    map[int]*Client
@@ -32,16 +33,20 @@ func NewHub() *Hub {
 	return h
 }
 
+// IsOnline checks if a user with the given userID is currently connected to the hub.
 func (h *Hub) IsOnline(userID int) bool {
+	// If the hub is nil, return false (user is not online).
 	if h == nil {
 		return false
 	}
+	// Acquire a read lock to safely check user presence in the map without data races
 	h.mu.RLock()
 	defer h.mu.RUnlock()
 	_, ok := h.Clients[userID]
 	return ok
 }
 
+// broadcastStatus sends a status message to all connected clients indicating whether a user is online or offline.
 func (h *Hub) broadcastStatus(userID int, online bool) {
 	msg := ChatMessage{
 		Type:   "status",
@@ -52,12 +57,11 @@ func (h *Hub) broadcastStatus(userID int, online bool) {
 	if err != nil {
 		return
 	}
+	// lock the hub's mutex for reading to safely iterate over the connected clients without data races
 	h.mu.RLock()
+	// Broadcast the status message to all connected clients.
 	for _, client := range h.Clients {
-		select {
-		case client.Send <- data:
-		default:
-		}
+		client.Send <- data
 	}
 	h.mu.RUnlock()
 }
@@ -65,7 +69,6 @@ func (h *Hub) broadcastStatus(userID int, online bool) {
 func (h *Hub) Run() {
 	for {
 		select {
-
 		case client := <-h.Register:
 			h.mu.Lock()
 			h.Clients[client.UserID] = client

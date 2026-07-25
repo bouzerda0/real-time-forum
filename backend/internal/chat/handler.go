@@ -10,7 +10,6 @@ import (
 )
 
 func ChatHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("is called")
 	if r.Method != http.MethodGet {
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		return
