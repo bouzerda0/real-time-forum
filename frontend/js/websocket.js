@@ -19,7 +19,7 @@ export function connectWebSocket() {
 
 }
 // Function to send a message through the WebSocket connection
-export function sendwebsocketMessage(receiverId, content) {
+export function sendWebSocketMessage(receiverId, content) {
     // Check if the WebSocket connection is open before sending the message
     if (!socket || socket.readyState !== WebSocket.OPEN) {
         return
@@ -44,4 +44,12 @@ function handleWebSocketMessage(event) {
     if (message.Type === "message") {
         window.updateChatMessages?.(message);
     }   
+}
+
+export function closeWebSocket() {
+    // Check if the WebSocket connection is open before closing it
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        // Close the WebSocket connection
+        socket.close();
+    }
 }

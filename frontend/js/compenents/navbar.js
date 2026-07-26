@@ -1,4 +1,4 @@
-import { closeWebSocket } from '/js/websocket.js';
+import { closeWebSocket } from '..websocket.js';
 
 export async function performLogout() {
     try {
