@@ -96,6 +96,7 @@ func (h *Hub) Run() {
 				// Receiver is offline.
 				continue
 			}
+			msg.Type = "message"
 			// Convert the message to JSON.
 			data, err := json.Marshal(msg)
 			if err != nil {
