@@ -1,33 +1,47 @@
-let ws = null;
-const listeners = new Set();
-
-export function connectWebSocket(onMessage, onError) {
-    if (onMessage) {
-        listeners.clear();
-        listeners.add(onMessage);
+let socket = null;
+export function connectWebSocket() {
+    // Create a new WebSocket connection to the server by sending  a request for upgrade to the WebSocket protocol
+    // start the handshake process with the  server 
+    socket = new WebSocket('ws://localhost:8080/ws');
+    socket.onopen = () => {
+        console.log('the upgrade to the WebSocket protocol was successful');
     }
-    if (ws && ws.readyState === WebSocket.OPEN) return ws;
-    ws = new WebSocket(`${window.location.protocol === "https:" ? "wss:" : "ws:"}//${window.location.host}/ws`);
-    ws.onmessage = (e) => {
-        try {
-            const data = JSON.parse(e.data);
-            listeners.forEach(cb => cb(data));
-        } catch (err) { console.error(err); }
+
+    socket.onerror = (error) => {
+        console.error('WebSocket error:', error);
+    }
+    socket.onmessage = (event) => {
+        handleWebSocketMessage(event);
     };
-    ws.onerror = onError || console.error;
-    ws.onclose = () => { ws = null; };
-    return ws;
+    socket.onclose = () => {
+        console.log('WebSocket connection closed:');
+    }
+
+}
+// Function to send a message through the WebSocket connection
+export function sendwebsocketMessage(receiverId, content) {
+    // Check if the WebSocket connection is open before sending the message
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+        return
+    }
+    const message = {
+        ReceiverID: receiverId,
+        Content: content,
+    }
+    // Convert the message object to a JSON string and send it through the WebSocket connection
+    const jsonMessage = JSON.stringify(message);
+    // Send the JSON message through the WebSocket connection
+    socket.send(jsonMessage);
 }
 
-export function sendWebSocketMessage(receiverId, content) {
-    const myId = +(JSON.parse(localStorage.getItem('currentUser') || '{}').id || 0);
-    if (ws?.readyState !== WebSocket.OPEN || !myId || Number(receiverId) === myId) return false;
-    ws.send(JSON.stringify({ ReceiverID: Number(receiverId), Content: content }));
-    return true;
-}
 
-export function closeWebSocket() {
-    ws?.close();
-    ws = null;
-    listeners.clear();
+function handleWebSocketMessage(event) {
+    // Parse the incoming message from the WebSocket server
+    const message = JSON.parse(event.data)
+    if (message.Type === "status") {
+        window.updateOnlineUsers?.(message);
+    }
+    if (message.Type === "message") {
+        window.updateChatMessages?.(message);
+    }   
 }
