@@ -4,7 +4,8 @@ import { ApiRequest } from "../api.js"
 // 3. sort the users list
 // 4. click on a user to start a chat
 // 5. notify the user when a new message is received
- const usersList = document.getElementById("users-list");
+
+const usersList = document.getElementById("users-list");
 
 export async function loadUsers() {
     try {
@@ -28,6 +29,7 @@ export async function loadUsers() {
     }
 }
 
+// Function to render the list of users in the UI
 function renderUsers(users) {
 
     // Remove old users before rendering again
@@ -67,7 +69,7 @@ function renderUsers(users) {
     });
 }
 
-
+// sort the users list by online status and last message timestamp
 export function updateOnlineUsers(message) {
     // Find the user element by its ID
     const userItem = document.querySelector(
@@ -117,3 +119,4 @@ function sortUsers(users) {
         return a.nickname.localeCompare(b.nickname);
     });
 }
+
