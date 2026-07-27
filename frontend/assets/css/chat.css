@@ -226,6 +226,15 @@
     color: #475569;
 }
 
+.user-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .user-status {
     width: 8px;
     height: 8px;

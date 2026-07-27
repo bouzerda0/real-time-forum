@@ -5,8 +5,6 @@ import { ApiRequest } from "../api.js"
 // 4. click on a user to start a chat
 // 5. notify the user when a new message is received
 
-const usersList = document.getElementById("users-list");
-
 export async function loadUsers() {
     try {
         // Request all users from the backend
@@ -62,4 +60,29 @@ function renderUsers(users) {
         // Add the user to the list
         usersList.appendChild(userItem);
     });
+}
+
+
+export function updateOnlineUsers(message) {
+    // Find the user element by its ID
+    const userItem = document.querySelector(
+        `[data-user-id="${message.userId}"]`
+    );
+
+    // If the user is not in the list, do nothing
+    if (!userItem) {
+        return;
+    }
+
+    // Find the status indicator
+    const status = userItem.querySelector(".user-status");
+
+    // Update the user's status
+    if (message.online) {
+        status.classList.remove("offline");
+        status.classList.add("online");
+    } else {
+        status.classList.remove("online");
+        status.classList.add("offline");
+    }
 }
