@@ -4,6 +4,7 @@ import { ApiRequest } from "../api.js"
 // 3. sort the users list
 // 4. click on a user to start a chat
 // 5. notify the user when a new message is received
+ const usersList = document.getElementById("users-list");
 
 export async function loadUsers() {
     try {
@@ -25,8 +26,6 @@ export async function loadUsers() {
 }
 
 function renderUsers(users) {
-    // Container that will hold all users
-    const usersList = document.getElementById("users-list");
 
     // Remove old users before rendering again
     usersList.replaceChildren();
@@ -47,7 +46,9 @@ function renderUsers(users) {
         } else {
             status.classList.add("offline");
         }
-
+        const avatar = document.createElement("div");
+        avatar.classList.add("user-avatar");
+        avatar.textContent = user.nickname.charAt(0).toUpperCase();
         // User name
         const username = document.createElement("span");
         username.classList.add("user-name");
@@ -56,6 +57,7 @@ function renderUsers(users) {
         // Build the HTML structure
         userItem.appendChild(status);
         userItem.appendChild(username);
+        userItem.appendChild(avatar);
 
         // Add the user to the list
         usersList.appendChild(userItem);
@@ -85,4 +87,8 @@ export function updateOnlineUsers(message) {
         status.classList.remove("online");
         status.classList.add("offline");
     }
+}
+
+function sortUsersList(users) {
+    
 }
