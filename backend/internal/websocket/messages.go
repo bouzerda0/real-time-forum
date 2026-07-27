@@ -3,11 +3,11 @@ package websocket
 import "time"
 
 type ChatMessage struct {
-    Type       string    `json:"Type,omitempty"`
-    UserID     int       `json:"UserID,omitempty"`
-    Online     bool      `json:"Online,omitempty"`
-    SenderID   int       `json:"SenderID,omitempty"`
-    ReceiverID int       `json:"ReceiverID,omitempty"`
-    Content    string    `json:"Content,omitempty"`
-    CreatedAt  time.Time `json:"CreatedAt,omitempty"`
+	Type       string    `json:"type"`
+	UserID     int       `json:"userId"`
+	Online     bool      `json:"online"`
+	SenderID   int       `json:"senderId"`
+	ReceiverID int       `json:"receiverId"`
+	Content    string    `json:"content"`
+	CreatedAt  time.Time `json:"createdAt"`
 }
