@@ -17,6 +17,9 @@ export async function loadUsers() {
             return;
         }
 
+        // Sort users before rendering
+        sortUsers(users);
+
         // Render the users in the UI
         renderUsers(users);
 
@@ -89,6 +92,28 @@ export function updateOnlineUsers(message) {
     }
 }
 
-function sortUsersList(users) {
-    
+function sortUsers(users) {
+    return users.sort((a, b) => {
+        // Check if the users have exchanged messages
+        const aHasMessage = a.lastmessage !== "0001-01-01T00:00:00Z";
+        const bHasMessage = b.lastmessage !== "0001-01-01T00:00:00Z";
+
+        // Both users have messages → sort by newest message first
+        if (aHasMessage && bHasMessage) {
+            return new Date(b.lastmessage) - new Date(a.lastmessage);
+        }
+
+        // Only A has messages → A comes first
+        if (aHasMessage) {
+            return -1;
+        }
+
+        // Only B has messages → B comes first
+        if (bHasMessage) {
+            return 1;
+        }
+
+        // Neither has messages → sort alphabetically
+        return a.nickname.localeCompare(b.nickname);
+    });
 }
