@@ -2,7 +2,6 @@ package chat
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -14,25 +13,29 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		return
 	}
+
 	sender, err := posts.GetUserID(r)
 	if err != nil {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
-	fmt.Println(sender)
+
 	receiverstr := r.URL.Query().Get("receiver")
 	limitstr := r.URL.Query().Get("limit")
 	offsetstr := r.URL.Query().Get("offset")
+
 	receiver, err := strconv.Atoi(receiverstr)
 	if err != nil {
 		http.Error(w, http.StatusText(400), http.StatusBadRequest)
 		return
 	}
+
 	limit, err := strconv.Atoi(limitstr)
 	if err != nil {
 		http.Error(w, http.StatusText(400), http.StatusBadRequest)
 		return
 	}
+
 	offset, err := strconv.Atoi(offsetstr)
 	if err != nil {
 		http.Error(w, http.StatusText(400), http.StatusBadRequest)

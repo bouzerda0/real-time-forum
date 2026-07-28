@@ -120,3 +120,22 @@ function sortUsers(users) {
     });
 }
 
+export function showNotification(message) {
+    // If the sender's chat is already open, don't show a notification
+    if (message.SenderID === currentChatUser) {
+        return;
+    }
+
+    // Find the sender in the users list
+    const userItem = document.querySelector(
+        `[data-user-id="${message.SenderID}"]`
+    );
+
+    // If the user doesn't exist, stop
+    if (!userItem) {
+        return;
+    }
+
+    // Add a notification class
+    userItem.classList.add("has-notification");
+}

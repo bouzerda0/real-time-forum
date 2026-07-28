@@ -39,10 +39,10 @@ function handleWebSocketMessage(event) {
     // Parse the incoming message from the WebSocket server
     const message = JSON.parse(event.data)
     if (message.Type === "status") {
-        window.updateOnlineUsers?.(message);
+        updateOnlineUsers(message);
     }
     if (message.Type === "message") {
-        window.updateChatMessages?.(message);
+    updateChatMessages(message);
     }   
 }
 
