@@ -1,26 +1,6 @@
-/* 
-chat.js
-│
-├── ChatView() 
-├── openChat() 
-├── loadMessages() 
-├── renderMessages() 
-├── sendMessage()
-├── updateChatMessages()
-├── updateLastMessage()
-├── loadMoreMessages()
-├── autoScroll()
-└── clearNotification()
-*/
 import { ApiRequest } from "../api.js";
 import { sendWebSocketMessage } from "../websocket.js";
-import {
-    getUserById,
-    loadUsers,
-    reorderUsers,
-    showNotification,
-    markRead,
-} from "./onlineUsers.js";
+import { getUserById, loadUsers, reorderUsers, showNotification, markRead } from "./onlineUsers.js";
 
 const CHAT_PAGE_SIZE = 10;
 const THROTTLE_MS = 300;
