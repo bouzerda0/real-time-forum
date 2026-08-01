@@ -43,9 +43,9 @@ type Comment struct {
 }
 
 type Message struct {
-	ID         int
-	SenderID   int
-	ReceiverID int
-	Content    string
-	CreatedAt  time.Time
+	ID         int       `json:"id"`
+	SenderID   int       `json:"senderId"`
+	ReceiverID int       `json:"receiverId"`
+	Content    string    `json:"content"`
+	CreatedAt  time.Time `json:"createdAt"`
 }

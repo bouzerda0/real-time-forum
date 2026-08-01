@@ -39,7 +39,7 @@ func GetMessages(userID, otherUserID, limit, offset int) ([]models.Message, erro
 	}
 	defer rows.Close()
 
-	var messages []models.Message
+	messages := []models.Message{}
 
 	for rows.Next() {
 		var msg models.Message

@@ -1,55 +1,53 @@
+import { updateOnlineUsers, loadUsers } from "./chat/onlineUsers.js";
+import { updateChatMessages } from "./chat/chat.js";
+
 let socket = null;
+
+// Connect the WebSocket (no-op when already open or connecting)
 export function connectWebSocket() {
-    // Create a new WebSocket connection to the server by sending  a request for upgrade to the WebSocket protocol
-    // start the handshake process with the  server 
-    socket = new WebSocket('ws://localhost:8080/ws');
+    if (socket && (socket.readyState === WebSocket.OPEN || socket.readyState === WebSocket.CONNECTING)) {
+        return;
+    }
+
+    socket = new WebSocket("ws://localhost:8080/ws");
     socket.onopen = () => {
-        console.log('the upgrade to the WebSocket protocol was successful');
-    }
-
-    socket.onerror = (error) => {
-        console.error('WebSocket error:', error);
-    }
-    socket.onmessage = (event) => {
-        handleWebSocketMessage(event);
+        console.log("WebSocket connection established");
     };
+    socket.onerror = (error) => {
+        console.error("WebSocket error:", error);
+    };
+    socket.onmessage = handleWebSocketMessage;
     socket.onclose = () => {
-        console.log('WebSocket connection closed:');
-    }
-
+        console.log("WebSocket connection closed");
+    };
 }
-// Function to send a message through the WebSocket connection
+
+// Entry point used by the navbar once the user is authenticated
+export function initOnlineSocket() {
+    connectWebSocket();
+    loadUsers();
+}
+window.initOnlineSocket = initOnlineSocket;
+
+// Send a private message through the WebSocket connection
 export function sendWebSocketMessage(receiverId, content) {
-    // Check if the WebSocket connection is open before sending the message
-    if (!socket || socket.readyState !== WebSocket.OPEN) {
-        return
-    }
-    const message = {
-        ReceiverID: receiverId,
-        Content: content,
-    }
-    // Convert the message object to a JSON string and send it through the WebSocket connection
-    const jsonMessage = JSON.stringify(message);
-    // Send the JSON message through the WebSocket connection
-    socket.send(jsonMessage);
-}
+    if (!socket || socket.readyState !== WebSocket.OPEN) return;
 
+    socket.send(JSON.stringify({ receiverId, content }));
+}
 
 function handleWebSocketMessage(event) {
-    // Parse the incoming message from the WebSocket server
-    const message = JSON.parse(event.data)
-    if (message.Type === "status") {
+    const message = JSON.parse(event.data);
+
+    if (message.type === "status") {
         updateOnlineUsers(message);
+    } else if (message.type === "message") {
+        updateChatMessages(message);
     }
-    if (message.Type === "message") {
-    updateChatMessages(message);
-    }   
 }
 
 export function closeWebSocket() {
-    // Check if the WebSocket connection is open before closing it
     if (socket && socket.readyState === WebSocket.OPEN) {
-        // Close the WebSocket connection
         socket.close();
     }
 }

@@ -235,6 +235,33 @@
     text-overflow: ellipsis;
 }
 
+/* Name + last-message preview column */
+.user-meta {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.user-lastmsg {
+    font-size: 0.72rem;
+    color: #94a3b8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.user-item.active {
+    background: #f1f5f9;
+}
+
+.chat-empty {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    text-align: center;
+    padding: 24px 8px;
+}
+
 .user-status {
     width: 8px;
     height: 8px;
