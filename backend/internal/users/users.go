@@ -19,7 +19,7 @@ type PublicUser struct {
 	Lastmessage time.Time `json:"lastmessage"`
 }
 
-// SQL query to fetch users along with their last message timestamp, excluding the current user.
+// SQL query to feddcccctch users along with their last message timestamp, excluding the current user.
 // Note: MAX(m.created_at) returns TEXT in SQLite (not DATETIME), so we scan it as a string.
 const query = `
 SELECT u.id, u.username, MAX(m.created_at) AS last_message FROM users u

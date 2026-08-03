@@ -64,3 +64,19 @@ func GetMessages(userID, otherUserID, limit, offset int) ([]models.Message, erro
 
 	return messages, nil
 }
+
+
+func UserExists(userID int) (bool, error) {
+	var count int
+
+	err := database.DB.QueryRow(
+		"SELECT COUNT(*) FROM users WHERE id = ?",
+		userID,
+	).Scan(&count)
+
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
+}

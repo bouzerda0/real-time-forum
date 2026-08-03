@@ -14,8 +14,10 @@ var GlobalHub *Hub
 
 // this struct represents a WebSocket hub that manages connected clients and broadcasts messages to them.
 type Hub struct {
-	mu         sync.RWMutex
-	Clients    map[int]*Client
+	mu sync.RWMutex
+	// Clients holds every active WebSocket connection for each user. A user can
+	// have several connections when they open the forum in multiple tabs.
+	Clients    map[int]map[*Client]struct{}
 	Register   chan *Client
 	Unregister chan *Client
 	Messages   chan ChatMessage
@@ -24,7 +26,7 @@ type Hub struct {
 // NewHub creates a new Hub and initializes all required fields.
 func NewHub() *Hub {
 	h := &Hub{
-		Clients:    make(map[int]*Client),
+		Clients:    make(map[int]map[*Client]struct{}),
 		Register:   make(chan *Client),
 		Unregister: make(chan *Client),
 		Messages:   make(chan ChatMessage),
@@ -42,8 +44,8 @@ func (h *Hub) IsOnline(userID int) bool {
 	// Acquire a read lock to safely check user presence in the map without data races
 	h.mu.RLock()
 	defer h.mu.RUnlock()
-	_, ok := h.Clients[userID]
-	return ok
+	clients := h.Clients[userID]
+	return len(clients) > 0
 }
 
 // broadcastStatus sends a status message to all connected clients indicating whether a user is online or offline.
@@ -60,8 +62,10 @@ func (h *Hub) broadcastStatus(userID int, online bool) {
 	// lock the hub's mutex for reading to safely iterate over the connected clients without data races
 	h.mu.RLock()
 	// Broadcast the status message to all connected clients.
-	for _, client := range h.Clients {
-		client.Send <- data
+	for _, clients := range h.Clients {
+		for client := range clients {
+			client.Send <- data
+		}
 	}
 	h.mu.RUnlock()
 }
@@ -71,26 +75,41 @@ func (h *Hub) Run() {
 		select {
 		case client := <-h.Register:
 			h.mu.Lock()
-			h.Clients[client.UserID] = client
+			wasOffline := len(h.Clients[client.UserID]) == 0
+			if h.Clients[client.UserID] == nil {
+				h.Clients[client.UserID] = make(map[*Client]struct{})
+			}
+			h.Clients[client.UserID][client] = struct{}{}
 			h.mu.Unlock()
-			h.broadcastStatus(client.UserID, true)
+			if wasOffline {
+				h.broadcastStatus(client.UserID, true)
+			}
 
 		case msg := <-h.Messages:
 			// Validate the message before processing it.
 			if !chat.Checkmessage(msg.Content) || msg.SenderID == msg.ReceiverID {
 				continue
 			}
+			receiverexist, err := chat.UserExists(msg.ReceiverID)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+			if !receiverexist {
+				fmt.Println("receiver not exist")
+				continue
+			}
 			if msg.CreatedAt.IsZero() {
 				msg.CreatedAt = time.Now()
 			}
-			err := chat.SaveMessage(msg.SenderID, msg.ReceiverID, msg.Content)
+			err = chat.SaveMessage(msg.SenderID, msg.ReceiverID, msg.Content)
 			if err != nil {
 				fmt.Println(err)
 				continue
 			}
 			// Find the receiver.
 			h.mu.RLock()
-			receiver, ok := h.Clients[msg.ReceiverID]
+			receivers, ok := h.Clients[msg.ReceiverID]
 			h.mu.RUnlock()
 			if !ok {
 				// Receiver is offline.
@@ -104,14 +123,25 @@ func (h *Hub) Run() {
 				continue
 			}
 
-			// Send the message to the receiver.
-			receiver.Send <- data
+			// Send the message to every open tab for the receiver.
+			for receiver := range receivers {
+				receiver.Send <- data
+			}
 
 		case client := <-h.Unregister:
 			h.mu.Lock()
-			delete(h.Clients, client.UserID)
+			isOffline := false
+			if clients, ok := h.Clients[client.UserID]; ok {
+				delete(clients, client)
+				if len(clients) == 0 {
+					delete(h.Clients, client.UserID)
+					isOffline = true
+				}
+			}
 			h.mu.Unlock()
-			h.broadcastStatus(client.UserID, false)
+			if isOffline {
+				h.broadcastStatus(client.UserID, false)
+			}
 		}
 	}
 }

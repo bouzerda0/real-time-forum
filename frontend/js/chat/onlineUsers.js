@@ -1,14 +1,3 @@
-/* 
-onlineUsers.js
-│
-├── loadUsers() 
-├── renderUsers() 
-├── sortUsers() 
-├── updateOnlineUsers() 
-├── reorderUsers() 
-├── showNotification() 
-└── markRead() 
-*/
 import { ApiRequest } from "../api.js";
 
 const usersList = document.getElementById("users-list");
@@ -152,6 +141,7 @@ export function showNotification(message) {
 
 // Remove the unread badge of a conversation
 export function markRead(userId) {
+    console.log("is called")
     notifiedUsers.delete(userId);
     const userItem = usersList.querySelector(`[data-user-id="${userId}"]`);
     if (userItem) userItem.classList.remove("has-notification");
