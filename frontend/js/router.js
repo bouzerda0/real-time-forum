@@ -73,11 +73,16 @@ async function render(path) {
 
     // Layout adjustments for auth pages
     const sidebar = document.querySelector('.sidebar');
+    const chatSidebar = document.getElementById('chatSidebar');
+    const contentLayout = document.getElementById('contentLayout');
     const navbar = document.querySelector('.navbar');
     const mainArea = document.querySelector('.main');
     const app = document.getElementById('app');
 
     if (sidebar) sidebar.style.display = isAuthPage ? 'none' : '';
+    if (chatSidebar) chatSidebar.style.display = isAuthPage ? 'none' : '';
+    // Ensure an open Members panel cannot remain active after navigating to an auth page.
+    if (isAuthPage && contentLayout) contentLayout.classList.remove('chat-active');
     if (navbar) navbar.style.display = isAuthPage ? 'none' : '';
     if (mainArea) {
         mainArea.style.marginLeft = isAuthPage ? '0' : '';
