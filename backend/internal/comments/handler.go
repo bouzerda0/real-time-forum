@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"real-time-forum/database"
+	"real-time-forum/internal/auth"
 	"real-time-forum/internal/models"
-	"real-time-forum/internal/users"
 )
 
 func CommentsHandler(w http.ResponseWriter, r *http.Request) {
@@ -17,7 +17,7 @@ func CommentsHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		userID, err := users.GetUserID(r)
+		userID, err := auth.GetUserID(r)
 		if err != nil || userID <= 0 {
 			http.Error(w, `{"error":"Unauthorized. Please login to view comments."}`, http.StatusUnauthorized)
 			return
@@ -42,7 +42,7 @@ func CommentsHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(postComments)
 
 	case http.MethodPost:
-		userID, err := users.GetUserID(r)
+		userID, err := auth.GetUserID(r)
 		if err != nil || userID <= 0 {
 			http.Error(w, `{"error":"Unauthorized. Please login to comment."}`, http.StatusUnauthorized)
 			return

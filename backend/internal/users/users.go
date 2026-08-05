@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"real-time-forum/database"
+	"real-time-forum/internal/auth"
 	"real-time-forum/internal/websocket"
 )
 
@@ -31,7 +32,7 @@ func UsersHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	currentUserID, err := GetUserID(r)
+	currentUserID, err := auth.GetUserID(r)
 	if err != nil {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
