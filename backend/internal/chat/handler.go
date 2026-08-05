@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"real-time-forum/internal/posts"
+	"real-time-forum/internal/auth"
 )
 
 func ChatHandler(w http.ResponseWriter, r *http.Request) {
@@ -14,7 +14,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sender, err := posts.GetUserID(r)
+	sender, err := auth.GetUserID(r)
 	if err != nil {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return

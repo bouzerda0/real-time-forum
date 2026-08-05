@@ -7,13 +7,14 @@ import (
 	"strconv"
 	"time"
 
+	"real-time-forum/internal/auth"
 	"real-time-forum/internal/models"
 )
 
 func PostHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodPost:
-		userID, err := GetUserID(r)
+		userID, err := auth.GetUserID(r)
 		if err != nil {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
@@ -45,7 +46,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(post)
 
 	case http.MethodGet:
-		userID, _ := GetUserID(r)
+		userID, _ := auth.GetUserID(r)
 		category := r.URL.Query().Get("category")
 		// Filter by category if specified
 		posts, err := GetAllPosts(category, userID)
@@ -81,7 +82,7 @@ func GetPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(400), http.StatusBadRequest)
 		return
 	}
-	userID, _ := GetUserID(r)
+	userID, _ := auth.GetUserID(r)
 	post, err := GetPostByID(post_id, userID)
 	if err != nil {
 		http.Error(w, http.StatusText(404), http.StatusNotFound)

@@ -25,7 +25,7 @@ func RequireAuth(next http.HandlerFunc) http.HandlerFunc {
 			sendJSONError(w, "Unauthorized. Please login.", http.StatusUnauthorized)
 			return
 		}
-
+		// add the user id to the request context
 		ctx := context.WithValue(r.Context(), "userID", userID)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	}

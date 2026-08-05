@@ -7,20 +7,17 @@ import (
 	"time"
 
 	"real-time-forum/database"
-	"real-time-forum/internal/posts"
 	"real-time-forum/internal/websocket"
 )
 
 type PublicUser struct {
-	ID          int        `json:"id"`
-	Username    string     `json:"username"`
-	Nickname    string     `json:"nickname"`
-	Online      bool       `json:"online"`
+	ID          int       `json:"id"`
+	Username    string    `json:"username"`
+	Nickname    string    `json:"nickname"`
+	Online      bool      `json:"online"`
 	Lastmessage time.Time `json:"lastmessage"`
 }
 
-// SQL query to feddcccctch users along with their last message timestamp, excluding the current user.
-// Note: MAX(m.created_at) returns TEXT in SQLite (not DATETIME), so we scan it as a string.
 const query = `
 SELECT u.id, u.username, MAX(m.created_at) AS last_message FROM users u
 LEFT JOIN messages m
@@ -29,13 +26,12 @@ WHERE u.id != ?
 GROUP BY u.id, u.username
 ORDER BY last_message DESC;`
 
-//
 func UsersHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	currentUserID, err := posts.GetUserID(r)
+	currentUserID, err := GetUserID(r)
 	if err != nil {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return

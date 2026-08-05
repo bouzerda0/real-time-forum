@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"real-time-forum/database"
-	"real-time-forum/internal/posts"
+	"real-time-forum/internal/users"
 )
 
 type ReactionRequest struct {
@@ -15,7 +15,7 @@ type ReactionRequest struct {
 
 // handles comment likes and dislikes atomically.
 func ReactionHandler(w http.ResponseWriter, r *http.Request) {
-	userID, err := posts.GetUserID(r)
+	userID, err := users.GetUserID(r)
 	if err != nil || userID <= 0 || r.Method != http.MethodPost {
 		http.Error(w, "Unauthorized or bad method", http.StatusUnauthorized)
 		return
