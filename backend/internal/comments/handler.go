@@ -60,6 +60,14 @@ func CommentsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Verify post exists before adding the comment
+		var postExists bool
+		err = database.DB.QueryRow("SELECT EXISTS(SELECT 1 FROM posts WHERE id=?)", newCommentInput.PostID).Scan(&postExists)
+		if err != nil || !postExists {
+			http.Error(w, `{"error":"Post not found or has been deleted"}`, http.StatusNotFound)
+			return
+		}
+
 		var authorUsername string
 		database.DB.QueryRow("SELECT username FROM users WHERE id = ?", userID).Scan(&authorUsername)
 		if authorUsername == "" {
