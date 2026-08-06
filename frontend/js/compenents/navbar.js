@@ -1,102 +1,80 @@
 import { closeWebSocket } from '../websocket.js';
 
+// Always clean up & redirect, even if the API call fails
 export async function performLogout() {
-    try {
-        await fetch('/api/logout', { method: 'POST' });
-    } catch (error) {
-        console.error('Logout request error:', error);
-    } finally {
+    try { await fetch('/api/logout', { method: 'POST' }); }
+    catch (e) { console.error('Logout error:', e); }
+    finally {
         closeWebSocket();
         localStorage.removeItem('isAuthenticated');
         localStorage.removeItem('currentUser');
-            window.navigateTo('/login');
+        window.navigateTo('/login');
     }
 }
 
 export function updateAuthUI() {
-    const navAuthArea = document.getElementById('navAuthArea');
-    const sidebarFooter = document.getElementById('sidebarFooter');
-    const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const navArea = document.getElementById('navAuthArea');
+    const footer = document.getElementById('sidebarFooter');
+    const authed = localStorage.getItem('isAuthenticated') === 'true';
+    const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
 
-    if (isAuthenticated) window.initOnlineSocket?.();
+    // Reconnect socket on auth state change
+    if (authed) window.initOnlineSocket?.();
 
-    if (navAuthArea) {
-        if (isAuthenticated) {
-            const displayName = currentUser.username || currentUser.nickname || currentUser.name || (currentUser.email ? currentUser.email.split('@')[0] : 'User');
-            const initial = (displayName || 'U').charAt(0).toUpperCase();
-            navAuthArea.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <div style="display: flex; align-items: center; gap: 8px; background: #eff6ff; border: 1px solid #bfdbfe; padding: 6px 14px; border-radius: 9999px;">
-                        <div style="width: 24px; height: 24px; border-radius: 50%; background: #8b5cf6; color: white; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">
-                            ${initial}
-                        </div>
-                        <span style="font-weight: 600; font-size: 13.5px; color: #1e40af;">@${displayName}</span>
+    if (navArea) {
+        if (authed) {
+            // Fallback chain: pick best display name available
+            const name = user.username || user.nickname || user.email?.split('@')[0] || 'User';
+            navArea.innerHTML = `
+                <div style="display:flex;align-items:center;gap:12px">
+                    <div style="display:flex;align-items:center;gap:8px;background:#eff6ff;border:1px solid #bfdbfe;padding:6px 14px;border-radius:9999px">
+                        <div class="user-rune-logo">${name[0].toUpperCase()}</div>
+                        <span style="font-weight:600;font-size:13.5px;color:#1e40af">@${name}</span>
                     </div>
-                    <button id="navLogoutBtn" style="background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; padding: 7px 14px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s;">
-                        Log Out
-                    </button>
-                </div>
-            `;
-            const logoutBtn = navAuthArea.querySelector('#navLogoutBtn');
-            if (logoutBtn) logoutBtn.addEventListener('click', performLogout);
+                    <button id="navLogoutBtn" style="background:#fee2e2;color:#dc2626;border:1px solid #fecaca;padding:7px 14px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer">Log Out</button>
+                </div>`;
+            navArea.querySelector('#navLogoutBtn').onclick = performLogout;
         } else {
-            navAuthArea.innerHTML = `
+            navArea.innerHTML = `
                 <button class="btn-login" onclick="navigateTo('/login')">Login</button>
-                <button class="btn-register" onclick="navigateTo('/register')">Register</button>
-            `;
+                <button class="btn-register" onclick="navigateTo('/register')">Register</button>`;
         }
     }
 
-    if (sidebarFooter) {
-        if (isAuthenticated) {
-            sidebarFooter.innerHTML = `
-                <button id="sidebarLogoutBtn" style="background: none; border: none; cursor: pointer; width: 100%; text-align: left; padding: 0.6rem 0.5rem; font-weight: 600; font-size: 0.9rem; color: #dc2626; display: flex; align-items: center; gap: 8px;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                        <polyline points="16 17 21 12 16 7"></polyline>
-                        <line x1="21" y1="12" x2="9" y2="12"></line>
-                    </svg>
-                    Log Out
-                </button>
-            `;
-            const sbLogoutBtn = sidebarFooter.querySelector('#sidebarLogoutBtn');
-            if (sbLogoutBtn) sbLogoutBtn.addEventListener('click', performLogout);
+    // Sidebar logout — only show when authed
+    if (footer) {
+        if (authed) {
+            footer.innerHTML = `<button class="btn-logout-sidebar" id="sidebarLogoutBtn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>Log Out</button>`;
+            footer.querySelector('#sidebarLogoutBtn').onclick = performLogout;
         } else {
-            sidebarFooter.innerHTML = '';
+            footer.innerHTML = '';
         }
     }
 }
 
-// Initialize sidebar and auth sync
+// One helper to toggle sidebar open/close
+function toggleSidebar(open) {
+    document.querySelector('.sidebar')?.classList.toggle('open', open);
+    document.getElementById('sidebarOverlay')?.classList.toggle('active', open);
+}
+
 export function initNavbar() {
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebarClose = document.getElementById('sidebarClose');
-    const sidebar = document.querySelector('.sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
+    // Mobile drawer open/close
+    document.getElementById('menuToggle')?.addEventListener('click', () => toggleSidebar(true));
+    document.getElementById('sidebarClose')?.addEventListener('click', () => toggleSidebar(false));
 
-    if (menuToggle && sidebar && overlay) {
-        menuToggle.addEventListener('click', () => {
-            sidebar.classList.add('open');
-            overlay.classList.add('active');
-        });
-    }
-
-    if (sidebarClose && sidebar && overlay) {
-        sidebarClose.addEventListener('click', () => {
-            sidebar.classList.remove('open');
-            overlay.classList.remove('active');
-        });
-    }
-
+    // Sync auth UI across tabs via storage events
     window.addEventListener('storage', (e) => {
-        if (e.key === 'currentUser' || e.key === 'isAuthenticated') {
-            updateAuthUI();
-        }
+        if (e.key === 'currentUser' || e.key === 'isAuthenticated') updateAuthUI();
     });
 }
 
-// Initialize on load
+// Run init — handles both sync and async DOM ready states
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initNavbar);
 } else {

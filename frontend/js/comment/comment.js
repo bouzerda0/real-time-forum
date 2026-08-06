@@ -1,4 +1,3 @@
-// Comments rendering and actions
 import { ApiRequest } from "../api.js";
 import { createReaction } from "../post/reactionPost.js";
 
@@ -6,7 +5,6 @@ export const escapeHTML = (str) =>
     String(str ?? "").replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[m]);
 
 export const fetchComments = (postId) => ApiRequest(`/api/comments?post_id=${postId}`);
-
 export const submitComment = (postId, content) =>
     ApiRequest("/api/comments", { method: "POST", body: { post_id: Number(postId), content } });
 
@@ -20,8 +18,8 @@ function createCommentItem(c) {
     const content = document.createElement("p");
     content.textContent = c.content || c.Content || "";
 
-    const reactionUI = createReaction(c.id || c.ID || 0, c.likes || 0, c.dislikes || 0, c.user_reaction, "comment");
-    reactionUI.style.marginTop = "8px";
+    const reactions = createReaction(c.id || c.ID || 0, c.likes || 0, c.dislikes || 0, c.user_reaction, "comment");
+    reactions.style.marginTop = "8px";
 
     item.append(header, content, reactionUI);
     return item;
@@ -34,54 +32,44 @@ export async function renderCommentsSection(postId, container) {
     container.innerHTML = `
         <div class="comments-section">
             <h4>Comments</h4>
-            <div id="comments-list-${postId}"></div>
-            <div id="comment-error-${postId}" class="form-error"></div>
-            <form id="reply-form-${postId}" style="margin-top: 10px;">
-                <textarea id="reply-input-${postId}" placeholder="Write a reply..." required rows="2" style="width:100%;"></textarea>
-                <button type="submit" style="margin-top: 5px;">Reply</button>
+            <div id="clist-${postId}"></div>
+            <div id="cerr-${postId}" class="form-error"></div>
+            <form id="cform-${postId}" style="margin-top:10px">
+                <textarea id="cinput-${postId}" placeholder="Write a reply..." required rows="2" style="width:100%"></textarea>
+                <button type="submit" style="margin-top:5px">Reply</button>
             </form>
-        </div>
-    `;
+        </div>`;
 
     const commentsList = container.querySelector(`#comments-list-${postId}`);
     if (Array.isArray(comments)) {
         comments.forEach(c => commentsList.appendChild(createCommentItem(c)));
     }
 
-    const errBox = container.querySelector(`#comment-error-${postId}`);
-    const showError = (msg) => { errBox.textContent = msg; };
+    const errBox = container.querySelector(`#cerr-${postId}`);
 
-    container.querySelector(`#reply-form-${postId}`).addEventListener("submit", async (e) => {
+    container.querySelector(`#cform-${postId}`).onsubmit = async (e) => {
         e.preventDefault();
-        showError("");
+        errBox.textContent = "";
 
-        const input = container.querySelector(`#reply-input-${postId}`);
+        const input = container.querySelector(`#cinput-${postId}`);
+        const text = input.value.trim();
 
-        if (!input.value.trim() || input.value.length > 4500) {
-            showError("Comment cannot exceed 4500 characters.");
+        if (!text || text.length > 4500) {
+            errBox.textContent = "Comment cannot exceed 4500 characters.";
             return;
         }
-
-        const content = input.value.trim();
 
         try {
             const createdComment = await submitComment(postId, content);
             input.value = "";
-
-            if (createdComment && (createdComment.id || createdComment.ID)) {
-                commentsList.appendChild(createCommentItem(createdComment));
-            } else {
-                const user = JSON.parse(localStorage.getItem("currentUser") || "{}");
-                const newComment = { id: 0, nickname: user.nickname || user.username || "You", content };
-                commentsList.appendChild(createCommentItem(newComment));
-            }
-        } catch (error) {
-            if (error && error.message && (error.message.includes("401") || error.message.includes("Unauthorized"))) {
-                showError("Please login to comment.");
-                if (window.navigateTo) window.navigateTo("/login");
-            } else {
-                showError("Failed to submit comment. Please try again.");
-            }
+            const comment = (res?.id || res?.ID)
+                ? res
+                : { id: 0, nickname: JSON.parse(localStorage.getItem("currentUser") || "{}").nickname || "You", content: text };
+            list.appendChild(createCommentItem(comment));
+        } catch (err) {
+            const is401 = err?.message?.includes("401") || err?.message?.includes("Unauthorized");
+            errBox.textContent = is401 ? "Please login to comment." : "Failed to submit comment.";
+            if (is401 && window.navigateTo) window.navigateTo("/login");
         }
-    });
+    };
 }
