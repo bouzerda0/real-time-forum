@@ -47,7 +47,7 @@ func ChatHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-
+	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(messages)
 	if err != nil {
 		http.Error(w, http.StatusText(500), http.StatusInternalServerError)
