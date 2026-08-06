@@ -35,6 +35,15 @@ func SessionHandler(w http.ResponseWriter, r *http.Request) {
 
 	userID, err := GetUserID(r)
 	if err != nil {
+		// Clear the invalid session cookie
+		http.SetCookie(w, &http.Cookie{
+			Name:     "session_token",
+			Value:    "",
+			Path:     "/",
+			MaxAge:   -1,
+			HttpOnly: true,
+		})
+
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"status":  "error",

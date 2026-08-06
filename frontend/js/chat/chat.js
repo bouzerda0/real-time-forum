@@ -98,12 +98,13 @@ export function sendMessage(event) {
     const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
     const optimistic = {
         senderId: currentUser.id,
+        receiverId: window.currentChatUser,
         content,
         createdAt: new Date().toISOString(),
     };
     removeEmptyMessage();
     appendMessage(optimistic);
-    updateLastMessage(optimistic);
+    updateLastMessage(window.currentChatUser, optimistic);
 
     chatInput.value = "";
     autoScroll(messagesContainer);
@@ -113,7 +114,7 @@ export function sendMessage(event) {
 export function updateChatMessages(message) {
     if (!message || message.type !== "message") return;
 
-    updateLastMessage(message);
+    updateLastMessage(message.senderId, message);
 
     if (message.senderId === window.currentChatUser) {
         if (queueLiveMessage(message)) return;
@@ -131,8 +132,8 @@ export function updateChatMessages(message) {
 }
 
 // Keep the users list ordered by the last message sent
-export function updateLastMessage(message) {
-    reorderUsers(message);
+export function updateLastMessage(userId, message) {
+    reorderUsers(userId, message);
 }
 
 // Remove the unread badge of a conversation

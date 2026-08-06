@@ -24,6 +24,11 @@ const routes = {
 async function checkSession() {
     try {
         const res = await fetch('/api/session');
+        if (res.status === 401) {
+            localStorage.removeItem('isAuthenticated');
+            localStorage.removeItem('currentUser');
+            return false;
+        }
         if (!res.ok) throw new Error();
         const { user } = await res.json();
         localStorage.setItem('isAuthenticated', 'true');

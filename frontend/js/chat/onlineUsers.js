@@ -1,4 +1,5 @@
 import { ApiRequest } from "../api.js";
+import { formatRelativeTime } from "./chatHelpers.js";
 
 const usersList = document.getElementById("users-list");
 
@@ -112,8 +113,20 @@ export function updateOnlineUsers(message) {
 }
 
 // 5. Move a user to the top of the list & refresh their last-message preview (Discord style)
-export function reorderUsers(message) {
-    const userItem = usersList.querySelector(`[data-user-id="${message.senderId}"]`);
+export function reorderUsers(userId, message) {
+    // 1. Update the cache
+    const userIndex = usersCache.findIndex(u => u.id === userId);
+    if (userIndex !== -1) {
+        const user = usersCache[userIndex];
+        user.lastmessage = message.createdAt;
+        
+        // Move to top of cache
+        usersCache.splice(userIndex, 1);
+        usersCache.unshift(user);
+    }
+
+    // 2. Update the DOM
+    const userItem = usersList.querySelector(`[data-user-id="${userId}"]`);
     if (!userItem) return;
 
     const preview = userItem.querySelector(".user-lastmsg");
@@ -141,22 +154,9 @@ export function showNotification(message) {
 
 // Remove the unread badge of a conversation
 export function markRead(userId) {
-    console.log("is called")
     notifiedUsers.delete(userId);
     const userItem = usersList.querySelector(`[data-user-id="${userId}"]`);
     if (userItem) userItem.classList.remove("has-notification");
 }
 
-function formatRelativeTime(dateStr) {
-    const date = new Date(dateStr);
-    if (isNaN(date.getTime())) return "";
 
-    const minutes = Math.floor((Date.now() - date.getTime()) / 60000);
-    if (minutes < 1) return "now";
-    if (minutes < 60) return `${minutes}m`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h`;
-    const days = Math.floor(hours / 24);
-    if (days < 7) return `${days}d`;
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-}
