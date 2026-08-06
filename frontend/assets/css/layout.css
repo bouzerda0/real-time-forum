@@ -54,7 +54,7 @@ body {
 .logo svg path { stroke: var(--primary); }
 .logo-title { font-size: 1.35rem; font-weight: 800; color: var(--text); letter-spacing: -.02em; }
 
-.sidebar-close { display:none; background:none; border:none; cursor:pointer; position:absolute; top:1rem; right:1rem; }
+.sidebar-close { display:none; background:none; border:none; cursor:pointer; position:absolute; top:1rem; right:1rem; font-size:1.5rem; color:var(--text-muted); }
 
 .sidebar-section-label {
   font-size: .68rem; font-weight: 800; letter-spacing: .12em;
@@ -134,81 +134,12 @@ body {
   padding:0 2rem; position:sticky; top:0; z-index:90;
 }
 
-.menu-toggle { display:none; background:none; border:none; cursor:pointer; }
-.auth-buttons { display:flex; gap:1rem; align-items:center; }
+.menu-toggle { display:none; background:none; border:none; cursor:pointer; font-size:1.5rem; color:var(--text); }
+.auth-buttons { display:flex; gap:1rem; align-items:center; margin-left:auto; }
 .btn-login { cursor:pointer; background:none; border:none; font-weight:600; font-family:inherit; color:var(--text); }
 .btn-register { cursor:pointer; background:var(--primary); color:#fff; padding:.5rem 1rem; border-radius:6px; border:none; font-weight:600; font-family:inherit; }
 
-<<<<<<< HEAD
 /* === UTILITIES === */
-=======
-
-/* === AUTH NAVBAR BUTTONS === */
-.auth-buttons {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    margin-left: auto;
-}
-
-.btn-login {
-    cursor: pointer;
-    background: none;
-    border: none;
-    font-weight: 600;
-    font-family: inherit;
-    color: var(--text);
-}
-
-.btn-register {
-    cursor: pointer;
-    background: var(--primary);
-    color: var(--white);
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    border: none;
-    font-weight: 600;
-    font-family: inherit;
-}
-
-/* === MOBILE OVERLAY & RESPONSIVE LAYOUT === */
-.sidebar-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.4);
-    backdrop-filter: blur(2px);
-    z-index: 95;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s ease;
-}
-
-.sidebar-overlay.active {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-@media (max-width: 768px) {
-    .sidebar {
-        transform: translateX(-100%);
-    }
-
-    .sidebar.open {
-        transform: translateX(0);
-    }
-
-    .sidebar-close,
-    .menu-toggle {
-        display: block;
-    }
-
-    .main {
-        margin-left: 0;
-    }
-}
-
-/* === GLOBAL USER RUNE LOGO === */
->>>>>>> 04cfb3aaec47aa154f2d646c134ccadbb610a546
 .user-rune-logo {
   width:26px; height:26px; border-radius:50%;
   background: linear-gradient(135deg, #8b5cf6, #6d28d9);
