@@ -11,12 +11,12 @@ import (
 	"real-time-forum/internal/websocket"
 )
 
-type PublicUser struct {
+type user struct {
 	ID          int       `json:"id"`
 	Username    string    `json:"username"`
 	Nickname    string    `json:"nickname"`
 	Online      bool      `json:"online"`
-	Lastmessage time.Time `json:"lastmessage"`
+	LastMessage time.Time `json:"lastmessage"`
 }
 
 const query = `
@@ -32,59 +32,45 @@ func UsersHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	currentUserID, err := auth.GetUserID(r)
+	userID, err := auth.GetUserID(r)
 	if err != nil {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
-	// Execute the SQL query to fetch users and their last message timestamps, excluding the current user.
-	rows, err := database.DB.Query(
-		query,
-		currentUserID,
-		currentUserID,
-		currentUserID,
-	)
+
+	rows, err := database.DB.Query(query, userID, userID, userID)
 	if err != nil {
 		http.Error(w, "Error fetching users", http.StatusInternalServerError)
 		return
 	}
 	defer rows.Close()
 
-	var users []PublicUser
+	var list []user
 	for rows.Next() {
-		// Create a new PublicUser instance and a variable to hold the last message timestamp.
-		var u PublicUser
-		// MAX(m.created_at) returns TEXT (not time.Time) because it's an aggregate result.
-		// Use sql.NullString to scan the raw text, then parse it into time.Time.
-		var lastMessage sql.NullString
+		var u user
+		var lastMsg sql.NullString
 
-		err := rows.Scan(
-			&u.ID,
-			&u.Username,
-			&lastMessage,
-		)
-		if err != nil {
+		if err := rows.Scan(&u.ID, &u.Username, &lastMsg); err != nil {
 			http.Error(w, "Error scanning users", http.StatusInternalServerError)
 			return
 		}
-		// If the last message timestamp is valid (not NULL),
-		// parse the SQLite datetime text format into time.Time.
-		if lastMessage.Valid {
-			parsedTime, parseErr := time.Parse("2006-01-02 15:04:05", lastMessage.String)
-			if parseErr == nil {
-				u.Lastmessage = parsedTime
+
+		if lastMsg.Valid {
+			if t, err := time.Parse("2006-01-02 15:04:05", lastMsg.String); err == nil {
+				u.LastMessage = t
 			}
 		}
+
 		u.Nickname = u.Username
 		u.Online = websocket.GlobalHub.IsOnline(u.ID)
-		users = append(users, u)
+		list = append(list, u)
 	}
 
-	if users == nil {
-		users = []PublicUser{}
+	if list == nil {
+		list = []user{}
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(users)
+	json.NewEncoder(w).Encode(list)
 }
