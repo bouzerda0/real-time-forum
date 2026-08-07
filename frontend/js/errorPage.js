@@ -9,7 +9,7 @@ const ERRORS = {
   503: ['Service Unavailable', 'The server is temporarily unavailable. Please try again later.']
 };
 
-export function ErrorPageView(status = 404) {
+export function errorView(status = 404) {
   const [title, desc] = ERRORS[status] || ['Unexpected Error', 'Something went wrong.'];
   const dom = document.createElement('div');
   dom.className = 'error-box';

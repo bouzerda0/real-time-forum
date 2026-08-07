@@ -1,6 +1,6 @@
 
 import { filterByCategory } from '/js/post/filterPosts.js';
-import { initRouter } from '/js/router.js';
+import { init } from '/js/router.js';
 import '/js/chat/onlineUsers.js';
 
 // Cursor glow effect
@@ -18,5 +18,5 @@ if (window.innerWidth > 768) {
 }
 
 window.filterByCategory = filterByCategory;
-initRouter();
+init();
 

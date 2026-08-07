@@ -10,7 +10,7 @@ const AVAILABLE_CATEGORIES = [
     "Education"
 ];
 
-export function CreatePostView() {
+export function createPostView() {
     const container = document.createElement("div");
     container.style.padding = "20px 0";
     container.appendChild(createPostForm());

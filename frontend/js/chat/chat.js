@@ -18,7 +18,7 @@ const chatForm = document.getElementById("chat-input-box");
 const chatInput = document.getElementById("sidebar-chat-input");
 
 // Router view for /messages
-export function ChatView() {
+export function chatView() {
     const dom = document.createElement("div");
     dom.innerHTML = `
         <div class="no-posts">
