@@ -4,7 +4,7 @@ import { initRouter } from '/js/router.js';
 import '/js/chat/onlineUsers.js';
 
 // Cursor glow effect
-const cursorBlur = document.getElementById('cursor-blur');
+const cursorBlur = document.getElementById('purple-glow');
 
 if (window.innerWidth > 768) {
     document.addEventListener('mousemove', (e) => {

@@ -1,7 +1,7 @@
 import { ApiRequest } from "../api.js";
 import { formatRelativeTime } from "./chatHelpers.js";
 
-const usersList = document.getElementById("users-list");
+const usersList = document.getElementById("online-users");
 
 // Cache of the last fetched users (used to resolve nicknames for incoming messages)
 let usersCache = [];
@@ -38,22 +38,22 @@ function renderUsers(users) {
 
     users.forEach((user) => {
         const userItem = document.createElement("div");
-        userItem.classList.add("user-item");
+        userItem.classList.add("person");
         userItem.dataset.userId = user.id;
 
         const avatar = document.createElement("div");
-        avatar.classList.add("user-avatar");
+        avatar.classList.add("profile-pic");
         avatar.textContent = user.nickname.charAt(0).toUpperCase();
 
         const meta = document.createElement("div");
-        meta.classList.add("user-meta");
+        meta.classList.add("person-info");
 
         const name = document.createElement("span");
-        name.classList.add("user-name");
+        name.classList.add("name");
         name.textContent = user.nickname;
 
         const lastMsg = document.createElement("span");
-        lastMsg.classList.add("user-lastmsg");
+        lastMsg.classList.add("last-text");
         lastMsg.textContent = hasLastMessage(user)
             ? formatRelativeTime(user.lastmessage)
             : "New member";
@@ -62,7 +62,7 @@ function renderUsers(users) {
         meta.appendChild(lastMsg);
 
         const status = document.createElement("span");
-        status.classList.add("user-status");
+        status.classList.add("green-dot");
         status.classList.add(user.online ? "online" : "offline");
 
         userItem.appendChild(avatar);
@@ -107,7 +107,7 @@ export function updateOnlineUsers(message) {
     const userItem = usersList.querySelector(`[data-user-id="${message.userId}"]`);
     if (!userItem) return;
 
-    const status = userItem.querySelector(".user-status");
+    const status = userItem.querySelector(".green-dot");
     status.classList.toggle("online", message.online);
     status.classList.toggle("offline", !message.online);
 }
@@ -129,7 +129,7 @@ export function reorderUsers(userId, message) {
     const userItem = usersList.querySelector(`[data-user-id="${userId}"]`);
     if (!userItem) return;
 
-    const preview = userItem.querySelector(".user-lastmsg");
+    const preview = userItem.querySelector(".last-text");
     if (preview) {
         const content = message.content || "";
         preview.textContent = content

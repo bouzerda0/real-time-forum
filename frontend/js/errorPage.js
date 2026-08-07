@@ -12,17 +12,17 @@ const ERRORS = {
 export function ErrorPageView(status = 404) {
   const [title, desc] = ERRORS[status] || ['Unexpected Error', 'Something went wrong.'];
   const dom = document.createElement('div');
-  dom.className = 'error-page';
+  dom.className = 'error-box';
   dom.innerHTML = `
-    <div class="error-code">${status}</div>
+    <div class="big-error">${status}</div>
     <h1>${title}</h1>
     <p>${desc}</p>
-    <button class="error-home-btn">Back to Home</button>
+    <button class="home-button">Back to Home</button>
   `;
 
   return {
     dom,
-    logic: () => dom.querySelector('.error-home-btn')?.addEventListener('click', () => navigateTo('/'))
+    logic: () => dom.querySelector('.home-button')?.addEventListener('click', () => navigateTo('/'))
   };
 }
 

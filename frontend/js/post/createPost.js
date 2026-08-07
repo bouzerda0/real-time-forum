@@ -23,7 +23,7 @@ export function CreatePostView() {
 
 function createPostForm() {
     const form = document.createElement("form");
-    form.className = "post-box";
+    form.className = "create-box";
     form.id = "create-post-form";
 
     form.addEventListener("submit", handleCreatePost);
@@ -31,13 +31,13 @@ function createPostForm() {
     // Error box
     const errBox = document.createElement("div");
     errBox.id = "post-error";
-    errBox.className = "form-error";
+    errBox.className = "error-text";
 
     // Title
     const title = document.createElement("input");
     title.type = "text";
-    title.id = "post-title";
-    title.className = "post-title";
+    title.id = "title";
+    title.className = "title";
     title.placeholder = "Enter post title";
     title.required = true;
 
@@ -45,15 +45,15 @@ function createPostForm() {
 
     // Content
     const content = document.createElement("textarea");
-    content.id = "post-content";
-    content.className = "post-content";
+    content.id = "text";
+    content.className = "text";
     content.placeholder = "Write your post...";
     content.required = true;
 
     // Submit Button
     const submit = document.createElement("button");
     submit.type = "submit";
-    submit.className = "post-submit";
+    submit.className = "submit-btn";
     submit.textContent = "Create Post";
 
     form.append(
@@ -76,8 +76,8 @@ async function handleCreatePost(event) {
     event.preventDefault();
     showPostError("");
 
-    const titleInput = document.getElementById("post-title");
-    const contentInput = document.getElementById("post-content");
+    const titleInput = document.getElementById("title");
+    const contentInput = document.getElementById("text");
 
     const categories = Array.from(
         document.querySelectorAll('input[name="post-categories"]:checked')
@@ -119,16 +119,16 @@ async function handleCreatePost(event) {
 
 function createCategorySection() {
     const container = document.createElement("div");
-    container.className = "post-categories-container";
+    container.className = "category-list";
 
     const labelTitle = document.createElement("label");
-    labelTitle.className = "categories-title";
+    labelTitle.className = "pick-category";
     labelTitle.textContent = "Select Categories:";
     container.appendChild(labelTitle);
 
     AVAILABLE_CATEGORIES.forEach(catName => {
         const itemWrapper = document.createElement("div");
-        itemWrapper.className = "category-item";
+        itemWrapper.className = "category-option";
 
         const catId = catName.toLowerCase();
 

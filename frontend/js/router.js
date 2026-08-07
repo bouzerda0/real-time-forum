@@ -60,24 +60,39 @@ async function render(path) {
 
     // Toggle shell visibility — auth pages are fullscreen, no sidebar/nav
     const hide = isAuthPage ? 'none' : '';
-    document.querySelector('.sidebar')?.style.setProperty('display', hide);
+    document.querySelector('.left-menu')?.style.setProperty('display', hide);
     document.getElementById('chatSidebar')?.style.setProperty('display', hide);
-    document.querySelector('.navbar')?.style.setProperty('display', hide);
+    document.querySelector('.top-bar')?.style.setProperty('display', hide);
     if (isAuthPage) document.getElementById('contentLayout')?.classList.remove('chat-active');
 
     // Auth pages need full width — reset margin/padding overrides
-    const main = document.querySelector('.main');
+    const main = document.querySelector('.main-content');
     if (main) { main.style.marginLeft = hide ? '0' : ''; main.style.width = hide ? '100%' : ''; }
 
     const app = document.getElementById('app');
     if (!app) return;
-    if (isAuthPage) { app.style.padding = '0'; app.style.maxWidth = 'none'; }
-    else { app.style.padding = ''; app.style.maxWidth = ''; }
+    if (isAuthPage) { 
+        app.style.padding = '20px'; 
+        app.style.maxWidth = 'none'; 
+        app.style.display = 'flex';
+        app.style.alignItems = 'center';
+        app.style.justifyContent = 'center';
+        app.style.minHeight = '100vh';
+        app.style.boxSizing = 'border-box';
+    }
+    else { 
+        app.style.padding = ''; 
+        app.style.maxWidth = ''; 
+        app.style.display = '';
+        app.style.alignItems = '';
+        app.style.justifyContent = '';
+        app.style.minHeight = '';
+        app.style.boxSizing = '';
+    }
 
-    // Dynamic route: /post/:id
     if (path.startsWith('/post/')) {
         const id = Number(path.split('/')[2]);
-        if (id) { app.innerHTML = '<div id="feed-container"></div>'; return loadPostCard(id); }
+        if (id) { app.innerHTML = '<div id="feed" class="feed-container"></div>'; return loadPostCard(id); }
     }
 
     // Match route or fallback to 404

@@ -1,16 +1,16 @@
 export function RegisterView() {
     const mainContainer = document.createElement('div');
-    mainContainer.className = 'disc-card';
+    mainContainer.className = 'login-box';
     mainContainer.innerHTML = `
         <h2>Create Account</h2>
-        <div class="subtitle">Join the Real-Time Forum premium community</div>
-        <div id="register-error"></div>
+        <div class="subtitle">Join the Forum community</div>
+        <div id="register-error-text"></div>
         <form id="registerForm" style="display: flex; flex-direction: column; gap: 1rem;">
             <div>
                 <label for="username">username</label>
                 <input type="text" id="username" placeholder="e.g. cyber_samurai" required minlength="3" maxlength="25" />
             </div>
-            <div class="form-row">
+            <div class="flex-row">
                 <div>
                     <label for="firstName">First Name</label>
                     <input type="text" id="firstName" placeholder="First Name" required />
@@ -20,7 +20,7 @@ export function RegisterView() {
                     <input type="text" id="lastName" placeholder="Last Name" required />
                 </div>
             </div>
-            <div class="form-row">
+            <div class="flex-row">
                 <div>
                     <label for="age">Age</label>
                     <input type="number" id="age" placeholder="21" min="13" max="120" required />
@@ -42,7 +42,7 @@ export function RegisterView() {
                 <label for="password">Password</label>
                 <input type="password" id="password" placeholder="At least 8 characters" required minlength="8" />
             </div>
-            <button type="submit" class="btn-create">Create Account</button>
+            <button type="submit" class="new-post-btn">Create Account</button>
         </form>
         <p style="margin-top: 1.5rem; font-size: 0.875rem; text-align: center;">
             Already have an account? <a href="/login" id="login-link">Sign In</a>
@@ -50,7 +50,7 @@ export function RegisterView() {
     `;
 
     const logic = () => {
-        const [form, errBox, btn] = ['#registerForm', '#register-error', 'button[type="submit"]'].map(s => mainContainer.querySelector(s));
+        const [form, errBox, btn] = ['#registerForm', '#register-error-text', 'button[type="submit"]'].map(s => mainContainer.querySelector(s));
         const getVal = id => mainContainer.querySelector(id).value.trim();
 
         form.addEventListener('submit', async (e) => {

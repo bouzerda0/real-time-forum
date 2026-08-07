@@ -2,10 +2,10 @@ import { ApiRequest } from "../api.js"
 import { createReaction } from "./reactionPost.js"
 
 export async function loadFeed() {
-    const feed = document.getElementById("feed-container");
+    const feed = document.getElementById("feed");
     if (!feed) return;
 
-    document.querySelectorAll('.cat-btn').forEach(btn => {
+    document.querySelectorAll('.menu-btn').forEach(btn => {
         btn.classList.remove('active');
         if (btn.getAttribute('data-cat') === 'all') {
             btn.classList.add('active');
@@ -29,15 +29,15 @@ export async function loadFeed() {
 }
 
 export function showEmpty(category) {
-    const feedContainer = document.getElementById("feed-container");
+    const feedContainer = document.getElementById("feed");
 
     feedContainer.innerHTML = "";
 
     const container = document.createElement("div");
-    container.className = "empty-feed";
+    container.className = "no-posts";
 
     const iconContainer = document.createElement("div");
-    iconContainer.className = "empty-feed-icon";
+    iconContainer.className = "sad-face";
     iconContainer.innerHTML = `
         <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
@@ -53,7 +53,7 @@ export function showEmpty(category) {
         : "Be the first to create a post and start a conversation in this category.";
 
     const createBtn = document.createElement("button");
-    createBtn.className = "empty-feed-btn";
+    createBtn.className = "blue-button";
     createBtn.innerHTML = `
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -76,7 +76,7 @@ export function showEmpty(category) {
 }
 
 export function renderPosts(posts) {
-    const feedContainer = document.getElementById("feed-container");
+    const feedContainer = document.getElementById("feed");
 
     feedContainer.innerHTML = "";
 
@@ -90,23 +90,23 @@ export function renderPosts(posts) {
 }
 
 export function renderHomeFeed(container) {
-    if (container) container.innerHTML = '<div id="feed-container"></div>';
+    if (container) container.innerHTML = '<div id="feed" class="feed-container"></div>';
 }
 
 function createPostCard(post) {
     const article = document.createElement("article");
-    article.className = "post-card";
+    article.className = "post post-card";
 
     // Header
     const header = document.createElement("div");
-    header.className = "post-header";
+    header.className = "post-top";
 
     const user = document.createElement("span");
-    user.className = "post-user";
+    user.className = "name";
     user.textContent = post.nickname || post.Nickname || "Anonymous";
 
     const category = document.createElement("span");
-    category.className = "post-category";
+    category.className = "category";
     category.textContent = post.categories ? post.categories.join(', ') : '';
 
     header.appendChild(user);
@@ -114,17 +114,17 @@ function createPostCard(post) {
 
     // Title
     const title = document.createElement("h2");
-    title.className = "post-title";
+    title.className = "title";
     title.textContent = post.title;
 
     // Content
     const content = document.createElement("p");
-    content.className = "post-content";
+    content.className = "text";
     content.textContent = post.content;
 
     // Footer
     const footer = document.createElement("div");
-    footer.className = "post-footer";
+    footer.className = "post-bottom";
 
     const date = document.createElement("span");
     date.textContent = formatDate(post.created_at);

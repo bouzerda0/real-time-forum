@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,64 +13,65 @@
   <link rel="stylesheet" href="/assets/css/chat.css">
   <link rel="stylesheet" href="/assets/css/errorPage.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
 </head>
-<body>
-  <div id="cursor-blur"></div>
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-  <aside class="sidebar">
+<body>
+  <div id="purple-glow"></div>
+  <div class="menu-bg" id="sidebarOverlay"></div>
+
+  <aside class="left-menu">
     <div class="logo clickable-logo" onclick="navigateTo('/')">💬 01-Forum</div>
     <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">&times;</button>
 
-    <div class="sidebar-section-label">Main menu</div>
-    <ul class="nav-list">
-      <li class="active" onclick="navigateTo('/')">🏠 Dashboard</li>
+    <div class="menu-title">Main menu</div>
+    <ul class="links">
       <li class="active" onclick="toggleChatSidebar()">💬 Messages</li>
     </ul>
 
-    <div class="sidebar-section-label">Quick actions</div>
-    <button class="btn-create" onclick="navigateTo('/create-post')">✍️ Create Post</button>
+    <div class="menu-title">Quick actions</div>
+    <button class="new-post-btn" onclick="navigateTo('/create-post')">✍️ Create Post</button>
 
     <div class="sidebar-categories">
-      <button class="cat-btn active" data-cat="all" onclick="filterByCategory('all')">📋 All Posts</button>
-      <button class="cat-btn" data-cat="liked" onclick="filterByCategory('liked')">❤️ Liked Posts</button>
-      <button class="cat-btn" data-cat="General" onclick="filterByCategory('General')">📝 General</button>
-      <button class="cat-btn" data-cat="Technology" onclick="filterByCategory('Technology')">💻 Technology</button>
-      <button class="cat-btn" data-cat="Programming" onclick="filterByCategory('Programming')">⌨️ Programming</button>
-      <button class="cat-btn" data-cat="Gaming" onclick="filterByCategory('Gaming')">🎮 Gaming</button>
-      <button class="cat-btn" data-cat="Science" onclick="filterByCategory('Science')">🔬 Science</button>
-      <button class="cat-btn" data-cat="Education" onclick="filterByCategory('Education')">📚 Education</button>
+      <button class="menu-btn active" data-cat="all" onclick="filterByCategory('all')">📋 All Posts</button>
+      <button class="menu-btn" data-cat="liked" onclick="filterByCategory('liked')">👍 Liked Posts</button>
+      <button class="menu-btn" data-cat="General" onclick="filterByCategory('General')">📝 General</button>
+      <button class="menu-btn" data-cat="Technology" onclick="filterByCategory('Technology')">💻 Technology</button>
+      <button class="menu-btn" data-cat="Programming" onclick="filterByCategory('Programming')">⌨️ Programming</button>
+      <button class="menu-btn" data-cat="Gaming" onclick="filterByCategory('Gaming')">🎮 Gaming</button>
+      <button class="menu-btn" data-cat="Science" onclick="filterByCategory('Science')">🔬 Science</button>
+      <button class="menu-btn" data-cat="Education" onclick="filterByCategory('Education')">📚 Education</button>
     </div>
 
     <div class="sidebar-footer" id="sidebarFooter"></div>
   </aside>
 
-  <div class="main">
-    <header class="navbar">
+  <div class="main-content">
+    <header class="top-bar">
       <button class="menu-toggle" id="menuToggle" aria-label="Open menu">&#9776;</button>
       <div class="auth-buttons" id="navAuthArea"></div>
     </header>
 
-    <div class="content-layout" id="contentLayout">
-      <main id="app" class="main-feed"></main>
-      <aside class="chat-sidebar" id="chatSidebar">
+    <div class="page-with-chat" id="contentLayout">
+      <main id="app" class="left-side"></main>
+      <aside class="right-sidebar" id="chatSidebar">
         <div id="chat-view-users" class="chat-view">
-          <div class="chat-sidebar-header">
+          <div class="chat-top">
             <h4>Members</h4>
-            <button class="close-chat-btn" onclick="toggleChatSidebar()">&times;</button>
+            <button class="close-chat" onclick="toggleChatSidebar()">&times;</button>
           </div>
-          <div id="users-list" class="users-list"></div>
+          <div id="online-users" class="online-users"></div>
         </div>
 
         <div id="chat-view-conversation" class="chat-view hidden">
-          <div class="chat-sidebar-header">
-            <button class="back-chat-btn" onclick="switchChatView('users')">&larr;</button>
+          <div class="chat-top">
+            <button class="back-chat" onclick="switchChatView('users')">&larr;</button>
             <h4 id="active-chat-username">Chat</h4>
-            <button class="close-chat-btn" onclick="toggleChatSidebar()">&times;</button>
+            <button class="close-chat" onclick="toggleChatSidebar()">&times;</button>
           </div>
           <input type="hidden" id="sidebar-receiver-id">
-          <div id="sidebar-messages" class="sidebar-messages"></div>
-          <form id="sidebar-chat-form" class="sidebar-chat-form">
+          <div id="messages" class="messages"></div>
+          <form id="chat-input-box" class="chat-input-box">
             <input id="sidebar-chat-input" type="text" placeholder="Type a message..." required autocomplete="off">
             <button type="submit">Send</button>
           </form>
@@ -80,4 +82,5 @@
 
   <script type="module" src="/js/app.js"></script>
 </body>
+
 </html>

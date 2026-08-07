@@ -2,10 +2,10 @@ import { ApiRequest } from "../api.js";
 import { showEmpty, renderPosts } from "./feed.js";
 
 export async function filterByCategory(category) {
-    const feed = document.getElementById("feed-container");
+    const feed = document.getElementById("feed");
     if (feed) feed.innerHTML = "<p>Loading...</p>";
 
-    document.querySelectorAll('.cat-btn').forEach(btn => {
+    document.querySelectorAll('.menu-btn').forEach(btn => {
         btn.classList.remove('active');
         if (btn.getAttribute('data-cat') === category) {
             btn.classList.add('active');

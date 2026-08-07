@@ -1,10 +1,10 @@
 export function LoginView() {
     const mainContainer = document.createElement('div');
-    mainContainer.className = 'disc-card';
+    mainContainer.className = 'login-box';
     mainContainer.innerHTML = `
         <h2>Welcome Back</h2>
         <div class="subtitle">Sign in with your username or e-mail</div>
-        <div id="login-error"></div>
+        <div id="login-error-text"></div>
         <form id="loginForm" style="display: flex; flex-direction: column; gap: 1rem;">
             <div>
                 <label for="identify">username or E-mail</label>
@@ -14,7 +14,7 @@ export function LoginView() {
                 <label for="password">Password</label>
                 <input type="password" id="password" placeholder="Enter password" required />
             </div>
-            <button type="submit" class="btn-create">Sign In</button>
+            <button type="submit" class="new-post-btn">Sign In</button>
         </form>
         <p style="margin-top: 1.5rem; font-size: 0.875rem; text-align: center;">
             Don't have an account? <a href="/register" id="signup-link">Register</a>
@@ -22,7 +22,7 @@ export function LoginView() {
     `;
 
     const logic = () => {
-        const [form, errBox, btn] = ['#loginForm', '#login-error', 'button[type="submit"]'].map(s => mainContainer.querySelector(s));
+        const [form, errBox, btn] = ['#loginForm', '#login-error-text', 'button[type="submit"]'].map(s => mainContainer.querySelector(s));
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();

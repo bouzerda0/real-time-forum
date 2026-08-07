@@ -4,7 +4,7 @@ import { renderCommentsSection } from "../comment/comment.js";
 
 
 export async function loadPostCard(postId) {
-    const container = document.getElementById("feed-container");
+    const container = document.getElementById("feed");
 
     try {
         const post = await ApiRequest(`/api/posts/${postId}`);
@@ -21,26 +21,26 @@ export async function loadPostCard(postId) {
 
 function createPostDetails(post) {
     const card = document.createElement("div");
-    card.className = "post-details";
-    card.id = "postcard"
+    card.className = "view-post";
+    card.id = "main-post"
     const nickname = document.createElement('div')
     nickname.textContent = post.nickname || post.Nickname || "Anonymous"
-    nickname.id = "nicknamecard"
+    nickname.id = "author-tag"
 
     const title = document.createElement("div");
     title.textContent = post.title;
-    title.id = "titel-card"
+    title.id = "post-title"
 
     const content = document.createElement("div");
     content.textContent = post.content;
-    content.id = "content-card"
+    content.id = "post-body"
 
     const reactionsUI = createReaction(post.id, post.likes || 0, post.dislikes || 0);
 
     const backBtn = createBackButton();
 
     const commentsContainer = document.createElement("div");
-    commentsContainer.className = "post-comments-container";
+    commentsContainer.className = "comments-area";
     commentsContainer.style.marginTop = "20px";
     renderCommentsSection(post.id, commentsContainer);
 
@@ -58,7 +58,7 @@ function createPostDetails(post) {
 
 function createBackButton() {
     const button = document.createElement("button");
-    button.id = "backhomebuttom"
+    button.id = "back-btn"
     button.textContent = "← Home";
 
     button.addEventListener("click", () => {

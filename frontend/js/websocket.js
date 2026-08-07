@@ -22,7 +22,7 @@ export function connectWebSocket() {
     };
 }
 
-// Entry point used by the navbar once the user is authenticated
+// Entry point used by the top-bar once the user is authenticated
 export function initOnlineSocket() {
     connectWebSocket();
     loadUsers();

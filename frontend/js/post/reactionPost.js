@@ -2,15 +2,15 @@ import { ApiRequest } from "../api.js";
 
 export function createReaction(postId, initialLikes = 0, initialDislikes = 0, initialUserReaction, itemType = "post") {
     const actionsDiv = document.createElement("div");
-    actionsDiv.className = "post-actions";
+    actionsDiv.className = "buttons";
 
     // Build reaction buttons
     const buttons = [
-        { isLike: 1, type: "like", icon: "❤️", count: initialLikes, activeVal: 1 },
-        { isLike: 0, type: "dislike", icon: "💔", count: initialDislikes, activeVal: 0 }
+        { isLike: 1, type: "like", icon: "👍", count: initialLikes, activeVal: 1 },
+        { isLike: 0, type: "dislike", icon: "👎", count: initialDislikes, activeVal: 0 }
     ].map(({ isLike, type, icon, count, activeVal }) => {
         const btn = document.createElement("button");
-        btn.className = `btn-react ${type}-btn${initialUserReaction === activeVal ? ` ${type}d` : ""}`;
+        btn.className = `action-btn ${type}-btn${initialUserReaction === activeVal ? ` ${type}d` : ""}`;
         btn.setAttribute(`data-${itemType}-id`, postId);
         const countId = itemType === "post" ? `${type}s-count-${postId}` : `${type}s-count-${itemType}-${postId}`;
         btn.innerHTML = `<span class="react-icon">${icon}</span><span id="${countId}" class="react-count">${count || 0}</span>`;

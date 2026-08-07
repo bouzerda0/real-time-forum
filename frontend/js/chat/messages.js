@@ -4,7 +4,7 @@ import { autoScroll, formatMessageTime } from "./chatHelpers.js";
 
 const CHAT_PAGE_SIZE = 10;
 
-export const messagesContainer = document.getElementById("sidebar-messages");
+export const messagesContainer = document.getElementById("messages");
 
 // Pagination state of the current conversation (window.currentChatUser = open user id)
 let messageOffset = 0;
@@ -48,7 +48,7 @@ export async function loadMessages() {
             if (pendingTime > 0) {
                 appendMessage(pendingLiveMessage);
             } else if (messageOffset === 0) {
-                messagesContainer.innerHTML = '<div class="chat-empty">No messages yet, say hi!</div>';
+                messagesContainer.innerHTML = '<div class="no-chat">No messages yet, say hi!</div>';
             }
         } else {
             hasMore = messages.length === CHAT_PAGE_SIZE;
@@ -66,7 +66,7 @@ export async function loadMessages() {
         console.error("Failed to load messages:", error);
         pendingLiveMessage = null;
         if (messageOffset === 0) {
-            messagesContainer.innerHTML = '<div class="chat-empty">Could not load messages.</div>';
+            messagesContainer.innerHTML = '<div class="no-chat">Could not load messages.</div>';
         }
     } finally {
         isLoadingMore = false;
@@ -121,14 +121,14 @@ export function appendMessage(message, container = messagesContainer) {
     const isSelf = message.senderId === currentUser.id;
 
     const bubble = document.createElement("div");
-    bubble.classList.add("chat-message", isSelf ? "self" : "other");
+    bubble.classList.add("chat-bubble", isSelf ? "self" : "other");
 
     const sender = document.createElement("span");
-    sender.classList.add("message-sender");
+    sender.classList.add("sender-name");
     sender.textContent = isSelf ? "You" : senderNickname(message.senderId);
 
     const content = document.createElement("span");
-    content.classList.add("message-content");
+    content.classList.add("chat-text");
     content.textContent = message.content;
 
     const time = document.createElement("span");
@@ -147,7 +147,7 @@ export function senderNickname(senderId) {
 }
 
 export function removeEmptyMessage() {
-    messagesContainer.querySelector(".chat-empty")?.remove();
+    messagesContainer.querySelector(".no-chat")?.remove();
 }
 
 // Keep a live message until the initial history request finishes

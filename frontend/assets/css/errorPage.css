@@ -1,9 +1,54 @@
-/* Error Page */
-.error-page { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:calc(100vh - 72px); text-align:center; padding:2rem; animation:fadeIn .5s ease; }
-.error-code { font-size:8rem; font-weight:900; letter-spacing:-.04em; line-height:1; background:linear-gradient(135deg, #7c3aed, #0ea5e9); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-.error-page h1 { font-size:1.75rem; font-weight:800; color:#0f172a; margin:.75rem 0 .5rem; }
-.error-page p { color:#64748b; font-size:1.05rem; max-width:360px; line-height:1.6; margin-bottom:2rem; }
-.error-home-btn { background:linear-gradient(135deg, #7c3aed, #6d28d9); color:#fff; border:none; padding:.75rem 2rem; border-radius:12px; font-size:.95rem; font-weight:700; font-family:inherit; cursor:pointer; box-shadow:0 4px 16px rgba(124,58,237,.35); transition:all .25s ease; }
-.error-home-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(124,58,237,.45); }
-.error-home-btn:active { transform:translateY(0); }
-@keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.error-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 60vh;
+  padding: 40px;
+}
+
+.big-error {
+  font-size: 140px;
+  font-weight: 800;
+  color: var(--light-purple);
+  margin: 0;
+  line-height: 1;
+  text-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
+}
+
+.error-box h1 {
+  font-size: 32px;
+  color: var(--main-text);
+  margin-top: 24px;
+  margin-bottom: 12px;
+}
+
+.error-box p {
+  color: var(--grey-text);
+  font-size: 16px;
+  margin-bottom: 32px;
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+.home-button {
+  background-color: var(--main-purple);
+  color: var(--white-box);
+  padding: 14px 32px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.home-button:hover {
+  background-color: #4f46e5;
+}
+
+.home-button:active {
+  transform: scale(0.98);
+}

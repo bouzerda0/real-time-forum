@@ -23,7 +23,7 @@ export const submitComment = async (postId, content) => {
 
 function createCommentItem(c) {
     const item = document.createElement("div");
-    item.className = "comment-item";
+    item.className = "single-comment";
 
     const header = document.createElement("strong");
     header.textContent = c.username || c.Username || c.nickname || c.Nickname || "Anonymous";
@@ -44,10 +44,10 @@ export async function renderCommentsSection(postId, container) {
     const comments = await fetchComments(postId).catch(() => []);
 
     container.innerHTML = `
-        <div class="comments-section">
+        <div class="comment-list">
             <h4>Comments</h4>
             <div id="clist-${postId}"></div>
-            <div id="cerr-${postId}" class="form-error" style="color:red; margin:5px 0;"></div>
+            <div id="cerr-${postId}" class="error-text" style="color:red; margin:5px 0;"></div>
             <form id="cform-${postId}" style="margin-top:10px">
                 <textarea id="cinput-${postId}" placeholder="Write a reply..." required rows="2" style="width:100%"></textarea>
                 <button type="submit" style="margin-top:5px">Reply</button>

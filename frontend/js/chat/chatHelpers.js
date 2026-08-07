@@ -24,7 +24,7 @@ let toastTimer = null;
 // Show a clickable toast for a message from another conversation
 export function showMessageToast(message, nickname, onClick) {
     const toast = document.createElement("div");
-    toast.className = "msg-toast";
+    toast.className = "notification";
 
     // Build the toast with textContent (message content is user-controlled → never innerHTML)
     const sender = document.createElement("strong");

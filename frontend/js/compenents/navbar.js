@@ -26,12 +26,19 @@ export function updateAuthUI() {
             // Fallback chain: pick best display name available
             const name = user.username || user.nickname || user.email?.split('@')[0] || 'User';
             navArea.innerHTML = `
-                <div style="display:flex;align-items:center;gap:12px">
-                    <div style="display:flex;align-items:center;gap:8px;background:#eff6ff;border:1px solid #bfdbfe;padding:6px 14px;border-radius:9999px">
-                        <div class="user-rune-logo">${name[0].toUpperCase()}</div>
-                        <span style="font-weight:600;font-size:13.5px;color:#1e40af">@${name}</span>
+                <div class="auth-buttons-wrapper" style="display:flex;align-items:center;gap:12px">
+                    <div style="display:flex;align-items:center;gap:8px;background:var(--light-purple);padding:6px 14px;border-radius:20px;">
+                        <div class="user-avatar">${name[0].toUpperCase()}</div>
+                        <span style="font-weight:600;font-size:14px;color:var(--main-purple)">@${name}</span>
                     </div>
-                    <button id="navLogoutBtn" style="background:#fee2e2;color:#dc2626;border:1px solid #fecaca;padding:7px 14px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer">Log Out</button>
+                    <button id="navLogoutBtn" class="logout-btn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                            <polyline points="16 17 21 12 16 7"/>
+                            <line x1="21" y1="12" x2="9" y2="12"/>
+                        </svg>
+                        Log Out
+                    </button>
                 </div>`;
             navArea.querySelector('#navLogoutBtn').onclick = performLogout;
         } else {
@@ -44,7 +51,7 @@ export function updateAuthUI() {
     // Sidebar logout — only show when authed
     if (footer) {
         if (authed) {
-            footer.innerHTML = `<button class="btn-logout-sidebar" id="sidebarLogoutBtn">
+            footer.innerHTML = `<button class="logout-btn" id="sidebarLogoutBtn">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                     <polyline points="16 17 21 12 16 7"/>
@@ -57,9 +64,9 @@ export function updateAuthUI() {
     }
 }
 
-// One helper to toggle sidebar open/close
+// One helper to toggle left-menu open/close
 function toggleSidebar(open) {
-    document.querySelector('.sidebar')?.classList.toggle('open', open);
+    document.querySelector('.left-menu')?.classList.toggle('open', open);
     document.getElementById('sidebarOverlay')?.classList.toggle('active', open);
 }
 

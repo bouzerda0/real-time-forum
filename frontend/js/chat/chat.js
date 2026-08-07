@@ -14,21 +14,21 @@ import {
 } from "./messages.js";
 
 const THROTTLE_MS = 300;
-const chatForm = document.getElementById("sidebar-chat-form");
+const chatForm = document.getElementById("chat-input-box");
 const chatInput = document.getElementById("sidebar-chat-input");
 
 // Router view for /messages
 export function ChatView() {
     const dom = document.createElement("div");
     dom.innerHTML = `
-        <div class="empty-feed">
-            <div class="empty-feed-icon">
+        <div class="no-posts">
+            <div class="sad-face">
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                 </svg>
             </div>
             <h2>Messages</h2>
-            <p>Pick a member from the chat sidebar to start a private conversation.</p>
+            <p>Pick a member from the chat left-menu to start a private conversation.</p>
         </div>
     `;
 
@@ -73,7 +73,7 @@ export function openChat(userId, nickname) {
     document.getElementById("active-chat-username").textContent = nickname || "Chat";
     document.getElementById("sidebar-receiver-id").value = userId;
 
-    document.querySelectorAll(".user-item.active").forEach((el) => el.classList.remove("active"));
+    document.querySelectorAll(".person.active").forEach((el) => el.classList.remove("active"));
     const selected = document.querySelector(`[data-user-id="${userId}"]`);
     if (selected) selected.classList.add("active");
 
