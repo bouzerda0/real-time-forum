@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func clearCookie(w http.ResponseWriter) {
+func expireCookie(w http.ResponseWriter) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_token",
 		Value:    "",
@@ -15,14 +15,11 @@ func clearCookie(w http.ResponseWriter) {
 	})
 }
 
-// SendJSONError writes a JSON error response with the correct HTTP status code.
-// Always call this instead of manually writing status + encoding separately —
-// it guarantees WriteHeader is called BEFORE the body is written.
-func SendJSONError(w http.ResponseWriter, message string, statusCode int) {
+func jsonError(w http.ResponseWriter, msg string, code int) {
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(statusCode)
+	w.WriteHeader(code)
 	json.NewEncoder(w).Encode(map[string]string{
 		"status":  "error",
-		"message": message,
+		"message": msg,
 	})
 }

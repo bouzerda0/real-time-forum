@@ -41,7 +41,7 @@ func main() {
 	// Comments API Routes
 	http.HandleFunc("GET /api/comments", middleware.RequireAuth(comments.CommentsHandler))
 	http.HandleFunc("POST /api/comments", middleware.RequireAuth(comments.CommentsHandler))
-	http.HandleFunc("POST /api/comments/reaction", middleware.RequireAuth(comments.ReactionHandler))
+	http.HandleFunc("POST /api/comments/reaction", middleware.RequireAuth(comments.ReactHandler))
 
 	// Chat & WebSocket Routes
 	hub := websocket.NewHub()
