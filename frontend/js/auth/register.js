@@ -1,7 +1,7 @@
-export function RegisterView() {
-    const mainContainer = document.createElement('div');
-    mainContainer.className = 'login-box';
-    mainContainer.innerHTML = `
+export function registerView() {
+    const container = document.createElement('div');
+    container.className = 'login-box';
+    container.innerHTML = `
         <h2>Create Account</h2>
         <div class="subtitle">Join the Forum community</div>
         <div id="register-error-text"></div>
@@ -56,19 +56,18 @@ export function RegisterView() {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            errBox.textContent = '';
+            errNode.textContent = '';
             btn.disabled = true;
             btn.textContent = 'Creating account...';
 
-            // Extract payload
             const payload = {
-                username: getVal('#username'),
-                first_name: getVal('#firstName'),
-                last_name: getVal('#lastName'),
-                age: parseInt(getVal('#age'), 10),
-                gender: mainContainer.querySelector('#gender').value,
-                email: getVal('#email'),
-                password: mainContainer.querySelector('#password').value
+                username: val('#username'),
+                first_name: val('#firstName'),
+                last_name: val('#lastName'),
+                age: parseInt(val('#age'), 10),
+                gender: container.querySelector('#gender').value,
+                email: val('#email'),
+                password: container.querySelector('#password').value
             };
 
             try {
@@ -94,5 +93,5 @@ export function RegisterView() {
         });
     };
 
-    return { dom: mainContainer, logic };
+    return { dom: container, logic };
 }

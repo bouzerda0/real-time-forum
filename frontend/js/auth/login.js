@@ -1,7 +1,7 @@
-export function LoginView() {
-    const mainContainer = document.createElement('div');
-    mainContainer.className = 'login-box';
-    mainContainer.innerHTML = `
+export function loginView() {
+    const container = document.createElement('div');
+    container.className = 'login-box';
+    container.innerHTML = `
         <h2>Welcome Back</h2>
         <div class="subtitle">Sign in with your username or e-mail</div>
         <div id="login-error-text"></div>
@@ -26,8 +26,8 @@ export function LoginView() {
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const identify = mainContainer.querySelector('#identify').value.trim();
-            const password = mainContainer.querySelector('#password').value;
+            const identify = container.querySelector('#identify').value.trim();
+            const password = container.querySelector('#password').value;
 
             errBox.textContent = '';
             btn.disabled = true;
@@ -46,7 +46,6 @@ export function LoginView() {
                     return;
                 }
 
-                // Save auth state and navigate home
                 localStorage.setItem('isAuthenticated', 'true');
                 if (data.user) localStorage.setItem('currentUser', JSON.stringify(data.user));
                 window.navigateTo('/');
@@ -59,5 +58,5 @@ export function LoginView() {
         });
     };
 
-    return { dom: mainContainer, logic };
+    return { dom: container, logic };
 }
