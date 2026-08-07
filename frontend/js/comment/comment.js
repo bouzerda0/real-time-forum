@@ -4,9 +4,7 @@ import { createReaction } from "../post/reactionPost.js";
 export const escapeHTML = (str) =>
     String(str ?? "").replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[m]);
 
-export const fetchComments = (postId) => ApiRequest(`/api/comments?post_id=${postId}`);
-
-export const submitComment = async (postId, content) => {
+const submitComment = async (postId, content) => {
     const res = await fetch("/api/comments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -21,9 +19,9 @@ export const submitComment = async (postId, content) => {
     return res.json();
 };
 
-function createCommentItem(c) {
-    const item = document.createElement("div");
-    item.className = "single-comment";
+function createComment(c) {
+    const node = document.createElement("div");
+    node.className = "single-comment";
 
     const header = document.createElement("strong");
     header.textContent = c.username || c.Username || c.nickname || c.Nickname || "Anonymous";
@@ -31,15 +29,15 @@ function createCommentItem(c) {
     const content = document.createElement("p");
     content.textContent = c.content || c.Content || "";
 
-    const commentId = c.id || c.ID || 0;
-    const reactions = createReaction(commentId, c.likes || 0, c.dislikes || 0, c.user_reaction, "comment");
+    const id = c.id || c.ID || 0;
+    const reactions = createReaction(id, c.likes || 0, c.dislikes || 0, c.user_reaction, "comment");
     reactions.style.marginTop = "8px";
 
-    item.append(header, content, reactions);
-    return item;
+    node.append(header, content, reactions);
+    return node;
 }
 
-export async function renderCommentsSection(postId, container) {
+export async function renderComments(postId, container) {
     if (!container) return;
     const comments = await fetchComments(postId).catch(() => []);
 
@@ -54,14 +52,14 @@ export async function renderCommentsSection(postId, container) {
             </form>
         </div>`;
 
-    const commentsList = container.querySelector(`#clist-${postId}`);
-    const errBox = container.querySelector(`#cerr-${postId}`);
+    const list = container.querySelector(`#clist-${postId}`);
+    const errNode = container.querySelector(`#cerr-${postId}`);
     const form = container.querySelector(`#cform-${postId}`);
     const input = container.querySelector(`#cinput-${postId}`);
-    const submitBtn = form.querySelector(`button[type="submit"]`);
+    const btn = form.querySelector(`button[type="submit"]`);
 
     if (Array.isArray(comments)) {
-        comments.forEach(c => commentsList.appendChild(createCommentItem(c)));
+        comments.forEach(c => list.appendChild(createComment(c)));
     }
 
     form.onsubmit = async (e) => {
@@ -75,23 +73,22 @@ export async function renderCommentsSection(postId, container) {
         }
 
         try {
-            submitBtn.disabled = true;
-            submitBtn.textContent = "Sending...";
+            btn.disabled = true;
+            btn.textContent = "Sending...";
 
-            const createdComment = await submitComment(postId, text);
-            commentsList.appendChild(createCommentItem(createdComment));
+            const newComment = await submitComment(postId, text);
+            list.appendChild(createCommentNode(newComment));
             input.value = "";
 
         } catch (err) {
-            errBox.textContent = err.message;
-
-            const msgLower = err.message.toLowerCase();
-            if (msgLower.includes("401") || msgLower.includes("unauthorized") || msgLower.includes("login")) {
-                if (window.navigator) window.navigator("/login");
+            errNode.textContent = err.message;
+            const msg = err.message.toLowerCase();
+            if (msg.includes("401") || msg.includes("unauthorized") || msg.includes("login")) {
+                if (window.navigateTo) window.navigateTo("/login");
             }
         } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = "Reply";
+            btn.disabled = false;
+            btn.textContent = "Reply";
         }
     };
 }

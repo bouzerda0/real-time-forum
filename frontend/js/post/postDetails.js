@@ -1,6 +1,6 @@
 import { ApiRequest } from "../api.js";
 import { createReaction } from "./reactionPost.js";
-import { renderCommentsSection } from "../comment/comment.js";
+import { renderComments } from "../comment/comment.js";
 
 
 export async function loadPostCard(postId) {
@@ -42,7 +42,7 @@ function createPostDetails(post) {
     const commentsContainer = document.createElement("div");
     commentsContainer.className = "comments-area";
     commentsContainer.style.marginTop = "20px";
-    renderCommentsSection(post.id, commentsContainer);
+    renderComments(post.id, commentsContainer);
 
     card.append(
         backBtn,
