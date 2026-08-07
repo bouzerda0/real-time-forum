@@ -47,13 +47,13 @@ async function checkAuth() {
 
 export async function navigateTo(path) {
     window.history.pushState(null, '', path);
-    await render(path);
+    await mount(path);
 }
 window.navigateTo = navigateTo;
 
-async function render(path) {
-    const isAuthPage = path === '/login' || path === '/register';
-    const authed = await checkSession();
+async function mount(path) {
+    const isAuthRoute = path === '/login' || path === '/register';
+    const isAuthed = await checkAuth();
 
     if (!isAuthed && !isAuthRoute) return navigateTo('/login');
     if (isAuthed && isAuthRoute) return navigateTo('/');
@@ -116,5 +116,5 @@ export function init() {
         navigateTo(a.pathname + a.search + a.hash);
     });
 
-    render(location.pathname);
+    mount(location.pathname);
 }
