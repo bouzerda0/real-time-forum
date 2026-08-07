@@ -1,45 +1,111 @@
-/* Auth Card */
-#app:has(.disc-card) {
-  display:flex; justify-content:center; align-items:center;
-  min-height:100vh; width:100%; max-width:none;
-  background:radial-gradient(circle at 10% 20%, #eff6ff, #f8fafc 90%);
-  padding:30px 20px;
+.login-box {
+  background-color: var(--white-box);
+  border: 1px solid var(--border-color);
+  border-top: 4px solid var(--main-purple);
+  border-radius: 16px;
+  padding: 40px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 15px 35px rgba(99, 102, 241, 0.08);
+  box-sizing: border-box;
 }
 
-.disc-card {
-  background:rgba(255,255,255,.95); backdrop-filter:blur(16px);
-  border:1px solid rgba(226,232,240,.8); border-radius:20px;
-  padding:42px; box-shadow:0 20px 40px -15px rgba(15,23,42,.08);
-  width:100%; max-width:480px; font-family:'Inter', sans-serif;
-  animation:fadeInCard .45s cubic-bezier(.16,1,.3,1);
+.login-box h2 {
+  color: var(--main-text);
+  font-size: 28px;
+  font-weight: 800;
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 8px;
 }
-@keyframes fadeInCard { from{opacity:0;transform:translateY(-16px) scale(.98)} to{opacity:1;transform:translateY(0) scale(1)} }
 
-.disc-card h2 { color:#0f172a; font-size:30px; font-weight:800; letter-spacing:-.03em; text-align:center; margin:0 0 6px; }
-.disc-card .subtitle { color:#64748b; font-size:14.5px; text-align:center; margin-bottom:28px; }
-.disc-card label { display:block; color:#334155; font-size:13.5px; font-weight:600; margin-bottom:6px; }
-.disc-card p { color:#64748b; }
-.disc-card a { color:#8b5cf6; text-decoration:none; font-weight:600; transition:color .2s; }
-.disc-card a:hover { text-decoration:underline; color:#1e40af; }
-
-.form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-
-.disc-card input, .disc-card select {
-  width:100%; padding:13px 15px; border:1px solid #cbd5e1; border-radius:12px;
-  font-size:14.5px; color:#0f172a; background:#f8fafc;
-  transition:all .2s cubic-bezier(.16,1,.3,1); font-family:'Inter', sans-serif;
+.subtitle {
+  color: var(--grey-text);
+  font-size: 15px;
+  text-align: center;
+  margin-bottom: 32px;
 }
-.disc-card input:focus, .disc-card select:focus { outline:none; border-color:#8b5cf6; background:#fff; box-shadow:0 0 0 4px rgba(37,99,235,.12); }
-.disc-card input::placeholder { color:#94a3b8; }
 
-#login-error, #register-error, .form-error {
-  background:#fef2f2; border:1px solid #fecaca; color:#dc2626;
-  padding:13px 16px; border-radius:12px; text-align:center;
-  font-size:13.5px; font-weight:500; margin-bottom:20px;
+.login-box label {
+  display: block;
+  color: var(--main-text);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
 }
-#login-error:empty, #register-error:empty, .form-error:empty { display:none; }
 
-@media (max-width:480px) {
-  .form-row { grid-template-columns:1fr; }
-  .disc-card { padding:28px 20px; }
+.login-box a {
+  color: var(--main-purple);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-box a:hover {
+  text-decoration: underline;
+}
+
+.flex-row {
+  display: flex;
+  gap: 16px;
+}
+
+.flex-row > div {
+  flex: 1;
+}
+
+.login-box input, 
+.login-box select {
+  width: 100%;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  border: 1px solid #f1f5f9;
+  border-radius: 10px;
+  box-sizing: border-box;
+  font-size: 15px;
+  color: var(--main-text);
+  background-color: #f8fafc;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.login-box input:focus, 
+.login-box select:focus {
+  border-color: var(--main-purple);
+  background-color: var(--white-box);
+  outline: none;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.1);
+}
+
+.login-box .new-post-btn {
+  margin-top: 8px;
+  margin-bottom: 16px;
+  padding: 16px;
+  font-size: 16px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.login-box .new-post-btn:hover {
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+}
+
+#login-error-text, 
+#register-error-text, 
+.error-text {
+  background-color: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: #dc2626;
+  padding: 14px;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.1);
+}
+
+#login-error-text:empty, 
+#register-error-text:empty, 
+.error-text:empty {
+  display: none;
 }
