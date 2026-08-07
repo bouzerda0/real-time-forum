@@ -8,20 +8,19 @@ import (
 	"real-time-forum/database"
 )
 
-//  clears user session and cookie.
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)
-		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Method not allowed"})
+		json.NewEncoder(w).Encode(apiResponse{Status: "error", Message: "Method not allowed"})
 		return
 	}
 
 	cookie, err := r.Cookie("session_token")
 
-	// Delete session from database
+	// delete session from database
 	if err == nil && cookie.Value != "" {
 
 		query := "DELETE FROM user_sessions WHERE session_token = ?"
@@ -32,7 +31,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Expire session cookie immediately
+	// expire session cookie
 	deletedCookie := &http.Cookie{
 		Name:     "session_token",
 		Value:    "",
@@ -44,7 +43,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, deletedCookie)
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(APIResponse{
+	json.NewEncoder(w).Encode(apiResponse{
 		Status:  "success",
 		Message: "Logged out successfully",
 	})

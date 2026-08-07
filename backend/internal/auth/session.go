@@ -9,7 +9,6 @@ import (
 	"real-time-forum/database"
 )
 
-// extracts logged-in user ID from session token.
 func GetUserID(r *http.Request) (int, error) {
 	cookie, err := r.Cookie("session_token")
 	if err != nil {

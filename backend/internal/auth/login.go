@@ -18,17 +18,17 @@ const (
 	SessionDuration = 24 * time.Hour
 )
 
-type LoginRequest struct {
+type LoginReq struct {
 	Identifier string `json:"identify"`
 	Password   string `json:"password"`
 }
 
-type APIResponse struct {
+type apiResponse struct {
 	Status  string `json:"status"`
 	Message string `json:"message"`
 }
 
-//  creates a random 32-byte session token.
+// creates a random 32 byte session token.
 func generateSessionToken() string {
 	b := make([]byte, 32)
 	_, err := rand.Read(b)
@@ -45,15 +45,15 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodPost {
 		w.WriteHeader(http.StatusMethodNotAllowed)
-		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Method not allowed"})
+		json.NewEncoder(w).Encode(apiResponse{Status: "error", Message: "Method not allowed"})
 		return
 	}
 
-	var req LoginRequest
+	var req LoginReq
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Invalid request formatting"})
+		json.NewEncoder(w).Encode(apiResponse{Status: "error", Message: "Invalid request formatting"})
 		return
 	}
 
@@ -61,7 +61,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var dbUsername, dbEmail, dbFirstName, dbLastName string
 	var dbPasswordHash string
 
-	// Lookup user by email or username
 	err = database.DB.QueryRow(
 		"SELECT id, username, email, COALESCE(first_name, ''), COALESCE(last_name, ''), password FROM users WHERE email = ? OR username = ?",
 		req.Identifier, req.Identifier,
@@ -69,11 +68,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if err == sql.ErrNoRows {
 			w.WriteHeader(http.StatusUnauthorized)
-			json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Invalid username/email or password."})
+			json.NewEncoder(w).Encode(apiResponse{Status: "error", Message: "Invalid username/email or password."})
 			return
 		}
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Server error"})
+		json.NewEncoder(w).Encode(apiResponse{Status: "error", Message: "Server error"})
 		return
 	}
 
@@ -81,7 +80,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	err = bcrypt.CompareHashAndPassword([]byte(dbPasswordHash), []byte(req.Password))
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Invalid username/email or password."})
+		json.NewEncoder(w).Encode(apiResponse{Status: "error", Message: "Invalid username/email or password."})
 		return
 	}
 
@@ -99,7 +98,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("Error saving session to DB:", err)
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(APIResponse{Status: "error", Message: "Error creating session, try again later"})
+		json.NewEncoder(w).Encode(apiResponse{Status: "error", Message: "Error creating session, try again later"})
 		return
 	}
 

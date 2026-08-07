@@ -17,75 +17,74 @@ func CommentsHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
 	case http.MethodGet:
-		userID, err := auth.GetUserID(r)
-		if err != nil || userID <= 0 {
-			http.Error(w, `{"error":"Unauthorized. Please login to view comments."}`, http.StatusUnauthorized)
-			return
-		}
-		postIDString := r.URL.Query().Get("post_id") // gets post id from the URL
-		postID, err := strconv.Atoi(postIDString)
-		if err != nil || postID <= 0 {
-			http.Error(w, `{"error":"Invalid post_id parameter"}`, http.StatusBadRequest)
+		uid, err := auth.GetUserID(r)
+		if err != nil || uid <= 0 {
+			http.Error(w, `{"error":"Unauthorized"}`, http.StatusUnauthorized)
 			return
 		}
 
-		postComments, err := GetCommentsByPostID(postID, userID)
+		postID, err := strconv.Atoi(r.URL.Query().Get("post_id"))
+		if err != nil || postID <= 0 {
+			http.Error(w, `{"error":"Invalid post_id"}`, http.StatusBadRequest)
+			return
+		}
+
+		list, err := byPostID(postID, uid)
 		if err != nil {
 			http.Error(w, `{"error":"Failed to fetch comments"}`, http.StatusInternalServerError)
 			return
 		}
-
-		if postComments == nil {
-			postComments = []models.Comment{}
+		if list == nil {
+			list = []models.Comment{}
 		}
+
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(postComments)
+		json.NewEncoder(w).Encode(list)
 
 	case http.MethodPost:
-		userID, err := auth.GetUserID(r)
-		if err != nil || userID <= 0 {
-			http.Error(w, `{"error":"Unauthorized. Please login to comment."}`, http.StatusUnauthorized)
+		uid, err := auth.GetUserID(r)
+		if err != nil || uid <= 0 {
+			http.Error(w, `{"error":"Unauthorized"}`, http.StatusUnauthorized)
 			return
 		}
 
-		var newCommentInput models.Comment
-		if err := json.NewDecoder(r.Body).Decode(&newCommentInput); err != nil {
-			http.Error(w, `{"error":"Invalid JSON "}`, http.StatusBadRequest)
+		var c models.Comment
+		if err := json.NewDecoder(r.Body).Decode(&c); err != nil {
+			http.Error(w, `{"error":"Invalid JSON"}`, http.StatusBadRequest)
 			return
 		}
 		defer r.Body.Close()
 
-		if newCommentInput.PostID <= 0 || strings.TrimSpace(newCommentInput.Content) == "" {
+		if c.PostID <= 0 || strings.TrimSpace(c.Content) == "" {
 			http.Error(w, `{"error":"Post ID and content are required"}`, http.StatusBadRequest)
 			return
 		}
 
-		// verify post exists
-		var postExists bool
-		err = database.DB.QueryRow("SELECT EXISTS(SELECT 1 FROM posts WHERE id=?)", newCommentInput.PostID).Scan(&postExists)
-		if err != nil || !postExists {
-			http.Error(w, `{"error":"Post not found or has been deleted"}`, http.StatusNotFound)
+		var exists bool
+		err = database.DB.QueryRow("SELECT EXISTS(SELECT 1 FROM posts WHERE id=?)", c.PostID).Scan(&exists)
+		if err != nil || !exists {
+			http.Error(w, `{"error":"Post not found"}`, http.StatusNotFound)
 			return
 		}
 
-		newCommentInput.UserID = userID
-		var authorUsername string
-		database.DB.QueryRow("SELECT username FROM users WHERE id = ?", userID).Scan(&authorUsername)
-		if authorUsername == "" {
-			authorUsername = "User"
+		c.UserID = uid
+		var name string
+		database.DB.QueryRow("SELECT username FROM users WHERE id = ?", uid).Scan(&name)
+		if name == "" {
+			name = "User"
 		}
-		newCommentInput.Username = authorUsername
-		newCommentInput.Nickname = authorUsername
-		newCommentInput.CreatedAt = time.Now()
+		c.Username = name
+		c.Nickname = name
+		c.CreatedAt = time.Now()
 
-		savedComment, err := CreateComment(newCommentInput)
+		saved, err := CreateComment(c)
 		if err != nil {
 			http.Error(w, `{"error":"Failed to save comment"}`, http.StatusInternalServerError)
 			return
 		}
 
 		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(savedComment)
+		json.NewEncoder(w).Encode(saved)
 
 	default:
 		http.Error(w, `{"error":"Method not allowed"}`, http.StatusMethodNotAllowed)
