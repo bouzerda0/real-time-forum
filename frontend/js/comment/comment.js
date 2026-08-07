@@ -1,4 +1,3 @@
-// Comments rendering and actions
 import { ApiRequest } from "../api.js";
 import { createReaction } from "../post/reactionPost.js";
 
@@ -7,23 +6,36 @@ export const escapeHTML = (str) =>
 
 export const fetchComments = (postId) => ApiRequest(`/api/comments?post_id=${postId}`);
 
-export const submitComment = (postId, content) =>
-    ApiRequest("/api/comments", { method: "POST", body: { post_id: Number(postId), content } });
+export const submitComment = async (postId, content) => {
+    const res = await fetch("/api/comments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ post_id: Number(postId), content })
+    });
+
+    if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || data.message || "Failed to submit comment.");
+    }
+    return res.json();
+};
 
 function createCommentItem(c) {
     const item = document.createElement("div");
     item.className = "comment-item";
 
     const header = document.createElement("strong");
-    header.textContent = c.nickname || c.Nickname || "Anonymous";
+    header.textContent = c.username || c.Username || c.nickname || c.Nickname || "Anonymous";
 
     const content = document.createElement("p");
     content.textContent = c.content || c.Content || "";
 
-    const reactionUI = createReaction(c.id || c.ID || 0, c.likes || 0, c.dislikes || 0, c.user_reaction, "comment");
-    reactionUI.style.marginTop = "8px";
+    const commentId = c.id || c.ID || 0;
+    const reactions = createReaction(commentId, c.likes || 0, c.dislikes || 0, c.user_reaction, "comment");
+    reactions.style.marginTop = "8px";
 
-    item.append(header, content, reactionUI);
+    item.append(header, content, reactions);
     return item;
 }
 
@@ -34,54 +46,52 @@ export async function renderCommentsSection(postId, container) {
     container.innerHTML = `
         <div class="comments-section">
             <h4>Comments</h4>
-            <div id="comments-list-${postId}"></div>
-            <div id="comment-error-${postId}" class="form-error"></div>
-            <form id="reply-form-${postId}" style="margin-top: 10px;">
-                <textarea id="reply-input-${postId}" placeholder="Write a reply..." required rows="2" style="width:100%;"></textarea>
-                <button type="submit" style="margin-top: 5px;">Reply</button>
+            <div id="clist-${postId}"></div>
+            <div id="cerr-${postId}" class="form-error" style="color:red; margin:5px 0;"></div>
+            <form id="cform-${postId}" style="margin-top:10px">
+                <textarea id="cinput-${postId}" placeholder="Write a reply..." required rows="2" style="width:100%"></textarea>
+                <button type="submit" style="margin-top:5px">Reply</button>
             </form>
-        </div>
-    `;
+        </div>`;
 
-    const commentsList = container.querySelector(`#comments-list-${postId}`);
+    const commentsList = container.querySelector(`#clist-${postId}`);
+    const errBox = container.querySelector(`#cerr-${postId}`);
+    const form = container.querySelector(`#cform-${postId}`);
+    const input = container.querySelector(`#cinput-${postId}`);
+    const submitBtn = form.querySelector(`button[type="submit"]`);
+
     if (Array.isArray(comments)) {
         comments.forEach(c => commentsList.appendChild(createCommentItem(c)));
     }
 
-    const errBox = container.querySelector(`#comment-error-${postId}`);
-    const showError = (msg) => { errBox.textContent = msg; };
-
-    container.querySelector(`#reply-form-${postId}`).addEventListener("submit", async (e) => {
+    form.onsubmit = async (e) => {
         e.preventDefault();
-        showError("");
+        errBox.textContent = "";
+        const text = input.value.trim();
 
-        const input = container.querySelector(`#reply-input-${postId}`);
-
-        if (!input.value.trim() || input.value.length > 4500) {
-            showError("Comment cannot exceed 4500 characters.");
+        if (!text || text.length > 4500) {
+            errBox.textContent = "Comment cannot be empty or exceed 4500 characters.";
             return;
         }
 
-        const content = input.value.trim();
-
         try {
-            const createdComment = await submitComment(postId, content);
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Sending...";
+
+            const createdComment = await submitComment(postId, text);
+            commentsList.appendChild(createCommentItem(createdComment));
             input.value = "";
 
-            if (createdComment && (createdComment.id || createdComment.ID)) {
-                commentsList.appendChild(createCommentItem(createdComment));
-            } else {
-                const user = JSON.parse(localStorage.getItem("currentUser") || "{}");
-                const newComment = { id: 0, nickname: user.nickname || user.username || "You", content };
-                commentsList.appendChild(createCommentItem(newComment));
-            }
-        } catch (error) {
-            if (error && error.message && (error.message.includes("401") || error.message.includes("Unauthorized"))) {
-                showError("Please login to comment.");
+        } catch (err) {
+            errBox.textContent = err.message;
+
+            const msgLower = err.message.toLowerCase();
+            if (msgLower.includes("401") || msgLower.includes("unauthorized") || msgLower.includes("login")) {
                 if (window.navigateTo) window.navigateTo("/login");
-            } else {
-                showError("Failed to submit comment. Please try again.");
             }
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Reply";
         }
-    });
+    };
 }

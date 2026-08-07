@@ -60,7 +60,7 @@ func CommentsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Verify post exists before adding the comment
+		// verify post exists
 		var postExists bool
 		err = database.DB.QueryRow("SELECT EXISTS(SELECT 1 FROM posts WHERE id=?)", newCommentInput.PostID).Scan(&postExists)
 		if err != nil || !postExists {
@@ -68,6 +68,7 @@ func CommentsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		newCommentInput.UserID = userID
 		var authorUsername string
 		database.DB.QueryRow("SELECT username FROM users WHERE id = ?", userID).Scan(&authorUsername)
 		if authorUsername == "" {
@@ -75,7 +76,7 @@ func CommentsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		newCommentInput.Username = authorUsername
 		newCommentInput.Nickname = authorUsername
-		newCommentInput.CreatedAt = time.Now() // sets creation time to current time
+		newCommentInput.CreatedAt = time.Now()
 
 		savedComment, err := CreateComment(newCommentInput)
 		if err != nil {
