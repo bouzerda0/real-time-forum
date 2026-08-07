@@ -17,7 +17,9 @@ export async function ApiRequest(url, options = {}) {
     }
 
     if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status}`);
+        const err = new Error(`HTTP Error: ${response.status}`);
+        err.status = response.status;
+        throw err;
     }
 
     return await response.json();

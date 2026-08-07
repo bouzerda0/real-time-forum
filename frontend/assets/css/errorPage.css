@@ -1,52 +1,70 @@
+.error-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+  padding: 20px;
+}
+
 .error-box {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  min-height: 60vh;
-  padding: 40px;
+  background: var(--white-box, #ffffff);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+  border-top: 4px solid var(--main-purple, #6366f1);
+  padding: 60px 40px;
+  max-width: 500px;
+  width: 100%;
 }
 
 .big-error {
   font-size: 140px;
-  font-weight: 800;
-  color: var(--light-purple);
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--main-purple, #6366f1), var(--pink-color, #ec4899));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   margin: 0;
   line-height: 1;
-  text-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
+  text-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
 }
 
 .error-box h1 {
-  font-size: 32px;
-  color: var(--main-text);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--main-text, #111827);
   margin-top: 24px;
   margin-bottom: 12px;
 }
 
 .error-box p {
-  color: var(--grey-text);
+  color: var(--grey-text, #6b7280);
   font-size: 16px;
   margin-bottom: 32px;
   max-width: 400px;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .home-button {
-  background-color: var(--main-purple);
-  color: var(--white-box);
+  background: linear-gradient(135deg, var(--main-purple, #6366f1), #4f46e5);
+  color: #ffffff;
   padding: 14px 32px;
   border: none;
   border-radius: 12px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+  transition: all 0.2s ease;
 }
 
 .home-button:hover {
-  background-color: #4f46e5;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
 }
 
 .home-button:active {

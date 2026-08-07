@@ -12,12 +12,14 @@ const ERRORS = {
 export function errorView(status = 404) {
   const [title, desc] = ERRORS[status] || ['Unexpected Error', 'Something went wrong.'];
   const dom = document.createElement('div');
-  dom.className = 'error-box';
+  dom.className = 'error-wrapper';
   dom.innerHTML = `
-    <div class="big-error">${status}</div>
-    <h1>${title}</h1>
-    <p>${desc}</p>
-    <button class="home-button">Back to Home</button>
+    <div class="error-box">
+        <div class="big-error">${status}</div>
+        <h1>${title}</h1>
+        <p>${desc}</p>
+        <button class="home-button">Back to Home</button>
+    </div>
   `;
 
   return {
@@ -29,7 +31,7 @@ export function errorView(status = 404) {
 export function renderError(status = 404) {
   const app = document.getElementById('app');
   if (!app) return;
-  const { dom, logic } = ErrorPageView(status);
+  const { dom, logic } = errorView(status);
   app.replaceChildren(dom);
   logic();
 }

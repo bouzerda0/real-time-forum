@@ -4,6 +4,8 @@ import { createReaction } from "../post/reactionPost.js";
 export const escapeHTML = (str) =>
     String(str ?? "").replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[m]);
 
+const fetchComments = (postId) => ApiRequest(`/api/comments?post_id=${postId}`);
+
 const submitComment = async (postId, content) => {
     const res = await fetch("/api/comments", {
         method: "POST",
@@ -64,11 +66,11 @@ export async function renderComments(postId, container) {
 
     form.onsubmit = async (e) => {
         e.preventDefault();
-        errBox.textContent = "";
+        errNode.textContent = "";
         const text = input.value.trim();
 
         if (!text || text.length > 4500) {
-            errBox.textContent = "Comment cannot be empty or exceed 4500 characters.";
+            errNode.textContent = "Comment cannot be empty or exceed 4500 characters.";
             return;
         }
 
@@ -77,7 +79,7 @@ export async function renderComments(postId, container) {
             btn.textContent = "Sending...";
 
             const newComment = await submitComment(postId, text);
-            list.appendChild(createCommentNode(newComment));
+            list.appendChild(createComment(newComment));
             input.value = "";
 
         } catch (err) {

@@ -12,10 +12,10 @@ export async function loadPostCard(postId) {
 
         container.appendChild(createPostDetails(post));
     } catch (error) {
-        const { ErrorPageView } = await import("../errorPage.js");
-        const errorView = ErrorPageView();
-        container.replaceChildren(errorView.dom);
-        if (errorView.logic) errorView.logic();
+        const { errorView } = await import("../errorPage.js");
+        const view = errorView(error.status || 404);
+        container.replaceChildren(view.dom);
+        if (view.logic) view.logic();
     }
 }
 
