@@ -87,7 +87,7 @@ export async function renderCommentsSection(postId, container) {
 
             const msgLower = err.message.toLowerCase();
             if (msgLower.includes("401") || msgLower.includes("unauthorized") || msgLower.includes("login")) {
-                if (window.navigateTo) window.navigateTo("/login");
+                if (window.navigator) window.navigator("/login");
             }
         } finally {
             submitBtn.disabled = false;

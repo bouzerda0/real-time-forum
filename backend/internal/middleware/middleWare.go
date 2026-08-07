@@ -13,7 +13,7 @@ func RequireAuth(next http.HandlerFunc) http.HandlerFunc {
 		cookie, err := r.Cookie("session_token")
 		if err != nil || cookie.Value == "" {
 			clearCookie(w)
-			sendJSONError(w, "Unauthorized. Please login.", http.StatusUnauthorized)
+			SendJSONError(w, "Unauthorized. Please login.", http.StatusUnauthorized)
 			return
 		}
 
@@ -22,7 +22,7 @@ func RequireAuth(next http.HandlerFunc) http.HandlerFunc {
 		err = database.DB.QueryRow(query, cookie.Value, time.Now()).Scan(&userID)
 		if err != nil {
 			clearCookie(w)
-			sendJSONError(w, "Unauthorized. Please login.", http.StatusUnauthorized)
+			SendJSONError(w, "Unauthorized. Please login.", http.StatusUnauthorized)
 			return
 		}
 		// add the user id to the request context

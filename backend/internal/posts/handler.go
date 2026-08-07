@@ -59,7 +59,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			posts = []models.Post{}
 		}
 		w.Header().Set("Content-Type", "application/json")
-
+		w.WriteHeader(http.StatusOK)
 		err = json.NewEncoder(w).Encode(posts)
 		if err != nil {
 			http.Error(w, http.StatusText(500), http.StatusInternalServerError)

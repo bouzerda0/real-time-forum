@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"real-time-forum/database"
 	"real-time-forum/internal/auth"
@@ -50,15 +51,27 @@ func main() {
 	http.HandleFunc("/ws", websocket.WSHandler(hub))
 	http.HandleFunc("GET /chat", chat.ChatHandler)
 
-	// Serving Frontend SPA (must be registered after specific API routes)
 	fs := http.FileServer(http.Dir(frontendDir))
-
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if _, err := os.Stat(frontendDir + r.URL.Path); os.IsNotExist(err) {
-			r.URL.Path = "/"
+		path := r.URL.Path
+
+		// 1. serve index.html with 200 OK for known SPA routes
+		switch {
+		case path == "/", path == "/login", path == "/register", path == "/create-post", path == "/messages", strings.HasPrefix(path, "/post/"):
+			http.ServeFile(w, r, frontendDir+"/index.html")
+			return
 		}
 
-		fs.ServeHTTP(w, r)
+		// 2. serve static files if they exist (JS, CSS, images, etc.)
+		if stat, err := os.Stat(frontendDir + path); err == nil && !stat.IsDir() {
+			fs.ServeHTTP(w, r)
+			return
+		}
+
+		// 3. serve index.html with 404 Not Found for unknown routes
+		w.WriteHeader(http.StatusNotFound)
+		indexFile, _ := os.ReadFile(frontendDir + "/index.html")
+		w.Write(indexFile)
 	})
 	port := ":8080"
 	log.Printf("Server is running on http://localhost%s\n", port)

@@ -38,7 +38,7 @@ func CommentsHandler(w http.ResponseWriter, r *http.Request) {
 		if postComments == nil {
 			postComments = []models.Comment{}
 		}
-
+		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(postComments)
 
 	case http.MethodPost:

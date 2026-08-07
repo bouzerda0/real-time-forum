@@ -57,3 +57,17 @@ export function addThrottledScrollListener(container, delay, callback) {
         callback();
     });
 }
+
+export function formatRelativeTime(dateStr) {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return "";
+
+    const minutes = Math.floor((Date.now() - date.getTime()) / 60000);
+    if (minutes < 1) return "now";
+    if (minutes < 60) return `${minutes}m`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h`;
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `${days}d`;
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}

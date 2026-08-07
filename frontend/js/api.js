@@ -9,6 +9,13 @@ export async function ApiRequest(url, options = {}) {
         credentials: "include",
     });
 
+    if (response.status === 401) {
+        localStorage.removeItem('isAuthenticated');
+        localStorage.removeItem('currentUser');
+        if (window.navigateTo) window.navigateTo('/login');
+        throw new Error("Unauthorized");
+    }
+
     if (!response.ok) {
         throw new Error(`HTTP Error: ${response.status}`);
     }

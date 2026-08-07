@@ -1,628 +1,110 @@
-/* =========================================================
-   Modern Forum & Dashboard Feed Styles
-   Clean SaaS Dashboard Aesthetic — CSS-Only Redesign
-========================================================= */
-
-/* --- Design Tokens --- */
-:root {
-  --bg: #f8fafc;
-  --card: #ffffff;
-  --text: #0f172a;
-  --text-secondary: #334155;
-  --muted: #64748b;
-  --muted-light: #94a3b8;
-  --primary: #8b5cf6;
-  --primary-soft: #f5f3ff;
-  --border: #e2e8f0;
-  --border-light: #f1f5f9;
-  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
-  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.03);
-  --shadow-lg: 0 8px 24px rgba(15, 23, 42, 0.07), 0 2px 6px rgba(15, 23, 42, 0.03);
-  --radius-card: 16px;
-  --radius-pill: 999px;
-  --transition-fast: 200ms ease;
-  --transition-base: 250ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* --- Main Feed Container & Layout --- */
+/* === FEED === */
 #feed-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 32px 24px;
-  max-width: 940px;
-  margin: 0 auto;
-  width: 100%;
+  display:flex; flex-direction:column; gap:20px;
+  padding:32px 24px; max-width:940px; margin:0 auto; width:100%;
 }
 
-.dashboard-feed {
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-  padding: 32px 24px;
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
+/* Post Cards */
+.post-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:16px; padding:24px 28px; box-shadow:var(--shadow-sm);
+  transition:var(--ease); cursor:pointer;
+  display:flex; flex-direction:column; justify-content:space-between;
+  min-height:260px; width:100%;
 }
+.post-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-lg); border-color:#cbd5e1; }
 
-/* --- Section Headers --- */
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
+/* Header & User */
+.post-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:12px; }
+.post-user {
+  display:inline-flex; align-items:center; gap:10px;
+  font-weight:600; font-size:.92rem; color:var(--text);
 }
-
-.section-header h3 {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0;
-  letter-spacing: -0.01em;
-}
-
-.btn-view-all {
-  background: transparent;
-  border: 1.5px solid var(--border);
-  color: var(--primary);
-  padding: 6px 16px;
-  border-radius: var(--radius-pill);
-  font-size: 0.84rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  font-family: inherit;
-}
-
-.btn-view-all:hover {
-  border-color: var(--primary);
-  background: var(--primary-soft);
-}
-
-/* =========================================================
-   POST CARDS — Clean, Minimal, Elevated
-========================================================= */
-.post-card,
-.dash-card,
-.dash-card.post {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-card);
-  padding: 24px 28px;
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--transition-base),
-    box-shadow var(--transition-base),
-    border-color var(--transition-fast);
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 280px;
-  width: 100%;
-  position: relative;
-}
-
-/* Inside horizontal carousel */
-.carousel-container .post-card,
-.carousel-container .dash-card.post {
-  flex: 0 0 auto;
-  width: 420px;
-  min-width: 360px;
-  max-width: calc(100vw - 64px);
-  min-height: 260px;
-  scroll-snap-align: start;
-}
-
-/* Hover — subtle lift with shadow */
-.post-card:hover,
-.dash-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
-  border-color: #cbd5e1;
-}
-
-/* =========================================================
-   POST HEADER — Author & Category
-========================================================= */
-.post-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 14px;
-  gap: 12px;
-}
-
-/* Author badge with generated avatar */
-.post-user,
-.user-info {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 600;
-  font-size: 0.92rem;
-  color: var(--text);
-}
-
 .post-user::before {
-  content: '';
-  display: inline-block;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: var(--primary);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E");
-  background-size: 18px;
-  background-position: center;
-  background-repeat: no-repeat;
-  flex-shrink: 0;
+  content:''; display:inline-block; width:34px; height:34px; border-radius:50%;
+  background:var(--primary) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E") center/18px no-repeat;
+  flex-shrink:0;
 }
 
-/* Avatar element used in members / other views */
-.avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--primary);
-  color: #ffffff;
-  display: grid;
-  place-items: center;
-  font-size: 0.88rem;
-  font-weight: 700;
-  flex-shrink: 0;
-  letter-spacing: 0.02em;
+/* Category Badges */
+.post-category {
+  display:inline-flex; align-items:center;
+  background:var(--primary-soft); color:var(--primary);
+  padding:4px 12px; border-radius:var(--radius-pill);
+  font-size:.78rem; font-weight:600; text-transform:capitalize;
+  border:1px solid #ede9fe; white-space:nowrap;
 }
 
-/* =========================================================
-   CATEGORY BADGES — Clean Flat Pills
-========================================================= */
-.post-category,
-.pill {
-  display: inline-flex;
-  align-items: center;
-  background: var(--primary-soft);
-  color: var(--primary);
-  padding: 4px 12px;
-  border-radius: var(--radius-pill);
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  text-transform: capitalize;
-  border: 1px solid #ede9fe;
-  white-space: nowrap;
+/* Typography */
+.post-title {
+  font-size:1.2rem; font-weight:700; color:var(--text);
+  margin-bottom:10px; line-height:1.4; word-break:break-word; transition:color .2s;
+}
+.post-card:hover .post-title { color:var(--primary); }
+
+.post-content {
+  font-size:.93rem; color:var(--text-muted); line-height:1.65;
+  margin-bottom:20px; min-height:60px;
+  display:-webkit-box; -webkit-line-clamp:4; line-clamp:4;
+  -webkit-box-orient:vertical; overflow:hidden;
+  word-break:break-word; white-space:pre-line;
 }
 
-.pills-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: 2px 0 12px;
+/* Footer */
+.post-footer {
+  margin-top:auto; display:flex; align-items:center; justify-content:space-between;
+  border-top:1px solid var(--border-light); padding-top:16px;
+  font-size:.84rem; color:var(--text-muted); font-weight:500;
+  flex-wrap:wrap; gap:12px;
 }
-
-/* =========================================================
-   POST TITLE & CONTENT — Typography Hierarchy
-========================================================= */
-.post-title,
-.dash-card-title {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0 0 10px 0;
-  line-height: 1.4;
-  letter-spacing: -0.01em;
-  word-break: break-word;
-  transition: color var(--transition-fast);
+.post-footer > span:first-child { display:inline-flex; align-items:center; gap:5px; color:#94a3b8; font-size:.82rem; margin-right:auto; }
+.post-footer > span:first-child::before { content:'📅'; font-size:.84rem; }
+.post-footer > span:nth-child(2) {
+  display:inline-flex; align-items:center; gap:5px;
+  background:var(--bg); border:1px solid var(--border);
+  padding:5px 12px; border-radius:var(--radius-pill);
+  color:var(--text-muted); font-size:.82rem; font-weight:600;
+  cursor:pointer; white-space:nowrap;
 }
+.post-footer > span:nth-child(2)::before { content:'💬'; font-size:.88rem; }
 
-.post-card:hover .post-title,
-.dash-card:hover .dash-card-title {
-  color: var(--primary);
-}
-
-.post-content,
-.dash-card-snippet {
-  font-size: 0.93rem;
-  color: var(--muted);
-  line-height: 1.65;
-  margin: 0 0 20px 0;
-  min-height: 60px;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  word-break: break-word;
-  white-space: pre-line;
-}
-
-/* =========================================================
-   POST FOOTER — Date, Comments, Reactions
-========================================================= */
-.post-footer,
-.dash-card-footer {
-  margin-top: auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-top: 1px solid var(--border-light);
-  padding-top: 16px;
-  font-size: 0.84rem;
-  color: var(--muted);
-  font-weight: 500;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-/* Date — left-aligned */
-.post-footer>span:first-child,
-.dash-card-footer>span:first-child {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  color: var(--muted-light);
-  font-size: 0.82rem;
-  font-weight: 500;
-  margin-right: auto;
-}
-
-.post-footer>span:first-child::before,
-.dash-card-footer>span:first-child::before {
-  content: '📅';
-  font-size: 0.84rem;
-}
-
-/* Comment count pill — right side */
-.post-footer>span:nth-child(2),
-.post-comments-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  padding: 5px 12px;
-  border-radius: var(--radius-pill);
-  color: var(--muted);
-  font-size: 0.82rem;
-  font-weight: 600;
-  transition: all var(--transition-fast);
-  cursor: pointer;
-  user-select: none;
-  white-space: nowrap;
-}
-
-.post-footer>span:nth-child(2)::before,
-.post-comments-toggle::before {
-  content: '💬';
-  font-size: 0.88rem;
-  line-height: 1;
-}
-
-.post-card:hover .post-footer>span:nth-child(2),
-.dash-card:hover .post-comments-toggle {
-  border-color: #cbd5e1;
-  background: var(--border-light);
-  color: var(--text-secondary);
-}
-
-/* =========================================================
-   REACTION BUTTONS — Like & Dislike
-========================================================= */
-.post-actions {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.post-stats {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 600;
-}
-
+/* Reactions */
+.post-actions { display:flex; align-items:center; gap:8px; font-weight:600; }
 .btn-react {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 12px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--muted);
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition-base);
-  user-select: none;
-  white-space: nowrap;
-  font-family: inherit;
+  display:inline-flex; align-items:center; gap:5px;
+  padding:5px 12px; border-radius:var(--radius-pill);
+  border:1px solid var(--border); background:var(--bg);
+  color:var(--text-muted); font-size:.82rem; font-weight:600;
+  cursor:pointer; transition:var(--ease); font-family:inherit;
 }
+.btn-react:hover { transform:translateY(-1px); }
+.like-btn:hover, .btn-react.like-btn.liked { border-color:#818cf8; background:var(--primary-soft); color:var(--primary); }
+.dislike-btn:hover, .btn-react.dislike-btn.disliked { border-color:#ef4444; background:#fef2f2; color:#dc2626; }
+.react-icon { font-size:.92rem; transition:transform .25s; }
+.btn-react:hover .react-icon, .liked .react-icon, .disliked .react-icon { transform:scale(1.2); }
 
-.btn-react:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.06);
+/* Empty State */
+.empty-feed {
+  background:var(--card); border:1.5px dashed #cbd5e1;
+  border-radius:16px; padding:56px 32px; text-align:center;
+  max-width:500px; margin:40px auto;
 }
-
-.like-btn:hover {
-  border-color: #818cf8;
-  background: var(--primary-soft);
-  color: var(--primary);
-}
-
-.dislike-btn:hover {
-  border-color: #ef4444;
-  background: #fef2f2;
-  color: #dc2626;
-}
-
-.btn-react.like-btn.liked {
-  background: var(--primary-soft);
-  border-color: #818cf8;
-  color: var(--primary);
-  box-shadow: 0 2px 6px rgba(139, 92, 246, 0.15);
-}
-
-.btn-react.dislike-btn.disliked {
-  background: #fef2f2;
-  border-color: #ef4444;
-  color: #dc2626;
-  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.15);
-}
-
-.react-icon {
-  font-size: 0.92rem;
-  line-height: 1;
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.btn-react:hover .react-icon,
-.liked .react-icon,
-.disliked .react-icon {
-  transform: scale(1.2);
-}
-
-.react-count {
-  font-variant-numeric: tabular-nums;
-}
-
-/* =========================================================
-   CAROUSELS — Horizontal Scrolling
-========================================================= */
-.carousel-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.carousel-container {
-  display: flex;
-  gap: 16px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  padding: 4px 2px 16px;
-  width: 100%;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.carousel-container::-webkit-scrollbar {
-  display: none;
-}
-
-.scroll-arrow {
-  position: absolute;
-  z-index: 5;
-  width: 40px;
-  height: 40px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  box-shadow: var(--shadow-md);
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  font-size: 1.15rem;
-  transition: all var(--transition-fast);
-  color: var(--muted);
-}
-
-.scroll-arrow:hover {
-  transform: scale(1.06);
-  background: var(--primary);
-  color: #ffffff;
-  border-color: var(--primary);
-}
-
-.left-arrow {
-  left: -14px;
-}
-
-.right-arrow {
-  right: -14px;
-}
-
-/* =========================================================
-   MEMBERS SECTION — Matching Post Card Visual Language
-========================================================= */
-.dash-card.member {
-  width: 230px;
-  min-height: auto;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 16px 20px;
-  border-radius: var(--radius-card);
-  background: var(--card);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--transition-base),
-    box-shadow var(--transition-base),
-    border-color var(--transition-fast);
-  cursor: default;
-}
-
-.dash-card.member:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
-  border-color: #cbd5e1;
-}
-
-.member .avatar {
-  width: 42px;
-  height: 42px;
-  font-size: 1rem;
-}
-
-.member-details {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.member-details strong {
-  font-size: 0.92rem;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.member-details span {
-  font-size: 0.78rem;
-  color: var(--muted);
-  font-weight: 500;
-}
-
-/* =========================================================
-   EMPTY STATES — Clean, Inviting
-========================================================= */
-.empty-feed,
-.empty-section-card {
-  background: var(--card);
-  border: 1.5px dashed #cbd5e1;
-  border-radius: var(--radius-card);
-  padding: 56px 32px;
-  text-align: center;
-  max-width: 500px;
-  margin: 40px auto;
-  box-shadow: none;
-}
-
-.empty-feed-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: var(--primary-soft);
-  color: var(--primary);
-  display: grid;
-  place-items: center;
-  margin: 0 auto 18px;
-}
-
-.empty-feed h2,
-.empty-section-card h4 {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0 0 8px;
-}
-
-.empty-feed p,
-.empty-section-card p {
-  font-size: 0.92rem;
-  color: var(--muted);
-  margin: 0 0 24px;
-  line-height: 1.55;
-}
-
+.empty-feed-icon { width:64px; height:64px; border-radius:50%; background:var(--primary-soft); color:var(--primary); display:grid; place-items:center; margin:0 auto 18px; }
+.empty-feed h2 { font-size:1.2rem; font-weight:700; color:var(--text); margin-bottom:8px; }
+.empty-feed p { font-size:.92rem; color:var(--text-muted); margin-bottom:24px; }
 .empty-feed-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: var(--primary);
-  color: #ffffff;
-  border: none;
-  padding: 10px 22px;
-  border-radius: var(--radius-pill);
-  font-size: 0.88rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--transition-base);
-  font-family: inherit;
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  background:var(--primary); color:#fff; border:none;
+  padding:10px 22px; border-radius:var(--radius-pill);
+  font-size:.88rem; font-weight:600; cursor:pointer;
+  transition:var(--ease); font-family:inherit;
 }
+.empty-feed-btn:hover { transform:translateY(-2px); box-shadow:0 6px 16px rgba(139,92,246,.3); }
 
-.empty-feed-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.3);
-}
-
-/* =========================================================
-   RESPONSIVE ADJUSTMENTS
-========================================================= */
-@media (max-width: 768px) {
-
-  #feed-container,
-  .dashboard-feed {
-    padding: 16px;
-    gap: 16px;
-  }
-
-  .post-card,
-  .dash-card,
-  .dash-card.post {
-    padding: 20px 18px;
-    border-radius: 14px;
-    min-height: 220px;
-  }
-
-  .carousel-container .post-card,
-  .carousel-container .dash-card.post {
-    width: 310px;
-    min-width: 280px;
-  }
-
-  .post-title,
-  .dash-card-title {
-    font-size: 1.08rem;
-  }
-
-  .post-content,
-  .dash-card-snippet {
-    font-size: 0.88rem;
-    min-height: 40px;
-    -webkit-line-clamp: 3;
-    line-clamp: 3;
-  }
-
-  .post-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .post-footer,
-  .dash-card-footer {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .post-footer>span:first-child,
-  .dash-card-footer>span:first-child {
-    margin-right: 0;
-    width: 100%;
-  }
-
-  .post-actions {
-    margin-left: 0;
-  }
-
-  .section-header h3 {
-    font-size: 1.1rem;
-  }
-
-  .empty-feed,
-  .empty-section-card {
-    padding: 40px 20px;
-    margin: 24px auto;
-  }
+/* Responsive */
+@media (max-width:768px) {
+  #feed-container { padding:16px; gap:16px; }
+  .post-card { padding:20px 18px; min-height:220px; }
+  .post-header, .post-footer { flex-direction:column; align-items:flex-start; gap:8px; }
+  .post-footer > span:first-child { margin-right:0; width:100%; }
 }
