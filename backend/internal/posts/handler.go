@@ -16,19 +16,22 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		userID, err := auth.GetUserID(r)
 		if err != nil {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			w.WriteHeader(http.StatusUnauthorized)
+			json.NewEncoder(w).Encode(map[string]string{"error": "Unauthorized"})
 			return
 		}
 
 		var post models.Post
 		if err := json.NewDecoder(r.Body).Decode(&post); err != nil {
-			http.Error(w, http.StatusText(400), http.StatusBadRequest)
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{"error": "Bad Request"})
 			return
 		}
 		defer r.Body.Close()
 
 		if !ValidatePostInput(post) {
-			http.Error(w, http.StatusText(400), http.StatusBadRequest)
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(map[string]string{"error": "Invalid Input"})
 			return
 		}
 
@@ -37,7 +40,8 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 
 		if err := CreatePost(post); err != nil {
 			fmt.Println("CreatePost error:", err)
-			http.Error(w, http.StatusText(500), http.StatusInternalServerError)
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]string{"error": "Internal Server Error"})
 			return
 		}
 
@@ -51,8 +55,8 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		// Filter by category if specified
 		posts, err := GetAllPosts(category, userID)
 		if err != nil {
-
-			http.Error(w, http.StatusText(500), http.StatusInternalServerError)
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]string{"error": "Internal Server Error"})
 			return
 		}
 		if posts == nil {
@@ -62,37 +66,44 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		err = json.NewEncoder(w).Encode(posts)
 		if err != nil {
-			http.Error(w, http.StatusText(500), http.StatusInternalServerError)
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(map[string]string{"error": "Internal Server Error"})
 			return
 		}
 
 	default:
-		http.Error(w, http.StatusText(405), http.StatusMethodNotAllowed)
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Method Not Allowed"})
 	}
 }
 
 func GetPostHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	if r.Method != http.MethodGet {
-		http.Error(w, http.StatusText(405), http.StatusMethodNotAllowed)
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Method Not Allowed"})
 		return
 	}
 	idstring := r.PathValue("id")
 	post_id, err := strconv.Atoi(idstring)
 	if err != nil {
-		http.Error(w, http.StatusText(400), http.StatusBadRequest)
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Post not found or invalid ID"})
 		return
 	}
 	userID, _ := auth.GetUserID(r)
 	post, err := GetPostByID(post_id, userID)
 	if err != nil {
-		http.Error(w, http.StatusText(404), http.StatusNotFound)
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Post not found"})
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(post)
 	if err != nil {
-		http.Error(w, http.StatusText(405), http.StatusMethodNotAllowed)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Internal Server Error"})
 		return
 	}
 }
