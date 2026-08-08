@@ -50,23 +50,23 @@ export function registerView() {
     `;
 
     const logic = () => {
-        const [form, errBox, btn] = ['#registerForm', '#register-error-text', 'button[type="submit"]'].map(s => mainContainer.querySelector(s));
-        const getVal = id => mainContainer.querySelector(id).value.trim();
+        const [form, errBox, btn] = ['#registerForm', '#register-error-text', 'button[type="submit"]'].map(s => container.querySelector(s));
+        const getVal = id => container.querySelector(id).value.trim();
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            errNode.textContent = '';
+            errBox.textContent = '';
             btn.disabled = true;
             btn.textContent = 'Creating account...';
 
             const payload = {
-                username: val('#username'),
-                first_name: val('#firstName'),
-                last_name: val('#lastName'),
-                age: parseInt(val('#age'), 10),
+                username: getVal('#username'),
+                first_name: getVal('#firstName'),
+                last_name: getVal('#lastName'),
+                age: parseInt(getVal('#age'), 10),
                 gender: container.querySelector('#gender').value,
-                email: val('#email'),
+                email: getVal('#email'),
                 password: container.querySelector('#password').value
             };
 

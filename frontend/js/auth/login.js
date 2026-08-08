@@ -22,7 +22,7 @@ export function loginView() {
     `;
 
     const logic = () => {
-        const [form, errBox, btn] = ['#loginForm', '#login-error-text', 'button[type="submit"]'].map(s => mainContainer.querySelector(s));
+        const [form, errBox, btn] = ['#loginForm', '#login-error-text', 'button[type="submit"]'].map(s => container.querySelector(s));
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
