@@ -55,22 +55,27 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
 
-		// 1. serve index.html with 200 OK for known SPA routes
+		// serve index.html for SPA routes
 		switch {
 		case path == "/", path == "/login", path == "/register", path == "/create-post", path == "/messages", strings.HasPrefix(path, "/post/"):
 			http.ServeFile(w, r, frontendDir+"/index.html")
 			return
 		}
 
-		// 2. serve static files if they exist (JS, CSS, images, etc.)
+		// serve static files if they exist (JS, CSS, images)
 		if stat, err := os.Stat(frontendDir + path); err == nil && !stat.IsDir() {
 			fs.ServeHTTP(w, r)
 			return
 		}
 
-		// 3. serve index.html with 404 Not Found for unknown routes
+		// serve index.html with 404 for unknown routes
+		indexFile, err := os.ReadFile(frontendDir + "/index.html")
+		if err != nil {
+			http.Error(w, "Page not found", http.StatusNotFound)
+			return
+		}
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(http.StatusNotFound)
-		indexFile, _ := os.ReadFile(frontendDir + "/index.html")
 		w.Write(indexFile)
 	})
 	port := ":8080"

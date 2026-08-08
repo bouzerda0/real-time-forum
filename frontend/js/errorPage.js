@@ -1,12 +1,12 @@
 import { navigateTo } from './router.js';
 
 const ERRORS = {
-  400: ['Bad Request', 'The server could not understand your request.'],
-  401: ['Unauthorized', 'You need to be logged in to access this page.'],
-  403: ['Forbidden', "You don't have permission to access this page."],
-  404: ['Page Not Found', "The page you're looking for doesn't exist or has been moved."],
-  500: ['Internal Server Error', 'Something went wrong on our end. Please try again later.'],
-  503: ['Service Unavailable', 'The server is temporarily unavailable. Please try again later.']
+  400: ['Bad Request'],
+  401: ['Unauthorized'],
+  403: ['Forbidden'],
+  404: ['Page Not Found'],
+  500: ['Internal Server Error'],
+  503: ['Service Unavailable']
 };
 
 export function errorView(status = 404) {

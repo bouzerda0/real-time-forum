@@ -93,6 +93,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Create new session token
 	sessionToken := generateSessionToken()
+	if sessionToken == "" {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(apiResponse{Status: "error", Message: "Server error"})
+		return
+	}
 	expirationTime := time.Now().Add(SessionDuration)
 	_, err = database.DB.Exec("INSERT INTO user_sessions (user_id, session_token, expires_at) VALUES (?, ?, ?)", dbID, sessionToken, expirationTime)
 	if err != nil {
