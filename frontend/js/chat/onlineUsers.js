@@ -1,12 +1,9 @@
 import { ApiRequest } from "../api.js";
 import { formatRelativeTime } from "./chatHelpers.js";
 
-const usersList = document.getElementById("online-users");
+const usersList = document.getElementById("users-list");
 
-// Cache of the last fetched users (used to resolve nicknames for incoming messages)
 let usersCache = [];
-// Users that currently have unread messages (kept across re-renders)
-const notifiedUsers = new Set();
 
 // 1. Load all users from the backend
 export async function loadUsers() {
@@ -69,10 +66,6 @@ function renderUsers(users) {
         userItem.appendChild(meta);
         userItem.appendChild(status);
 
-        if (notifiedUsers.has(user.id)) {
-            userItem.classList.add("has-notification");
-        }
-
         // 4. Click on a user to start a chat
         userItem.addEventListener("click", () => {
             window.openChat(user.id, user.nickname);
@@ -112,8 +105,8 @@ export function updateOnlineUsers(message) {
     status.classList.toggle("offline", !message.online);
 }
 
-// 5. Move a user to the top of the list & refresh their last-message preview (Discord style)
-export function reorderUsers(userId, message) {
+//  Move a user to the top of the list & refresh their last-message preview (Discord style)
+export function updateLastMessage(userId, message) {
     // 1. Update the cache
     const userIndex = usersCache.findIndex(u => u.id === userId);
     if (userIndex !== -1) {
@@ -148,17 +141,13 @@ export function showNotification(message) {
     const userItem = usersList.querySelector(`[data-user-id="${message.senderId}"]`);
     if (!userItem) return;
 
-    notifiedUsers.add(message.senderId);
     userItem.classList.add("has-notification");
-    document.querySelector('.links li')?.classList.add('has-notification');
 }
 
 // Remove the unread badge of a conversation
-export function markRead(userId) {
-    notifiedUsers.delete(userId);
+export function clearNotification(userId) {
     const userItem = usersList.querySelector(`[data-user-id="${userId}"]`);
     if (userItem) userItem.classList.remove("has-notification");
-    if (notifiedUsers.size === 0) document.querySelector('.links li')?.classList.remove('has-notification');
 }
 
 

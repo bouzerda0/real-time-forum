@@ -5,7 +5,6 @@ import { createPostView } from '/js/post/createPost.js';
 import { loadPostCard } from '/js/post/postDetails.js';
 import { updateAuthUI } from '/js/compenents/navbar.js';
 import { errorView } from '/js/errorPage.js';
-import { chatView } from '/js/chat/chat.js';
 
 // route definitions
 const routes = {
@@ -17,7 +16,6 @@ const routes = {
     '/login': loginView,
     '/register': registerView,
     '/create-post': createPostView,
-    '/messages': chatView,
     '/404': errorView,
 };
 
@@ -49,11 +47,11 @@ async function checkAuth() {
 
 export async function navigateTo(path) {
     window.history.pushState(null, '', path);
-    await mount(path);
+    await render(path);
 }
 window.navigateTo = navigateTo;
 
-async function mount(path) {
+async function render(path) {
     const isAuthRoute = path === '/login' || path === '/register';
     const isAuthed = await checkAuth();
 
@@ -109,7 +107,7 @@ async function mount(path) {
 }
 
 export function init() {
-    window.addEventListener('popstate', () => mount(location.pathname));
+    window.addEventListener('popstate', () => render(location.pathname));
 
     document.body.addEventListener('click', (e) => {
         const a = e.target.closest('a[href]');
@@ -118,5 +116,5 @@ export function init() {
         navigateTo(a.pathname + a.search + a.hash);
     });
 
-    mount(location.pathname);
+    render(location.pathname);
 }
