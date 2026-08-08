@@ -101,7 +101,7 @@ async function mount(path) {
         }
     }
 
-    const route = routesMap[path] || errorView;
+    const route = routes[path] || errorView;
     const view = route();
     app.innerHTML = '';
     app.appendChild(view.dom);
