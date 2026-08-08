@@ -244,3 +244,14 @@ body {
 .purple-glow {
   display: none;
 }
+
+/* Auth-route layout (login / register centered view) */
+.auth-view {
+  padding: 20px;
+  max-width: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  box-sizing: border-box;
+}

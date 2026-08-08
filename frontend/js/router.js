@@ -7,7 +7,8 @@ import { updateAuthUI } from '/js/compenents/navbar.js';
 import { errorView } from '/js/errorPage.js';
 import { chatView } from '/js/chat/chat.js';
 
-const routesMap = {
+// route definitions
+const routes = {
     '/': () => {
         const dom = document.createElement('div');
         renderHomeFeed(dom);
@@ -20,6 +21,7 @@ const routesMap = {
     '/404': errorView,
 };
 
+// auth check
 async function checkAuth() {
     try {
         const res = await fetch('/api/session');
