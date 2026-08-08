@@ -143,13 +143,38 @@
 
 .chat-bubble {
   background-color: #f1f5f9;
-  padding: 12px 16px;
-  border-radius: 16px;
-  margin-bottom: 12px;
-  max-width: 85%;
+  padding: 10px 14px;
+  border-radius: 18px;
+  margin-bottom: 10px;
+
+  /* Short messages stay compact */
+  width: fit-content;
+  max-width: min(75%, 500px);
+
+  /* Long messages wrap correctly */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+
   display: flex;
   flex-direction: column;
   gap: 4px;
+
+  /* Better visual balance */
+  line-height: 1.4;
+  box-sizing: border-box;
+}
+.msg-time {
+  align-self: flex-end;
+  margin-top: 2px;
+
+  font-size: 11px;
+  line-height: 1;
+  color: #94a3b8;
+  white-space: nowrap;
+
+  opacity: 0.9;
+  user-select: none;
 }
 
 .chat-bubble.self {

@@ -171,15 +171,24 @@ body {
 }
 
 .top-bar {
-  background-color: var(--white-box);
-  border-bottom: 1px solid var(--border-color);
-  padding: 16px 32px;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 20px;
-}
+  width: 100%;
+  height: 70px;
+  min-height: 70px;
 
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 20px;
+  box-sizing: border-box;
+
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+
+  position: sticky;   /* changed from relative */
+  top: 0;              /* add this */
+  z-index: 20;
+}
 .auth-buttons {
   display: flex;
   align-items: center;
