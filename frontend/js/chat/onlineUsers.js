@@ -150,6 +150,7 @@ export function showNotification(message) {
 
     notifiedUsers.add(message.senderId);
     userItem.classList.add("has-notification");
+    document.querySelector('.links li')?.classList.add('has-notification');
 }
 
 // Remove the unread badge of a conversation
@@ -157,6 +158,7 @@ export function markRead(userId) {
     notifiedUsers.delete(userId);
     const userItem = usersList.querySelector(`[data-user-id="${userId}"]`);
     if (userItem) userItem.classList.remove("has-notification");
+    if (notifiedUsers.size === 0) document.querySelector('.links li')?.classList.remove('has-notification');
 }
 
 

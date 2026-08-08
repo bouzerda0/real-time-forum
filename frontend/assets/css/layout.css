@@ -255,3 +255,21 @@ body {
   min-height: 100vh;
   box-sizing: border-box;
 }
+
+@media (max-width: 768px) {
+  .main-content { margin-left: 0; }
+  .top-bar { padding: 12px 16px; }
+  .feed-container { padding: 16px 10px !important; max-width: 100% !important; }
+  .feed-container .post-card { padding: 16px !important; }
+  .feed-container .title { font-size: 18px; }
+  .feed-container .post-bottom { flex-wrap: wrap; gap: 10px; }
+  .feed-container .buttons { margin-left: 0; }
+  .create-box { margin: 16px 12px; padding: 20px; max-width: 100%; }
+  .login-box { padding: 24px 16px; max-width: 100%; }
+  .flex-row { flex-direction: column; gap: 0; }
+  .right-sidebar { width: 100%; border-left: none; }
+  .page-with-chat.chat-active .left-side { padding-right: 0; }
+  .auth-view { padding: 12px; }
+  .error-box { padding: 32px 20px; }
+  .big-error { font-size: 80px; }
+}

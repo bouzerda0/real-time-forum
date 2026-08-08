@@ -23,6 +23,10 @@
   display: flex;
 }
 
+.page-with-chat.chat-active .left-side {
+  padding-right: 340px; /* 320px sidebar + 20px gap */
+}
+
 .chat-view {
   display: flex;
   flex-direction: column;
@@ -123,6 +127,11 @@
   border-radius: 50%;
   margin-left: auto;
   flex-shrink: 0;
+  transition: background-color 0.2s ease;
+}
+
+.green-dot.offline {
+  background-color: #cbd5e1;
 }
 
 .messages {
@@ -230,4 +239,36 @@
   flex-direction: column;
   align-items: center;
   gap: 16px;
+}
+
+/* ── Unread notification dot ─────────────────────────────────────── */
+.person.has-notification,
+.links li.has-notification {
+  position: relative;
+}
+
+.person.has-notification::after,
+.links li.has-notification::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background-color: #ef4444;
+  border-radius: 50%;
+  position: absolute;
+  right: 36px;
+  top: 50%;
+  transform: translateY(-50%);
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
+  animation: notif-pulse 2s ease-in-out infinite;
+}
+
+.links li.has-notification::after {
+  right: 12px;
+  width: 8px;
+  height: 8px;
+}
+
+@keyframes notif-pulse {
+  0%, 100% { box-shadow: 0 0 4px rgba(239, 68, 68, 0.4); }
+  50%      { box-shadow: 0 0 10px rgba(239, 68, 68, 0.8); }
 }
