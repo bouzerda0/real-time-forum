@@ -5,6 +5,7 @@ import { createPostView } from '/js/post/createPost.js';
 import { loadPostCard } from '/js/post/postDetails.js';
 import { updateAuthUI } from '/js/compenents/navbar.js';
 import { errorView } from '/js/errorPage.js';
+import { ApiRequest } from '/js/api.js';
 
 // route definitions
 const routes = {
@@ -22,18 +23,14 @@ const routes = {
 // auth check
 async function checkAuth() {
     try {
-        const res = await fetch('/api/session');
-        if (res.status === 401) {
-            localStorage.removeItem('isAuthenticated');
-            localStorage.removeItem('currentUser');
-            return false;
-        }
-        if (!res.ok) throw new Error();
-        const { user } = await res.json();
+        const { user } = await ApiRequest('/api/session');
         localStorage.setItem('isAuthenticated', 'true');
         if (user) localStorage.setItem('currentUser', JSON.stringify(user));
         return true;
-    } catch {
+    } catch (err) {
+        if (err.message === "Unauthorized") {
+            return false;
+        }
         const cached = localStorage.getItem('isAuthenticated') === 'true';
         if (!cached) {
             localStorage.removeItem('isAuthenticated');
