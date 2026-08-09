@@ -10,14 +10,13 @@ const ERRORS = {
 };
 
 export function errorView(status = 404) {
-  const [title, desc] = ERRORS[status] || ['Unexpected Error', 'Something went wrong.'];
+  const [message] = ERRORS[status] || ['Unexpected Error'];
   const dom = document.createElement('div');
   dom.className = 'error-wrapper';
   dom.innerHTML = `
     <div class="error-box">
         <div class="big-error">${status}</div>
-        <h1>${title}</h1>
-        <p>${desc}</p>
+        <h1>${message}</h1>
         <button class="home-button">Back to Home</button>
     </div>
   `;
@@ -26,12 +25,4 @@ export function errorView(status = 404) {
     dom,
     logic: () => dom.querySelector('.home-button')?.addEventListener('click', () => navigateTo('/'))
   };
-}
-
-export function renderError(status = 404) {
-  const app = document.getElementById('app');
-  if (!app) return;
-  const { dom, logic } = errorView(status);
-  app.replaceChildren(dom);
-  logic();
 }
