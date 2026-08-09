@@ -1,9 +1,9 @@
 import { ApiRequest } from "../api.js";
 
-export function createReaction(itemId, initialLikes = 0, initialDislikes = 0, initialUserReaction, itemType = "post") {
+export function createReaction(itemId, initialLikes = 0, initialDislikes = 0, userReaction, itemType = "post") {
     const actionsDiv = document.createElement("div");
     actionsDiv.className = "buttons";
-    
+
     let likeId, dislikeId;
     if (itemType === "post") {
         likeId = `likes-count-${itemId}`;
@@ -13,8 +13,8 @@ export function createReaction(itemId, initialLikes = 0, initialDislikes = 0, in
         dislikeId = `dislikes-count-comment-${itemId}`;
     }
 
-    const likedClass = initialUserReaction === 1 ? "liked" : "";
-    const dislikedClass = initialUserReaction === 0 ? "disliked" : "";
+    const likedClass = userReaction === 1 ? "liked" : "";
+    const dislikedClass = userReaction === 0 ? "disliked" : "";
 
     actionsDiv.innerHTML = `
         <button class="action-btn like-btn ${likedClass}" data-${itemType}-id="${itemId}">
