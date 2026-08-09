@@ -45,12 +45,9 @@ window.switchChatView = switchChatView;
 export function openChat(userId, nickname) {
     window.currentChatUser = userId;
 
-    document.getElementById("active-chat-username").textContent = nickname || "Chat";
+    document.getElementById("active-chat-username").textContent = nickname;
     document.getElementById("sidebar-receiver-id").value = userId;
 
-    document.querySelectorAll(".person.active").forEach((el) => el.classList.remove("active"));
-    const selected = document.querySelector(`[data-user-id="${userId}"]`);
-    if (selected) selected.classList.add("active");
 
     clearNotification(userId);
     switchChatView("conversation");
@@ -60,7 +57,6 @@ export function openChat(userId, nickname) {
 }
 window.openChat = openChat;
 
-// Send a private message through the WebSocket
 export function sendMessage(event) {
     event.preventDefault();
     if (!window.currentChatUser) return;
@@ -87,7 +83,6 @@ export function sendMessage(event) {
 
 // Handle a new real-time message received over the WebSocket
 export function updateChatMessages(message) {
-    if (!message || message.type !== "message") return;
 
     updateLastMessage(message.senderId, message);
 
