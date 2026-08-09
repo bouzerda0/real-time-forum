@@ -1,6 +1,6 @@
 import { ApiRequest } from "../api.js";
 import { getUserById } from "./onlineUsers.js";
-import { autoScroll, formatMessageTime } from "./chatHelpers.js";
+import { formatMessageTime } from "./chatHelpers.js";
 
 const CHAT_PAGE_SIZE = 10;
 
@@ -35,18 +35,13 @@ export async function loadMessages() {
 
         if (!messages || messages.length === 0) {
             hasMore = false;
-
-            messagesContainer.innerHTML =
-                '<div class="no-chat">No messages yet, say hi!</div>';
-
             return;
         }
 
         hasMore = messages.length === CHAT_PAGE_SIZE;
         messageOffset += messages.length;
 
-        renderMessages(messages, messagesContainer);
-        autoScroll(messagesContainer);
+        renderMessages(messages, messagesContainer)
 
     } catch (error) {
         console.error("Failed to load messages:", error);
