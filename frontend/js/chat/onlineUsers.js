@@ -115,9 +115,8 @@ export function moveUserToTop(userId, message) {
     usersList.prepend(userItem);
 }
 
-// 6. Notify the user when a new message is received
+//  Notify the user when a new message is received
 export function showNotification(message) {
-    // If the chat with the sender is already open, don't notify
     if (message.senderId === window.currentChatUser) return;
 
     const userItem = usersList.querySelector(`[data-user-id="${message.senderId}"]`);

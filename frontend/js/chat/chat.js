@@ -1,6 +1,6 @@
 import { sendWebSocketMessage } from "../websocket.js";
 import { loadUsers, moveUserToTop, showNotification, clearNotification } from "./onlineUsers.js";
-import { addThrottledScrollListener, autoScroll, isNearBottom, showMessageToast } from "./chatHelpers.js";
+import { addThrottledScrollListener, showMessageToast } from "./chatHelpers.js";
 import {
     appendMessage,
     loadMessages,
@@ -88,14 +88,11 @@ export function updateChatMessages(message) {
 
     if (message.senderId === window.currentChatUser) {
         appendMessage(message);
-        if (isNearBottom(messagesContainer)) autoScroll(messagesContainer);
-        clearNotification(message.senderId);
         return;
     }
 
     showNotification(message);
     const nickname = senderNickname(message.senderId);
-    showMessageToast(message, nickname, () => openChat(message.senderId, nickname));
 }
 
 
