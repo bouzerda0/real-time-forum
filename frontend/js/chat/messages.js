@@ -147,5 +147,3 @@ export function senderNickname(senderId) {
     return user ? user.nickname : "User";
 }
 
-
-

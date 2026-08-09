@@ -17,24 +17,10 @@ export async function loadUsers() {
 
         usersCache = users;
         sortUsers(users);
-
-        // Only re-render when the rendered user set actually changed.
-        // Re-rendering on every navigation/sidebar-open would wipe the
-        // unread-notification dots on existing items.
-        const renderedIds = new Set(
-            [...usersList.querySelectorAll(".person")].map((el) => el.dataset.userId)
-        );
-        const needsRender =
-            users.length !== renderedIds.size ||
-            users.some((u) => !renderedIds.has(String(u.id)));
-
-        if (needsRender) renderUsers(users);
-
-        // Re-sync dots/counter after any re-render (idempotent)
-        updateNotificationCount();
+        renderUsers(users);
     } catch (error) {
         console.error("Failed to load users:", error);
-        const { showError } = await import("../errorPage.js");
+         const { showError } = await import("../errorPage.js");
         showError(error.status || 500);
     }
 }
@@ -128,62 +114,27 @@ export function moveUserToTop(userId, message) {
     const userItem = usersList.querySelector(`[data-user-id="${userId}"]`);
     if (userItem) usersList.prepend(userItem);
 }
+export function showChatNotification(message) {
+    const existingNotification =
+        document.getElementById("chat-notification");
 
-
-let notificationUsers = new Set();
-
-export async function showNotification(message) {
-    if (message.senderId === window.currentChatUser) return;
-
-    let userItem = usersList.querySelector(
-        `[data-user-id="${message.senderId}"]`
-    );
-    if (!userItem) {
-        await loadUsers();
-        if (message.senderId === window.currentChatUser) return;
-
-        userItem = usersList.querySelector(
-            `[data-user-id="${message.senderId}"]`
-        );
-        if (!userItem) return;
+    if (existingNotification) {
+        existingNotification.remove();
     }
 
-    // Don't count the same user more than once
-    notificationUsers.add(message.senderId);
-    userItem.classList.add("has-notification");
+    const notification = document.createElement("div");
 
-    updateNotificationCount();
+    notification.id = "chat-notification";
+    notification.classList.add("chat-notification");
+
+    notification.innerHTML = `
+        <span class="chat-notification-icon">💬</span>
+        <span class="chat-notification-text">${message}</span>
+    `;
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.remove();
+    }, 4000);
 }
-
-function updateNotificationCount() {
-    const count = document.querySelector(".notification-count");
-
-    if (!count) return;
-
-    notificationUsers.forEach((id) => {
-        const item = usersList.querySelector(`[data-user-id="${id}"]`);
-        if (!item) {
-            notificationUsers.delete(id);
-        } else {
-            item.classList.add("has-notification");
-        }
-    });
-
-    count.textContent = notificationUsers.size;
-    count.style.display = notificationUsers.size > 0 ? "flex" : "none";
-}
-
-// Remove the unread badge of a conversation
-export function clearNotification(userId) {
-    const userItem = usersList.querySelector(
-        `[data-user-id="${userId}"]`
-    );
-
-    if (!notificationUsers.has(userId)) return;
-
-    notificationUsers.delete(userId);
-    userItem?.classList.remove("has-notification");
-
-    updateNotificationCount();
-}
-
