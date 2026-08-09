@@ -58,13 +58,16 @@
   margin-top: 0;
   margin-bottom: 12px;
   line-height: 1.3;
+   overflow-wrap: break-word;
+  word-break: break-word;
 }
-
 .feed-container .text {
   color: #334155;
   margin-bottom: 24px;
   line-height: 1.6;
   font-size: 15px;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .feed-container .post-bottom {
