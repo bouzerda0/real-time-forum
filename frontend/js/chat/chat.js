@@ -62,6 +62,9 @@ export function sendMessage(event) {
 
     const content = chatInput.value.trim();
     if (!content) return;
+    if (content.length > 500) {
+        return;
+    }
 
     sendWebSocketMessage(window.currentChatUser, content);
 
