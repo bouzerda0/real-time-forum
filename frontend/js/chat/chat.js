@@ -18,12 +18,14 @@ const chatInput = document.getElementById("sidebar-chat-input");
 // Sidebar controls (called from the HTML)
 export function toggleChatSidebar() {
     const layout = document.getElementById("contentLayout");
-    const opening = layout.classList.contains("chat-active");
+    const closing = layout.classList.contains("chat-active");
 
     layout.classList.toggle("chat-active");
-    if (!opening) {
+    if (!closing) {
         switchChatView("users");
         loadUsers();
+    } else {
+        window.currentChatUser = null;
     }
 }
 window.toggleChatSidebar = toggleChatSidebar;
@@ -35,6 +37,10 @@ export function switchChatView(view) {
 
     usersView.classList.toggle("hidden", view !== "users");
     convView.classList.toggle("hidden", view !== "conversation");
+
+    if (view === "users") {
+        window.currentChatUser = null;
+    }
 }
 window.switchChatView = switchChatView;
 
@@ -78,13 +84,19 @@ export function sendMessage(event) {
 
 // Handle a new real-time message received over the WebSocket
 export function updateChatMessages(message) {
-
     moveUserToTop(message.senderId, message);
 
-    if (message.senderId === window.currentChatUser) {
+    const layout = document.getElementById("contentLayout");
+    const isSidebarOpen = layout ? layout.classList.contains("chat-active") : false;
+    const convView = document.getElementById("chat-view-conversation");
+    const isConvOpen = convView ? !convView.classList.contains("hidden") : false;
+
+    // Only append silently if sidebar is open AND conversation view is active for this sender
+    if (isSidebarOpen && isConvOpen && message.senderId === window.currentChatUser) {
         appendMessage(message);
         return;
     }
+
     const nickname = senderNickname(message.senderId);
     showChatNotification(`New message from ${nickname}`);
 }
