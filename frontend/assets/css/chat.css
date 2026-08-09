@@ -251,64 +251,72 @@
   gap: 16px;
 }
 
+.chat-notification {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
 
-
-.person {
-    position: relative;
-}
-
-.person.has-notification::after {
-    content: "";
-
-    position: absolute;
-    top: 50%;
-    right: 12px;
-
-    width: 8px;
-    height: 8px;
-
-    background-color: #3b82f6;
-    border-radius: 50%;
-
-    transform: translateY(-50%);
-    z-index: 5;
-
-    box-shadow:
-        0 0 0 2px rgba(59, 130, 246, 0.15);
-}
-
-
-
-.messages-link {
     display: flex;
     align-items: center;
+    gap: 12px;
+
+    min-width: 280px;
+    max-width: 360px;
+
+    padding: 14px 18px;
+
+    background: #030336;
+    color: #ffffff;
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-left: 4px solid var(--main-purple);
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.35);
+
+    font-size: 14px;
+    font-weight: 500;
+
+    z-index: 99999;
+
+    animation: notification-slide-in 0.25s ease;
 }
 
-
-/* Red notification counter */
-.notification-count {
-    display: none;
-
+.chat-notification-icon {
+    display: flex;
     align-items: center;
     justify-content: center;
 
-    width: 20px;
-    height: 20px;
+    width: 34px;
+    height: 34px;
 
-    margin-left: 6px;
-    padding: 0;
+    flex-shrink: 0;
 
-    background-color: #ef4444;
-    color: #ffffff;
+    background: var(--light-purple);
+    color: var(--main-purple);
 
     border-radius: 50%;
 
-    font-size: 11px;
-    font-weight: 700;
-    line-height: 20px;
+    font-size: 16px;
+}
 
-    text-align: center;
+.chat-notification-text {
+    overflow: hidden;
 
-    box-shadow:
-        0 0 0 2px rgba(239, 68, 68, 0.12);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+@keyframes notification-slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }

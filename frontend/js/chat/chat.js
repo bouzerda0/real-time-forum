@@ -1,5 +1,5 @@
 import { sendWebSocketMessage } from "../websocket.js";
-import { loadUsers, moveUserToTop, showNotification, clearNotification } from "./onlineUsers.js";
+import { loadUsers, moveUserToTop, showChatNotification} from "./onlineUsers.js";
 import { addThrottledScrollListener } from "./chatHelpers.js";
 import {
     appendMessage,
@@ -45,9 +45,6 @@ export function openChat(userId, nickname) {
 
     document.getElementById("active-chat-username").textContent = nickname;
     document.getElementById("sidebar-receiver-id").value = userId;
-
-
-    clearNotification(userId);
     switchChatView("conversation");
     resetMessages();
     loadMessages();
@@ -78,7 +75,6 @@ export function sendMessage(event) {
     moveUserToTop(window.currentChatUser, optimistic);
 
     chatInput.value = "";
-    autoScroll(messagesContainer);
 }
 
 // Handle a new real-time message received over the WebSocket
@@ -90,9 +86,8 @@ export function updateChatMessages(message) {
         appendMessage(message);
         return;
     }
-
-    showNotification(message);
     const nickname = senderNickname(message.senderId);
+    showChatNotification(`New message from ${nickname}`);
 }
 
 
