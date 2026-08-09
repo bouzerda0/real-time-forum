@@ -1,5 +1,4 @@
 import { ApiRequest } from "../api.js";
-import { formatRelativeTime } from "./chatHelpers.js";
 
 const usersList = document.getElementById("users-list");
 
@@ -49,14 +48,7 @@ function renderUsers(users) {
         name.classList.add("name");
         name.textContent = user.nickname;
 
-        const lastMsg = document.createElement("span");
-        lastMsg.classList.add("last-text");
-        lastMsg.textContent = hasLastMessage(user)
-            ? formatRelativeTime(user.lastmessage)
-            : "New member";
-
         meta.appendChild(name);
-        meta.appendChild(lastMsg);
 
         const status = document.createElement("span");
         status.classList.add("green-dot");
@@ -66,7 +58,6 @@ function renderUsers(users) {
         userItem.appendChild(meta);
         userItem.appendChild(status);
 
-        // 4. Click on a user to start a chat
         userItem.addEventListener("click", () => {
             window.openChat(user.id, user.nickname);
         });
@@ -105,7 +96,7 @@ export function updateOnlineUsers(message) {
     status.classList.toggle("offline", !message.online);
 }
 
-//  Move a user to the top of the list & refresh their last-message preview (Discord style)
+//  Move a user to the top of the list & refresh their last-message preview
 export function updateLastMessage(userId, message) {
     // 1. Update the cache
     const userIndex = usersCache.findIndex(u => u.id === userId);
@@ -118,18 +109,7 @@ export function updateLastMessage(userId, message) {
         usersCache.unshift(user);
     }
 
-    // 2. Update the DOM
     const userItem = usersList.querySelector(`[data-user-id="${userId}"]`);
-    if (!userItem) return;
-
-    const preview = userItem.querySelector(".last-text");
-    if (preview) {
-        const content = message.content || "";
-        preview.textContent = content
-            ? content.length > 30 ? `${content.slice(0, 30)}…` : content
-            : formatRelativeTime(message.createdAt);
-    }
-
     usersList.prepend(userItem);
 }
 
