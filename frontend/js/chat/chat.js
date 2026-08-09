@@ -1,12 +1,11 @@
 import { sendWebSocketMessage } from "../websocket.js";
-import { loadUsers, moveUserToTop, showChatNotification} from "./onlineUsers.js";
+import { loadUsers, moveUserToTop, showChatNotification } from "./onlineUsers.js";
 import { addThrottledScrollListener } from "./chatHelpers.js";
 import {
     appendMessage,
     loadMessages,
     loadMoreMessages,
     messagesContainer,
-    renderMessages,
     resetMessages,
     senderNickname,
 } from "./messages.js";
