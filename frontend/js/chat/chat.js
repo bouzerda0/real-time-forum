@@ -6,7 +6,6 @@ import {
     loadMessages,
     loadMoreMessages,
     messagesContainer,
-    removeEmptyMessage,
     renderMessages,
     resetMessages,
     senderNickname,
@@ -75,7 +74,6 @@ export function sendMessage(event) {
         content,
         createdAt: new Date().toISOString(),
     };
-    removeEmptyMessage();
     appendMessage(optimistic);
     moveUserToTop(window.currentChatUser, optimistic);
 
@@ -89,7 +87,6 @@ export function updateChatMessages(message) {
     moveUserToTop(message.senderId, message);
 
     if (message.senderId === window.currentChatUser) {
-        removeEmptyMessage();
         appendMessage(message);
         if (isNearBottom(messagesContainer)) autoScroll(messagesContainer);
         clearNotification(message.senderId);

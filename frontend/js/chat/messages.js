@@ -152,8 +152,5 @@ export function senderNickname(senderId) {
     return user ? user.nickname : "User";
 }
 
-// Remove the "No messages yet" message
-export function removeEmptyMessage() {
-    messagesContainer.querySelector(".no-chat")?.remove();
-}
+
 
