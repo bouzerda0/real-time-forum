@@ -81,7 +81,7 @@ export function registerView() {
                 window.navigateTo('/login');
             } catch (error) {
                 if (error.status === 400 || error.status === 409) {
-                    errBox.textContent = error.message || 'Registration failed. Please try again.';
+                    errBox.textContent = 'Registration failed. Please check your details and try again.';
                 } else {
                     const { showError } = await import("../errorPage.js");
                     showError(error.status || 500);

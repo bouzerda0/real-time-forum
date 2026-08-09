@@ -1,6 +1,6 @@
 import { ApiRequest } from "../api.js";
 import { getUserById } from "./onlineUsers.js";
-import { autoScroll, formatMessageTime } from "./chatHelpers.js";
+import { formatMessageTime } from "./chatHelpers.js";
 
 const CHAT_PAGE_SIZE = 10;
 

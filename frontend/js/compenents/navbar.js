@@ -15,16 +15,15 @@ export async function performLogout() {
 
 export function updateAuthUI() {
     const navArea = document.getElementById('navAuthArea');
-    const footer = document.getElementById('sidebarFooter');
+    const sidebar = document.getElementById('sidebarsidebar');
     const authed = localStorage.getItem('isAuthenticated') === 'true';
     const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
 
-    // Reconnect socket on auth state change
+    // Reconnect socket
     if (authed) window.initOnlineSocket?.();
 
     if (navArea) {
         if (authed) {
-            // Fallback chain: pick best display name available
             const name = user.username || user.nickname || user.email?.split('@')[0] || 'User';
             navArea.innerHTML = `
                 <div class="auth-buttons-wrapper" style="display:flex;align-items:center;gap:12px">
@@ -49,23 +48,22 @@ export function updateAuthUI() {
         }
     }
 
-    // Sidebar logout — only show when authed
-    if (footer) {
+    // Sidebar logout 
+    if (sidebar) {
         if (authed) {
-            footer.innerHTML = `<button class="logout-btn" id="sidebarLogoutBtn">
+            sidebar.innerHTML = `<button class="logout-btn" id="sidebarLogoutBtn">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
                     <polyline points="16 17 21 12 16 7"/>
                     <line x1="21" y1="12" x2="9" y2="12"/>
                 </svg>Log Out</button>`;
-            footer.querySelector('#sidebarLogoutBtn').onclick = performLogout;
+            sidebar.querySelector('#sidebarLogoutBtn').onclick = performLogout;
         } else {
-            footer.innerHTML = '';
+            sidebar.innerHTML = '';
         }
     }
 }
 
-// One helper to toggle left-menu open/close
 function toggleSidebar(open) {
     document.querySelector('.left-menu')?.classList.toggle('open', open);
     document.getElementById('sidebarOverlay')?.classList.toggle('active', open);
@@ -76,13 +74,11 @@ export function initNavbar() {
     document.getElementById('menuToggle')?.addEventListener('click', () => toggleSidebar(true));
     document.getElementById('sidebarClose')?.addEventListener('click', () => toggleSidebar(false));
 
-    // Sync auth UI across tabs via storage events
     window.addEventListener('storage', (e) => {
         if (e.key === 'currentUser' || e.key === 'isAuthenticated') updateAuthUI();
     });
 }
 
-// Run init — handles both sync and async DOM ready states
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initNavbar);
 } else {

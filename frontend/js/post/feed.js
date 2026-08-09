@@ -123,9 +123,9 @@ function createPostCard(post) {
     content.className = "text";
     content.textContent = post.content;
 
-    // Footer
-    const footer = document.createElement("div");
-    footer.className = "post-bottom";
+    // sidebar
+    const sidebar = document.createElement("div");
+    sidebar.className = "post-bottom";
 
     const date = document.createElement("span");
     date.textContent = formatDate(post.created_at);
@@ -136,15 +136,15 @@ function createPostCard(post) {
 
     const reactionsUI = createReaction(post.id, post.likes || 0, post.dislikes || 0);
 
-    footer.appendChild(date);
-    footer.appendChild(comments);
-    footer.appendChild(reactionsUI);
+    sidebar.appendChild(date);
+    sidebar.appendChild(comments);
+    sidebar.appendChild(reactionsUI);
 
     // Build article
     article.appendChild(header);
     article.appendChild(title);
     article.appendChild(content);
-    article.appendChild(footer);
+    article.appendChild(sidebar);
 
     return article;
 }

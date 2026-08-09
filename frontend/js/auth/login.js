@@ -45,8 +45,8 @@ export function loginView() {
                 if (data.user) localStorage.setItem('currentUser', JSON.stringify(data.user));
                 window.navigateTo('/');
             } catch (error) {
-                if (error.status === 400 || error.status === 401) {
-                    errBox.textContent = error.message || 'Login failed. Please check your credentials.';
+                if (error.message === "Unauthorized" || error.status === 400 || error.status === 401) {
+                    errBox.textContent = 'Invalid username/email or password.';
                 } else {
                     const { showError } = await import("../errorPage.js");
                     showError(error.status || 500);
