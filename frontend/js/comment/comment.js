@@ -7,18 +7,10 @@ export const escapeHTML = (str) =>
 const fetchComments = (postId) => ApiRequest(`/api/comments?post_id=${postId}`);
 
 const submitComment = async (postId, content) => {
-    const res = await fetch("/api/comments", {
+    return await ApiRequest("/api/comments", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ post_id: Number(postId), content })
+        body: { post_id: Number(postId), content }
     });
-
-    if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || data.message || "Failed to submit comment.");
-    }
-    return res.json();
 };
 
 function createComment(c) {
@@ -85,8 +77,8 @@ export async function renderComments(postId, container) {
         } catch (err) {
             errNode.textContent = err.message;
             const msg = err.message.toLowerCase();
-            if (msg.includes("401") || msg.includes("unauthorized") || msg.includes("login")) {
-                if (window.navigateTo) window.navigateTo("/login");
+            if (err.status === 400 || msg.includes("401") || msg.includes("unauthorized") || msg.includes("login")) {
+                if (err.status === 401 && window.navigateTo) window.navigateTo("/login");
             } else {
                 const { showError } = await import("../errorPage.js");
                 showError(err.status || 500);

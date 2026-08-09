@@ -1,8 +1,9 @@
 import { closeWebSocket } from '../websocket.js';
+import { ApiRequest } from '../api.js';
 
 // Always clean up & redirect, even if the API call fails
 export async function performLogout() {
-    try { await fetch('/api/logout', { method: 'POST' }); }
+    try { await ApiRequest('/api/logout', { method: 'POST' }); }
     catch (e) { console.error('Logout error:', e); }
     finally {
         closeWebSocket();

@@ -1,3 +1,5 @@
+import { ApiRequest } from '/js/api.js';
+
 export function registerView() {
     const container = document.createElement('div');
     container.className = 'login-box';
@@ -71,22 +73,19 @@ export function registerView() {
             };
 
             try {
-                const res = await fetch('/api/register', {
+                const data = await ApiRequest('/api/register', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: payload
                 });
-                const data = await res.json();
-
-                if (!res.ok) {
-                    errBox.textContent = data.message || 'Registration failed. Please try again.';
-                    return;
-                }
 
                 window.navigateTo('/login');
             } catch (error) {
-                const { showError } = await import("../errorPage.js");
-                showError(error.status || 500);
+                if (error.status === 400 || error.status === 409) {
+                    errBox.textContent = error.message || 'Registration failed. Please try again.';
+                } else {
+                    const { showError } = await import("../errorPage.js");
+                    showError(error.status || 500);
+                }
             } finally {
                 btn.disabled = false;
                 btn.textContent = 'Create Account';
