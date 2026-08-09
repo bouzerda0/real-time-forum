@@ -55,6 +55,9 @@ async function reactToPost(postId, isLike, likeBtn, dislikeBtn, itemType = "post
         if (err?.message?.includes("401") || err?.message?.includes("Unauthorized")) {
             alert("Please login to react.");
             if (window.navigateTo) window.navigateTo("/login");
+        } else {
+            const { showError } = await import("../errorPage.js");
+            showError(err.status || 500);
         }
     } finally {
         if (likeBtn) likeBtn.disabled = false;

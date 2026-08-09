@@ -12,10 +12,8 @@ export async function loadPostCard(postId) {
 
         container.appendChild(createPostDetails(post));
     } catch (error) {
-        const { errorView } = await import("../errorPage.js");
-        const view = errorView(error.status || 404);
-        container.replaceChildren(view.dom);
-        if (view.logic) view.logic();
+        const { showError } = await import("../errorPage.js");
+        showError(error.status || 404);
     }
 }
 

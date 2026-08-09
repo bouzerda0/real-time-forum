@@ -32,6 +32,9 @@ export async function filterByCategory(category) {
         if (feed) renderPosts(posts);
     } catch (error) {
         console.error("Error fetching filtered posts:", error);
-        if (feed) feed.innerHTML = "<p>Error loading posts.</p>";
+        if (feed) {
+            const { showError } = await import("../errorPage.js");
+            showError(error.status || 500);
+        }
     }
 }

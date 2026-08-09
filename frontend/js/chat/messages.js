@@ -52,8 +52,8 @@ export async function loadMessages() {
         console.error("Failed to load messages:", error);
 
         if (messageOffset === 0) {
-            messagesContainer.innerHTML =
-                '<div class="no-chat">Could not load messages.</div>';
+            const { showError } = await import("../errorPage.js");
+            showError(error.status || 500);
         }
 
     } finally {

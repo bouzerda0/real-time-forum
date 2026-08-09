@@ -24,7 +24,8 @@ export async function loadFeed() {
         renderPosts(posts);
     } catch (error) {
         console.error("Error loading feed:", error);
-        feed.innerHTML = "<p>Error loading posts.</p>";
+        const { showError } = await import("../errorPage.js");
+        showError(error.status || 500);
     }
 }
 
