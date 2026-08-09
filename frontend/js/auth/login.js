@@ -49,8 +49,9 @@ export function loginView() {
                 localStorage.setItem('isAuthenticated', 'true');
                 if (data.user) localStorage.setItem('currentUser', JSON.stringify(data.user));
                 window.navigateTo('/');
-            } catch {
-                errBox.textContent = 'Network error. Is the server running?';
+            } catch (error) {
+                const { showError } = await import("../errorPage.js");
+                showError(error.status || 500);
             } finally {
                 btn.disabled = false;
                 btn.textContent = 'Sign In';

@@ -26,3 +26,12 @@ export function errorView(status = 404) {
     logic: () => dom.querySelector('.home-button')?.addEventListener('click', () => navigateTo('/'))
   };
 }
+
+export function showError(status = 500) {
+  const container = document.querySelector('#app');
+  if (!container) return;
+
+  const view = errorView(status);
+  container.replaceChildren(view.dom);
+  view.logic?.();
+}

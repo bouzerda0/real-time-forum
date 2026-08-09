@@ -20,6 +20,8 @@ export async function loadUsers() {
         renderUsers(users);
     } catch (error) {
         console.error("Failed to load users:", error);
+        const { showError } = await import("../errorPage.js");
+        showError(error.status || 500);
     }
 }
 
@@ -103,7 +105,7 @@ export function moveUserToTop(userId, message) {
     if (userIndex !== -1) {
         const user = usersCache[userIndex];
         user.lastmessage = message.createdAt;
-        
+
         // Move to top of cache
         usersCache.splice(userIndex, 1);
         usersCache.unshift(user);

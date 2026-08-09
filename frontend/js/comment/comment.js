@@ -87,6 +87,9 @@ export async function renderComments(postId, container) {
             const msg = err.message.toLowerCase();
             if (msg.includes("401") || msg.includes("unauthorized") || msg.includes("login")) {
                 if (window.navigateTo) window.navigateTo("/login");
+            } else {
+                const { showError } = await import("../errorPage.js");
+                showError(err.status || 500);
             }
         } finally {
             btn.disabled = false;

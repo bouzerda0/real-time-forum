@@ -113,7 +113,8 @@ async function handleCreatePost(event) {
             await loadFeed();
         }
     } catch (error) {
-        showPostError("Failed to create post. Please try again.");
+        const { showError } = await import("../errorPage.js");
+        showError(error.status || 500);
     }
 }
 
