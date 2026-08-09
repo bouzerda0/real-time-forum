@@ -111,9 +111,9 @@ export function init() {
 
     document.body.addEventListener('click', (e) => {
         const a = e.target.closest('a[href]');
-        if (!a || a.origin !== location.origin) return;
+        if (!a) return;
         e.preventDefault();
-        navigateTo(a.pathname + a.search + a.hash);
+        navigateTo(a.pathname);
     });
 
     render(location.pathname);
