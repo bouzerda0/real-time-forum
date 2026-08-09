@@ -1,12 +1,11 @@
 import { sendWebSocketMessage } from "../websocket.js";
-import { loadUsers, updateLastMessage, showNotification, clearNotification } from "./onlineUsers.js";
+import { loadUsers, moveUserToTop, showNotification, clearNotification } from "./onlineUsers.js";
 import { addThrottledScrollListener, autoScroll, isNearBottom, showMessageToast } from "./chatHelpers.js";
 import {
     appendMessage,
     loadMessages,
     loadMoreMessages,
     messagesContainer,
-    queueLiveMessage,
     removeEmptyMessage,
     renderMessages,
     resetMessages,
@@ -75,7 +74,7 @@ export function sendMessage(event) {
     };
     removeEmptyMessage();
     appendMessage(optimistic);
-    updateLastMessage(window.currentChatUser, optimistic);
+    moveUserToTop(window.currentChatUser, optimistic);
 
     chatInput.value = "";
     autoScroll(messagesContainer);
@@ -84,11 +83,9 @@ export function sendMessage(event) {
 // Handle a new real-time message received over the WebSocket
 export function updateChatMessages(message) {
 
-    updateLastMessage(message.senderId, message);
+    moveUserToTop(message.senderId, message);
 
     if (message.senderId === window.currentChatUser) {
-        if (queueLiveMessage(message)) return;
-
         removeEmptyMessage();
         appendMessage(message);
         if (isNearBottom(messagesContainer)) autoScroll(messagesContainer);

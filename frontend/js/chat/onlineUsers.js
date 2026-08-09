@@ -97,7 +97,7 @@ export function updateOnlineUsers(message) {
 }
 
 //  Move a user to the top of the list & refresh their last-message preview
-export function updateLastMessage(userId, message) {
+export function moveUserToTop(userId, message) {
     // 1. Update the cache
     const userIndex = usersCache.findIndex(u => u.id === userId);
     if (userIndex !== -1) {
