@@ -75,7 +75,16 @@ export function initNavbar() {
     document.getElementById('sidebarClose')?.addEventListener('click', () => toggleSidebar(false));
 
     window.addEventListener('storage', (e) => {
-        if (e.key === 'currentUser' || e.key === 'isAuthenticated') updateAuthUI();
+        if (e.key !== 'currentUser' && e.key !== 'isAuthenticated') return;
+        // Logged out in another tab -> finish a clean logout here too
+        if (localStorage.getItem('isAuthenticated') !== 'true') {
+            closeWebSocket();
+            if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
+                window.navigateTo('/login');
+            }
+            return;
+        }
+        updateAuthUI();
     });
 }
 
