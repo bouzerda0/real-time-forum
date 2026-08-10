@@ -63,9 +63,9 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.Gender == "" {
+	if req.Gender != "Male" && req.Gender != "Female" {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(apiResponse{Status: "error", Message: "Please select a gender."})
+		json.NewEncoder(w).Encode(apiResponse{Status: "error", Message: "Gender must be either Male or Female."})
 		return
 	}
 

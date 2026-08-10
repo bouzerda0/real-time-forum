@@ -21,7 +21,7 @@ export async function filterByCategory(category) {
         let posts = await ApiRequest(url);
 
         if (Array.isArray(posts) && category === "liked") {
-            posts = posts.filter(p => p.user_reaction === 1 || p.UserReaction === 1);
+            posts = posts.filter(p => p.user_reaction === 1);
         }
 
         if (!posts || posts.length === 0) {
