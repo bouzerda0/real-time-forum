@@ -14,10 +14,8 @@ var GlobalHub *Hub
 
 // this struct represents a WebSocket hub that manages connected clients and broadcasts messages to them.
 type Hub struct {
-	mu sync.RWMutex
-	// Clients holds every active WebSocket connection for each user. A user can
-	// have several connections when they open the forum in multiple tabs.
-	Clients    map[int]map[*Client]struct{}
+	mu         sync.RWMutex
+	Clients    map[int][]*Client
 	Register   chan *Client
 	Unregister chan *Client
 	Messages   chan ChatMessage
@@ -26,7 +24,7 @@ type Hub struct {
 // NewHub creates a new Hub and initializes all required fields.
 func NewHub() *Hub {
 	h := &Hub{
-		Clients:    make(map[int]map[*Client]struct{}),
+		Clients:    make(map[int][]*Client),
 		Register:   make(chan *Client),
 		Unregister: make(chan *Client),
 		Messages:   make(chan ChatMessage),
@@ -63,10 +61,11 @@ func (h *Hub) broadcastStatus(userID int, online bool) {
 	h.mu.RLock()
 	// Broadcast the status message to all connected clients.
 	for _, clients := range h.Clients {
-		for client := range clients {
+		for _, client := range clients {
 			client.Send <- data
 		}
 	}
+
 	h.mu.RUnlock()
 }
 
@@ -76,10 +75,10 @@ func (h *Hub) Run() {
 		case client := <-h.Register:
 			h.mu.Lock()
 			wasOffline := len(h.Clients[client.UserID]) == 0
-			if h.Clients[client.UserID] == nil {
-				h.Clients[client.UserID] = make(map[*Client]struct{})
-			}
-			h.Clients[client.UserID][client] = struct{}{}
+			h.Clients[client.UserID] = append(
+				h.Clients[client.UserID],
+				client,
+			)
 			h.mu.Unlock()
 			if wasOffline {
 				h.broadcastStatus(client.UserID, true)
@@ -124,7 +123,7 @@ func (h *Hub) Run() {
 			}
 
 			// Send the message to every open tab for the receiver.
-			for receiver := range receivers {
+			for _, receiver := range receivers {
 				receiver.Send <- data
 			}
 
@@ -132,8 +131,17 @@ func (h *Hub) Run() {
 			h.mu.Lock()
 			isOffline := false
 			if clients, ok := h.Clients[client.UserID]; ok {
-				delete(clients, client)
-				if len(clients) == 0 {
+				for i, c := range clients {
+					if c == client {
+						h.Clients[client.UserID] = append(
+							clients[:i],
+							clients[i+1:]...,
+						)
+						break
+					}
+				}
+
+				if len(h.Clients[client.UserID]) == 0 {
 					delete(h.Clients, client.UserID)
 					isOffline = true
 				}
