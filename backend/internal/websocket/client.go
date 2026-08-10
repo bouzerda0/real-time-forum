@@ -30,7 +30,10 @@ func (c *Client) ReadPump() {
 		}
 		// set the SenderID of the message to the UserID of the client and send the message to the hub's Messages channel for broadcasting to other clients.
 		msg.SenderID = c.UserID
-		c.Hub.Messages <- msg
+		c.Hub.Messages <- HubMessage{
+			Client: c,
+			Msg:    msg,
+		}
 	}
 }
 
