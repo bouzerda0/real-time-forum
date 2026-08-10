@@ -34,6 +34,15 @@ func ValidatePostInput(post models.Post) bool {
 }
 
 func checkCategories(categories []string, selected []string) bool {
+	for i, sel := range selected {
+		for j := i + 1; j < len(selected); j++ {
+			if sel == selected[j] {
+				selected = append(selected[:j], selected[j+1:]...)
+				j--
+			}
+		}
+	}
+
 	for _, sel := range selected {
 		found := false
 

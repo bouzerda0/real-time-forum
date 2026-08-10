@@ -18,7 +18,11 @@ type Hub struct {
 	Clients    map[int][]*Client
 	Register   chan *Client
 	Unregister chan *Client
-	Messages   chan ChatMessage
+	Messages   chan HubMessage
+}
+type HubMessage struct {
+	Client *Client
+	Msg    ChatMessage
 }
 
 // NewHub creates a new Hub and initializes all required fields.
@@ -27,7 +31,7 @@ func NewHub() *Hub {
 		Clients:    make(map[int][]*Client),
 		Register:   make(chan *Client),
 		Unregister: make(chan *Client),
-		Messages:   make(chan ChatMessage),
+		Messages:   make(chan HubMessage),
 	}
 	GlobalHub = h
 	return h
@@ -84,47 +88,60 @@ func (h *Hub) Run() {
 				h.broadcastStatus(client.UserID, true)
 			}
 
-		case msg := <-h.Messages:
+		case hubmsg := <-h.Messages:
+			msg := hubmsg.Msg
+			senderClient := hubmsg.Client
+
 			// Validate the message before processing it.
 			if !chat.Checkmessage(msg.Content) || msg.SenderID == msg.ReceiverID {
 				continue
 			}
+
 			receiverexist, err := chat.UserExists(msg.ReceiverID)
 			if err != nil {
 				fmt.Println(err)
 				continue
 			}
+
 			if !receiverexist {
 				fmt.Println("receiver not exist")
 				continue
 			}
+
 			if msg.CreatedAt.IsZero() {
 				msg.CreatedAt = time.Now()
 			}
+
 			err = chat.SaveMessage(msg.SenderID, msg.ReceiverID, msg.Content)
 			if err != nil {
 				fmt.Println(err)
 				continue
 			}
-			// Find the receiver.
-			h.mu.RLock()
-			receivers, ok := h.Clients[msg.ReceiverID]
-			h.mu.RUnlock()
-			if !ok {
-				// Receiver is offline.
-				continue
-			}
+
 			msg.Type = "message"
-			// Convert the message to JSON.
+
 			data, err := json.Marshal(msg)
 			if err != nil {
 				log.Println("marshal error:", err)
 				continue
 			}
 
-			// Send the message to every open tab for the receiver.
+			h.mu.RLock()
+			receivers := append([]*Client(nil), h.Clients[msg.ReceiverID]...)
+			senders := append([]*Client(nil), h.Clients[msg.SenderID]...)
+			h.mu.RUnlock()
+
+			// Send to every tab of the receiver.
 			for _, receiver := range receivers {
 				receiver.Send <- data
+			}
+
+			// Send to other tabs of the sender,
+			// but NOT the tab that originally sent the message.
+			for _, sender := range senders {
+				if sender != senderClient {
+					sender.Send <- data
+				}
 			}
 
 		case client := <-h.Unregister:

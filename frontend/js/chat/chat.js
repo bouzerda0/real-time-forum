@@ -85,14 +85,13 @@ export function sendMessage(event) {
 // Handle a new real-time message received over the WebSocket
 export function updateChatMessages(message) {
     moveUserToTop(message.senderId, message);
-
     const layout = document.getElementById("contentLayout");
     const isSidebarOpen = layout ? layout.classList.contains("chat-active") : false;
     const convView = document.getElementById("chat-view-conversation");
     const isConvOpen = convView ? !convView.classList.contains("hidden") : false;
 
     // Only append silently if sidebar is open AND conversation view is active for this sender
-    if (isSidebarOpen && isConvOpen && message.senderId === window.currentChatUser) {
+    if (isSidebarOpen && isConvOpen) {
         appendMessage(message);
         return;
     }
