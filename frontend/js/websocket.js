@@ -43,7 +43,26 @@ function handleWebSocketMessage(event) {
         updateOnlineUsers(message);
     } else if (message.type === "message") {
         updateChatMessages(message);
+    } else if (message.type === "typing" || message.itemType === "typing") {
+        import("./chat/typingIndicator.js").then((module) => {
+            if (message.isTyping) {
+                module.showTypingIndicator(message.senderId, message.senderName);
+            } else {
+                module.hideTypingIndicator(message.senderId);
+            }
+        });
+
+        // Add this inside the existing socket.onmessage typing handler:
+        const sidebarTypingEl = document.getElementById(`sidebar-typing-${message.senderId}`);
+        if (sidebarTypingEl) {
+            sidebarTypingEl.style.display = message.isTyping ? 'block' : 'none';
+        }
     }
+}
+
+export function sendWebSocketEvent(payload) {
+    if (!socket || socket.readyState !== WebSocket.OPEN) return;
+    socket.send(JSON.stringify(payload));
 }
 
 export function closeWebSocket() {
