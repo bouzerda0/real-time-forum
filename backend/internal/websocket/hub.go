@@ -92,6 +92,30 @@ func (h *Hub) Run() {
 			msg := hubmsg.Msg
 			senderClient := hubmsg.Client
 
+			// Route typing event directly to the receiver without saving it
+			if msg.ItemType == "typing" || msg.Type == "typing" {
+				recId := msg.Receiver_ID
+				if recId == 0 {
+					recId = msg.ReceiverID
+				}
+				msg.Type = "typing"
+				msg.SenderID = senderClient.UserID
+				data, err := json.Marshal(msg)
+				if err != nil {
+					log.Println("marshal error:", err)
+					continue
+				}
+
+				h.mu.RLock()
+				receivers := append([]*Client(nil), h.Clients[recId]...)
+				h.mu.RUnlock()
+
+				for _, receiver := range receivers {
+					receiver.Send <- data
+				}
+				continue
+			}
+
 			// Validate the message before processing it.
 			if !chat.Checkmessage(msg.Content) || msg.SenderID == msg.ReceiverID {
 				continue
