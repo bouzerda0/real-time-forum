@@ -13,3 +13,13 @@ function sendTypingEvent(receiverId, status) {
     });
 }
 
+export function handleTyping(receiverId) {
+    if (!receiverId) return;
+    if (!isTyping) sendTypingEvent(receiverId, isTyping = true);
+    
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => {
+        if (isTyping) sendTypingEvent(receiverId, isTyping = false);
+    }, 1500);
+}
+
