@@ -23,3 +23,10 @@ export function handleTyping(receiverId) {
     }, 1500);
 }
 
+export function handleStopTyping(receiverId) {
+    if (isTyping && receiverId) {
+        clearTimeout(typingTimeout);
+        sendTypingEvent(receiverId, isTyping = false);
+    }
+}
+
