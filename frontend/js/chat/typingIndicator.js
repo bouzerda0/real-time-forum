@@ -30,3 +30,26 @@ export function handleStopTyping(receiverId) {
     }
 }
 
+export function showTypingIndicator(senderId, senderName) {
+    if (window.currentChatUser !== senderId) return;
+
+    const msgCont = document.getElementById("messages");
+    if (msgCont && !document.getElementById("typing-indicator")) {
+        const name = senderName || getUserById(senderId)?.nickname || "Someone";
+        msgCont.insertAdjacentHTML("beforeend", `
+            <div id="typing-indicator" class="typing-wrapper">
+                <span class="typing-username">${name} is typing</span>
+                <div class="typing-indicator-box">
+                    <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>
+                </div>
+            </div>
+        `);
+        msgCont.scrollTop = msgCont.scrollHeight;
+    }
+}
+
+export function hideTypingIndicator(senderId) {
+    if (window.currentChatUser === senderId) {
+        document.getElementById("typing-indicator")?.remove();
+    }
+}
