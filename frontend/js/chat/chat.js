@@ -9,6 +9,7 @@ import {
     resetMessages,
     senderNickname,
 } from "./messages.js";
+import { handleTyping, handleStopTyping } from "./typingIndicator.js";
 
 const THROTTLE_MS = 300;
 const chatForm = document.getElementById("chat-input-box");
@@ -80,6 +81,7 @@ export function sendMessage(event) {
     moveUserToTop(window.currentChatUser, optimistic);
 
     chatInput.value = "";
+    handleStopTyping(window.currentChatUser);
 }
 
 // Handle a new real-time message received over the WebSocket
@@ -103,6 +105,20 @@ export function updateChatMessages(message) {
 
 if (chatForm) {
     chatForm.addEventListener("submit", sendMessage);
+}
+
+if (chatInput) {
+    chatInput.addEventListener("input", () => {
+        handleTyping(window.currentChatUser);
+    });
+    chatInput.addEventListener("focus", () => {
+        if (chatInput.value.trim().length > 0) {
+            handleTyping(window.currentChatUser);
+        }
+    });
+    chatInput.addEventListener("blur", () => {
+        handleStopTyping(window.currentChatUser);
+    });
 }
 
 if (messagesContainer) {
