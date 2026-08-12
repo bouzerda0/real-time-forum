@@ -3,12 +3,13 @@ package chat
 import (
 	"real-time-forum/database"
 	"real-time-forum/internal/models"
+	"time"
 )
 
-func SaveMessage(SenderID int, ReceiverID int, Content string) error {
-	_, err := database.DB.Exec(`INSERT INTO messages (sender_id ,receiver_id , content )  
-	VALUES ( ? ,? ,?)`,
-		SenderID, ReceiverID, Content)
+func SaveMessage(SenderID int, ReceiverID int, Content string , created_at time.Time) error {
+	_, err := database.DB.Exec(`INSERT INTO messages (sender_id ,receiver_id , content , created_at  )  
+	VALUES ( ? ,? ,? , ?)`,
+		SenderID, ReceiverID, Content , created_at)
 	if err != nil {
 		return err
 	}

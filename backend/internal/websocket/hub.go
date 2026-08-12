@@ -131,12 +131,11 @@ func (h *Hub) Run() {
 				fmt.Println("receiver not exist")
 				continue
 			}
-
 			if msg.CreatedAt.IsZero() {
 				msg.CreatedAt = time.Now()
 			}
 
-			err = chat.SaveMessage(msg.SenderID, msg.ReceiverID, msg.Content)
+			err = chat.SaveMessage(msg.SenderID, msg.ReceiverID, msg.Content , msg.CreatedAt)
 			if err != nil {
 				fmt.Println(err)
 				continue
