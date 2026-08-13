@@ -64,13 +64,14 @@ export function sendMessage(event) {
 
     const content = chatInput.value.trim();
     if (!content) return;
-    if (content.length > 500) {
+    if (content.length > 1000) {
         return;
     }
 
     sendWebSocketMessage(window.currentChatUser, content);
 
     const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
+
     const optimistic = {
         senderId: currentUser.id,
         receiverId: window.currentChatUser,
@@ -96,6 +97,13 @@ export function updateChatMessages(message) {
     if (isSidebarOpen && isConvOpen) {
         appendMessage(message);
         return;
+    }
+    const currentUser = JSON.parse(
+        localStorage.getItem("currentUser") || "{}"
+    );
+
+    if (message.senderId === currentUser.id) {
+        return
     }
 
     const nickname = senderNickname(message.senderId);
