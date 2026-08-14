@@ -10,6 +10,7 @@ Features real-time private messaging via WebSockets, session-based authenticatio
 
 - 🔐 **User Authentication**: Secure Registration, Login, and Session handling using HttpOnly cookies.
 - ⚡ **Real-Time Private Chat**: One-on-one instant messaging powered by WebSockets.
+- ⌨️ **Live Typing Indicators**: See in real-time when other users are currently typing a message to you.
 - 🟢 **Live Online/Offline Status**: Instant presence indicators for active forum members.
 - 📌 **Forum Feed & Categories**: Filter posts by categories (General, Tech, Gaming, etc.) or liked content.
 - 💬 **Interactive Posts & Comments**: Create posts, leave comments, and react with likes/dislikes.
@@ -74,6 +75,17 @@ real-time-forum/
 │   └── index.html        # Single Page Application root
 └── README.md
 ```
+
+---
+
+## 👨‍💻 Developers
+
+This project was brought to life by a dedicated team committed to clean code, robust architecture, and exceptional user experiences.
+
+- **Ayman Bouzerda** — *Full-Stack developper | Talent in Zone 01 oujda*
+- **Mohammed Sarar** — *Full-stack developper | Talent in Zone 01 oujda*
+
+> *"Crafted with passion, exceptional style, and professional attention to detail."*
 
 ---
 
