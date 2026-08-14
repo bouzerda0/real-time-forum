@@ -47,10 +47,22 @@ window.switchChatView = switchChatView;
 
 // Open a conversation with a user
 export function openChat(userId, nickname) {
+    const layout = document.getElementById("contentLayout");
+    if (layout && !layout.classList.contains("chat-active")) {
+        layout.classList.add("chat-active");
+    }
+
     window.currentChatUser = userId;
 
-    document.getElementById("active-chat-username").textContent = nickname;
-    document.getElementById("sidebar-receiver-id").value = userId;
+    const usernameEl = document.getElementById("active-chat-username");
+    if (usernameEl) {
+        usernameEl.textContent = nickname || "Chat";
+    }
+    const receiverIdEl = document.getElementById("sidebar-receiver-id");
+    if (receiverIdEl) {
+        receiverIdEl.value = userId;
+    }
+
     switchChatView("conversation");
     resetMessages();
     loadMessages();
@@ -93,8 +105,8 @@ export function updateChatMessages(message) {
     const convView = document.getElementById("chat-view-conversation");
     const isConvOpen = convView ? !convView.classList.contains("hidden") : false;
 
-    // Only append silently if sidebar is open AND conversation view is active for this sender
-    if (isSidebarOpen && isConvOpen) {
+    // Only append silently if sidebar is open AND conversation view is active for this specific sender
+    if (isSidebarOpen && isConvOpen && window.currentChatUser == message.senderId) {
         appendMessage(message);
         return;
     }
@@ -107,7 +119,7 @@ export function updateChatMessages(message) {
     }
 
     const nickname = senderNickname(message.senderId);
-    showChatNotification(`New message from ${nickname}`);
+    showChatNotification(message.senderId, nickname);
 }
 
 

@@ -74,6 +74,15 @@ export function initNavbar() {
     document.getElementById('menuToggle')?.addEventListener('click', () => toggleSidebar(true));
     document.getElementById('sidebarClose')?.addEventListener('click', () => toggleSidebar(false));
 
+    // Close mobile sidebar on click outside
+    document.addEventListener('click', (e) => {
+        const menu = document.querySelector('.left-menu');
+        const toggleBtn = document.getElementById('menuToggle');
+        if (menu?.classList.contains('open') && !menu.contains(e.target) && !toggleBtn?.contains(e.target)) {
+            toggleSidebar(false);
+        }
+    });
+
     window.addEventListener('storage', (e) => {
         if (e.key !== 'currentUser' && e.key !== 'isAuthenticated') return;
         // Logged out in another tab -> finish a clean logout here too

@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Real-Time Forum — a modern community platform for discussions, posts, and live messaging.">
   <title>Real-Time Forum</title>
   <link rel="stylesheet" href="/assets/css/layout.css">
   <link rel="stylesheet" href="/assets/css/feed.css">
@@ -12,35 +13,107 @@
   <link rel="stylesheet" href="/assets/css/comments.css">
   <link rel="stylesheet" href="/assets/css/chat.css">
   <link rel="stylesheet" href="/assets/css/errorPage.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap">
 </head>
 
 <body>
+  <!-- Cursor-tracking glow effect -->
+  <div id="cursor-glow"></div>
+
   <div id="purple-glow"></div>
   <div class="menu-bg" id="sidebarOverlay"></div>
 
   <aside class="left-menu">
-    <div class="logo clickable-logo" onclick="navigateTo('/')">💬 01-Forum</div>
+    <div class="logo clickable-logo" onclick="navigateTo('/')">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+      01-Forum
+    </div>
     <button class="sidebar-close" id="sidebarClose" aria-label="Close menu">&times;</button>
 
     <div class="menu-title">Main menu</div>
     <ul class="links">
-      <li class="active messages-link" onclick="toggleChatSidebar()">💬 Messages</li>
+      <li class="active messages-link" onclick="toggleChatSidebar()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        Messages
+      </li>
     </ul>
 
     <div class="menu-title">Quick actions</div>
-    <button class="new-post-btn" onclick="navigateTo('/create-post')">✍️ Create Post</button>
+    <button class="new-post-btn" onclick="navigateTo('/create-post')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 20h9"/>
+        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+      </svg>
+      Create Post
+    </button>
 
     <div class="sidebar-categories">
-      <button class="menu-btn active" data-cat="all" onclick="filterByCategory('all')">📋 All Posts</button>
-      <button class="menu-btn" data-cat="liked" onclick="filterByCategory('liked')">👍 Liked Posts</button>
-      <button class="menu-btn" data-cat="General" onclick="filterByCategory('General')">📝 General</button>
-      <button class="menu-btn" data-cat="Technology" onclick="filterByCategory('Technology')">💻 Technology</button>
-      <button class="menu-btn" data-cat="Programming" onclick="filterByCategory('Programming')">⌨️ Programming</button>
-      <button class="menu-btn" data-cat="Gaming" onclick="filterByCategory('Gaming')">🎮 Gaming</button>
-      <button class="menu-btn" data-cat="Science" onclick="filterByCategory('Science')">🔬 Science</button>
-      <button class="menu-btn" data-cat="Education" onclick="filterByCategory('Education')">📚 Education</button>
+      <button class="menu-btn active" data-cat="all" onclick="filterByCategory('all')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+        </svg>
+        All Posts
+      </button>
+      <button class="menu-btn" data-cat="liked" onclick="filterByCategory('liked')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/>
+          <path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+        </svg>
+        Liked Posts
+      </button>
+      <button class="menu-btn" data-cat="General" onclick="filterByCategory('General')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10 9 9 9 8 9"/>
+        </svg>
+        General
+      </button>
+      <button class="menu-btn" data-cat="Technology" onclick="filterByCategory('Technology')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+          <line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+        Technology
+      </button>
+      <button class="menu-btn" data-cat="Programming" onclick="filterByCategory('Programming')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+        </svg>
+        Programming
+      </button>
+      <button class="menu-btn" data-cat="Gaming" onclick="filterByCategory('Gaming')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/>
+          <line x1="15" y1="13" x2="15.01" y2="13"/><line x1="18" y1="11" x2="18.01" y2="11"/>
+          <path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z"/>
+        </svg>
+        Gaming
+      </button>
+      <button class="menu-btn" data-cat="Science" onclick="filterByCategory('Science')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 3h6v11l4 4H5l4-4V3z"/>
+          <path d="M5 18h14"/>
+          <line x1="9" y1="3" x2="15" y2="3"/>
+        </svg>
+        Science
+      </button>
+      <button class="menu-btn" data-cat="Education" onclick="filterByCategory('Education')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+        Education
+      </button>
     </div>
 
     <div class="sidebar-sidebar" id="sidebarsidebar"></div>
@@ -81,6 +154,24 @@
   </div>
 
   <script type="module" src="/js/app.js"></script>
+
+  <!-- Mouse glow tracking -->
+  <script>
+    (function() {
+      const root = document.documentElement;
+      let ticking = false;
+      document.addEventListener('mousemove', function(e) {
+        if (!ticking) {
+          requestAnimationFrame(function() {
+            root.style.setProperty('--mouse-x', e.clientX + 'px');
+            root.style.setProperty('--mouse-y', e.clientY + 'px');
+            ticking = false;
+          });
+          ticking = true;
+        }
+      });
+    })();
+  </script>
 </body>
 
 </html>

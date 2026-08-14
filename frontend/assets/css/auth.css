@@ -1,111 +1,133 @@
+/* ═══════════════════════════════════════════════════════════════
+   AUTH — Login / Register Forms
+   ═══════════════════════════════════════════════════════════════ */
+
 .login-box {
-  background-color: var(--white-box);
-  border: 1px solid var(--border-color);
-  border-top: 4px solid var(--main-purple);
-  border-radius: 16px;
-  padding: 40px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-top: 4px solid var(--primary-500);
+  border-radius: var(--radius-xl);
+  padding: var(--space-10);
   width: 100%;
-  max-width: 500px;
-  box-shadow: 0 15px 35px rgba(99, 102, 241, 0.08);
+  max-width: 480px;
+  box-shadow: var(--shadow-xl);
   box-sizing: border-box;
+  animation: slideUpFade 0.5s var(--ease-out) forwards;
 }
 
 .login-box h2 {
-  color: var(--main-text);
-  font-size: 28px;
+  color: var(--text-primary);
+  font-size: var(--text-3xl);
   font-weight: 800;
   text-align: center;
   margin-top: 0;
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
+  font-family: var(--font-display);
 }
 
 .subtitle {
-  color: var(--grey-text);
-  font-size: 15px;
+  color: var(--text-muted);
+  font-size: var(--text-base);
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: var(--space-8);
 }
 
 .login-box label {
   display: block;
-  color: var(--main-text);
-  font-size: 14px;
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
   font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
+  text-transform: capitalize;
 }
 
 .login-box a {
-  color: var(--main-purple);
+  color: var(--primary-500);
   text-decoration: none;
   font-weight: 600;
+  transition: color var(--transition-fast);
 }
 
 .login-box a:hover {
+  color: var(--primary-600);
   text-decoration: underline;
 }
 
 .flex-row {
   display: flex;
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .flex-row > div {
   flex: 1;
 }
 
-.login-box input, 
+.login-box input,
 .login-box select {
   width: 100%;
-  padding: 14px 16px;
-  margin-bottom: 20px;
-  border: 1px solid #f1f5f9;
-  border-radius: 10px;
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-5);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
   box-sizing: border-box;
-  font-size: 15px;
-  color: var(--main-text);
-  background-color: #f8fafc;
-  transition: all 0.3s ease;
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  background-color: var(--bg-input);
+  transition:
+    border-color var(--transition-base),
+    background-color var(--transition-base),
+    box-shadow var(--transition-base);
   font-family: inherit;
 }
 
-.login-box input:focus, 
+.login-box input:focus,
 .login-box select:focus {
-  border-color: var(--main-purple);
-  background-color: var(--white-box);
+  border-color: var(--primary-400);
+  background-color: var(--bg-card);
   outline: none;
-  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.1);
+  box-shadow:
+    0 0 0 3px rgba(139, 92, 246, 0.08),
+    0 4px 12px rgba(139, 92, 246, 0.08);
 }
 
 .login-box .new-post-btn {
-  margin-top: 8px;
-  margin-bottom: 16px;
-  padding: 16px;
-  font-size: 16px;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+  margin-top: var(--space-2);
+  margin-bottom: var(--space-4);
+  padding: var(--space-4);
+  font-size: var(--text-lg);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-glow);
 }
 
 .login-box .new-post-btn:hover {
-  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 8px 28px rgba(139, 92, 246, 0.4);
 }
 
-#login-error-text, 
-#register-error-text, 
+/* ── Error Messages ── */
+#login-error-text,
+#register-error-text,
 .error-text {
   background-color: #fef2f2;
-  border: 1px solid #fca5a5;
-  color: #dc2626;
-  padding: 14px;
-  border-radius: 8px;
+  border: 1px solid var(--danger-300);
+  color: var(--danger-600);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
   text-align: center;
-  margin-bottom: 20px;
-  font-size: 14px;
+  margin-bottom: var(--space-5);
+  font-size: var(--text-sm);
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.1);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.08);
+  animation: shake 0.35s ease;
 }
 
-#login-error-text:empty, 
-#register-error-text:empty, 
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+#login-error-text:empty,
+#register-error-text:empty,
 .error-text:empty {
   display: none;
 }

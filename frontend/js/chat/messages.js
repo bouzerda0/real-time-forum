@@ -14,8 +14,11 @@ let hasMore = true;
 // Reset the current conversation
 export function resetMessages() {
     messageOffset = 0;
+    isLoadingMore = false;
     hasMore = true;
-    messagesContainer.innerHTML = "";
+    if (messagesContainer) {
+        messagesContainer.innerHTML = "";
+    }
 }
 
 // Load the first 10 messages of the current conversation
@@ -41,7 +44,10 @@ export async function loadMessages() {
         hasMore = messages.length === CHAT_PAGE_SIZE;
         messageOffset += messages.length;
 
-        renderMessages(messages, messagesContainer)
+        renderMessages(messages, messagesContainer);
+        if (messagesContainer) {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
 
     } catch (error) {
         console.error("Failed to load messages:", error);
@@ -138,6 +144,9 @@ export function appendMessage(message, container = messagesContainer) {
     bubble.appendChild(time);
 
     container.appendChild(bubble);
+    if (container === messagesContainer && messagesContainer) {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
 }
 
 // Get the sender nickname

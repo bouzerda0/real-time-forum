@@ -20,7 +20,7 @@ export async function loadUsers() {
     }
 }
 
-export const getUserById = id => usersCache.find(u => u.id === id);
+export const getUserById = id => usersCache.find(u => u.id == id);
 
 function renderUsers(users) {
     usersList.innerHTML = "";
@@ -74,12 +74,19 @@ export function moveUserToTop(userId, { createdAt }) {
     if (item) usersList.prepend(item);
 }
 
-export function showChatNotification(message) {
+export function showChatNotification(senderId, senderName) {
     document.getElementById("chat-notification")?.remove();
     const notif = document.createElement("div");
     notif.id = "chat-notification";
     notif.className = "chat-notification";
-    notif.innerHTML = `<span class="chat-notification-icon">💬</span><span class="chat-notification-text">${message}</span>`;
+    notif.style.cursor = "pointer";
+    notif.innerHTML = `<span class="chat-notification-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span><span class="chat-notification-text">New message from ${senderName}</span>`;
+
+    notif.onclick = () => {
+        if (window.openChat) window.openChat(senderId, senderName);
+        notif.remove();
+    };
+
     document.body.appendChild(notif);
     setTimeout(() => notif.remove(), 4000);
 }
